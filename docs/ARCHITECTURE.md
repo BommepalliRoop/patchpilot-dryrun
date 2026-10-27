@@ -1,5 +1,6 @@
 # Architecture
-nDiagrams (HLD + LLD, Mermaid): `docs/DIAGRAMS.md`. Stack details: `docs/TECH_STACK.md`.
+
+Diagrams (HLD + LLD, Mermaid): `docs/DIAGRAMS.md`. Stack details: `docs/TECH_STACK.md`.
 
 ## High level
 ```
