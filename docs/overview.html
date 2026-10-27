@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PatchPilot in 8 Steps</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+/* Layout: plain-language team briefing. One big journey strip (8 stops) at the top, then one row per step:
+   number + picture on the left, words on the right. Light-first, teal accent like the PatchPilot console. */
+:root{
+  --bg:#F4F8F8; --card:#FFFFFF; --soft:#E6F1F0; --line:#D3E2E0;
+  --ink:#10232B; --muted:#4E6670; --accent:#0E9384; --accent-soft:#CDEFEA;
+  --hot:#D6455D; --warm:#C77A0A; --good:#1F8A4C; --boomi:#2F6FD6;
+  --display:"Sora","Segoe UI",system-ui,sans-serif;
+  --body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0C1519; --card:#132027; --soft:#18303A; --line:#24404A;
+  --ink:#E7F1F2; --muted:#9AB2B9; --accent:#33C9B6; --accent-soft:#123C3A;
+  --hot:#F0657C; --warm:#F0A63A; --good:#4CC77F; --boomi:#6EA2FF; color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0C1519; --card:#132027; --soft:#18303A; --line:#24404A;
+  --ink:#E7F1F2; --muted:#9AB2B9; --accent:#33C9B6; --accent-soft:#123C3A;
+  --hot:#F0657C; --warm:#F0A63A; --good:#4CC77F; --boomi:#6EA2FF; color-scheme:dark; }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 72px}
+.wrap{max-width:1000px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.2;text-wrap:balance}
+h1{font-size:44px;letter-spacing:-0.02em}
+h2{font-size:28px}
+h3{font-size:22px}
+p{margin:0;max-width:62ch}
+.label{font-size:13px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent)}
+.muted{color:var(--muted)}
+section{display:flex;flex-direction:column;gap:20px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:32px;align-items:center}
+.hero-text{display:flex;flex-direction:column;gap:14px}
+.big-idea{font-size:22px;color:var(--muted)}
+.big-idea b{color:var(--ink)}
+.need-box{background:var(--card);border:2px solid var(--accent);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:12px}
+.need-box .row{display:flex;gap:12px;align-items:flex-start}
+.need-box .k{font-family:var(--display);font-weight:700;color:var(--accent);min-width:64px}
+
+/* journey strip */
+.journey{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:0;position:relative}
+.stop{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;position:relative;padding-inline:4px}
+.stop::after{content:"";position:absolute;top:34px;left:calc(50% + 34px);right:calc(-50% + 34px);height:3px;background:var(--accent);opacity:.45}
+.stop:last-child::after{display:none}
+.circle{width:68px;height:68px;border-radius:50%;background:var(--card);border:3px solid var(--accent);display:grid;place-items:center;position:relative}
+.circle svg{width:32px;height:32px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.circle .n{position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--card);
+  font-family:var(--display);font-size:13px;display:grid;place-items:center}
+.stop.boomi .circle{border-color:var(--boomi)} .stop.boomi .circle svg{stroke:var(--boomi)} .stop.boomi .circle .n{background:var(--boomi)}
+.stop b{font-family:var(--display);font-size:15px}
+.stop span{font-size:14px;color:var(--muted);line-height:1.3}
+
+/* analogy */
+.analogy{background:var(--soft);border-radius:18px;padding:22px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.analogy .a{display:flex;flex-direction:column;gap:4px;min-width:0}
+.analogy .a b{font-family:var(--display);font-size:16px}
+.analogy .a span{font-size:15px;color:var(--muted)}
+.analogy-title{grid-column:1/-1;font-family:var(--display);font-weight:700}
+
+/* steps */
+.steps{display:flex;flex-direction:column;gap:18px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;display:grid;grid-template-columns:72px minmax(0,1fr) minmax(0,300px);gap:22px;align-items:center}
+.step .num{width:64px;height:64px;border-radius:16px;background:var(--accent-soft);color:var(--accent);font-family:var(--display);font-size:30px;font-weight:700;display:grid;place-items:center}
+.step.boomi .num{background:color-mix(in srgb,var(--boomi) 16%,transparent);color:var(--boomi)}
+.step .words{display:flex;flex-direction:column;gap:6px;min-width:0}
+.who{font-size:13px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted)}
+.pic{min-width:0}
+
+/* pictures */
+.repo-card{border:1px solid var(--line);border-radius:12px;padding:12px;font-size:14px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+.repo-card .url{font-family:ui-monospace,Consolas,monospace;font-size:13px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.repo-card .go{align-self:flex-start;background:var(--accent);color:var(--card);border-radius:8px;padding:5px 12px;font-weight:600}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:13px;border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 10px}
+.tag.on{border-color:var(--accent);color:var(--accent);font-weight:600}
+.alert-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.alert-grid i{aspect-ratio:1;border-radius:3px;background:var(--warm);opacity:.75}
+.alert-grid i.fire{background:var(--hot);opacity:1}
+.funnel{display:flex;flex-direction:column;gap:6px;align-items:center}
+.bar{height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:15px;color:var(--card);font-variant-numeric:tabular-nums}
+.bar.b1{width:100%;background:var(--warm)} .bar.b2{width:45%;background:var(--hot)} .bar.b3{width:22%;background:var(--hot)}
+.prio{display:flex;flex-direction:column;gap:6px}
+.prio div{display:flex;align-items:center;gap:10px;font-size:15px}
+.prio b{width:38px;text-align:center;border-radius:6px;padding:2px 0;color:var(--card);font-family:var(--display);font-size:14px}
+.p1{background:var(--hot)} .p2{background:var(--warm)} .p3{background:var(--accent)} .p4{background:var(--muted)}
+.loop{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:6px;font-size:14px;text-align:center}
+.loop .box{border:1px solid var(--line);border-radius:10px;padding:8px 4px;background:var(--bg)}
+.loop .arr{color:var(--accent);font-weight:700}
+.loop .back{grid-column:1/-1;font-size:13px;color:var(--muted)}
+.outputs{display:flex;flex-direction:column;gap:8px}
+.out{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg);font-size:15px}
+.out i{width:10px;height:10px;border-radius:50%;flex:none}
+.out.gh i{background:var(--ink)} .out.jira i{background:var(--boomi)} .out.teams i{background:#6264A7} .out.log i{background:var(--good)}
+.dash{border:1px solid var(--line);border-radius:12px;background:var(--bg);padding:10px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;text-align:center}
+.dash div{background:var(--card);border-radius:8px;padding:8px 4px;display:flex;flex-direction:column}
+.dash b{font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}
+.dash span{font-size:12px;color:var(--muted)}
+
+/* teams */
+.teams{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.team{border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:10px;border:2px solid var(--accent);background:var(--card)}
+.team.b{border-color:var(--boomi)}
+.team ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.team h3{color:var(--accent)} .team.b h3{color:var(--boomi)}
+.link{text-align:center;font-size:15px;color:var(--muted)}
+
+footer{font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+
+@media (max-width:820px){
+  h1{font-size:34px}
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .journey{grid-template-columns:repeat(4,minmax(0,1fr));row-gap:22px}
+  .stop:nth-child(4)::after{display:none}
+  .analogy{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .step{grid-template-columns:56px minmax(0,1fr)}
+  .step .num{width:52px;height:52px;font-size:24px}
+  .step .pic{grid-column:1/-1}
+  .teams{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:460px){
+  .journey{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stop:nth-child(2n)::after{display:none}
+  .stop:nth-child(4)::after{display:none}
+  .analogy{grid-template-columns:minmax(0,1fr)}
+}
+</style>
+</head><body>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="hero-text">
+      <div class="label">PatchPilot · team briefing</div>
+      <h1>From code link to fixed code, in 8 steps</h1>
+      <p class="big-idea">Companies get hundreds of security warnings about the libraries their code uses. Most don't matter.
+        <b>PatchPilot finds the few that really matter, fixes them, tests the fix, and tells the right people.</b> Automatically, every day.</p>
+    </div>
+    <div class="need-box" aria-label="Main requirement">
+      <div class="label">Our main requirement</div>
+      <div class="row"><span class="k">Input</span><span>A link to a GitHub code repository. Any language.</span></div>
+      <div class="row"><span class="k">Output</span><span>A tested fix waiting for approval, a Jira ticket, a Teams message and an audit record.</span></div>
+      <div class="row"><span class="k">People</span><span>No one has to do anything in between.</span></div>
+    </div>
+  </header>
+
+  <section aria-labelledby="j-h">
+    <h2 id="j-h">The whole journey at a glance</h2>
+    <div class="journey">
+      <div class="stop"><div class="circle"><span class="n">1</span><svg viewBox="0 0 24 24"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></div><b>Give the link</b><span>Paste the repo link</span></div>
+      <div class="stop"><div class="circle"><span class="n">2</span><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></div><b>Read the list</b><span>Which language and libraries</span></div>
+      <div class="stop"><div class="circle"><span class="n">3</span><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg></div><b>Look for problems</b><span>Known security holes</span></div>
+      <div class="stop"><div class="circle"><span class="n">4</span><svg viewBox="0 0 24 24"><path d="M4 5h16l-6 7v6l-4 2v-8z"/></svg></div><b>Keep what matters</b><span>Is the broken part used?</span></div>
+      <div class="stop"><div class="circle"><span class="n">5</span><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></div><b>Rank</b><span>P1 urgent to P4 low</span></div>
+      <div class="stop"><div class="circle"><span class="n">6</span><svg viewBox="0 0 24 24"><path d="M14 6l4 4-8 8H6v-4z"/><path d="M12 8l4 4"/></svg></div><b>Fix and test</b><span>Upgrade, run tests</span></div>
+      <div class="stop boomi"><div class="circle"><span class="n">7</span><svg viewBox="0 0 24 24"><path d="M4 12l16-7-6 16-3-7z"/></svg></div><b>Tell people</b><span>PR, Jira, Teams, audit</span></div>
+      <div class="stop"><div class="circle"><span class="n">8</span><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 14l3-3 3 2 4-5"/></svg></div><b>See results</b><span>On the dashboard</span></div>
+    </div>
+  </section>
+
+  <section class="analogy" aria-label="Simple comparison">
+    <div class="analogy-title">Think of it like a car service</div>
+    <div class="a"><b>Check every part</b><span>Steps 2–3: list all parts and look up recalls.</span></div>
+    <div class="a"><b>Only the parts you drive with</b><span>Step 4: a faulty spare tyre you never use is not urgent.</span></div>
+    <div class="a"><b>Replace and test drive</b><span>Step 6: swap the part, then make sure the car still runs.</span></div>
+    <div class="a"><b>Service report</b><span>Step 7: you approve the work; the record is kept for audits.</span></div>
+  </section>
+
+  <section aria-labelledby="s-h">
+    <h2 id="s-h">Each step in plain words</h2>
+    <div class="steps">
+
+      <article class="step">
+        <div class="num">1</div>
+        <div class="words">
+          <div class="who">Team member in the web app · or Boomi, every morning</div>
+          <h3>Give PatchPilot the code link</h3>
+          <p>Open the PatchPilot web app, click <b>Run scan</b> and paste the GitHub link. Public repos work straight away.
+            Private repos need a one-time access key from GitHub, set up once by the team lead. Boomi can also start this every day at 9:00 on its own.</p>
+        </div>
+        <div class="pic">
+          <div class="repo-card">
+            <span class="muted">Run scan</span>
+            <div class="url">github.com/acme/shop-backend</div>
+            <div class="tags"><span class="tag">Client: Acme Retail</span><span class="tag">Branch: main</span><span class="tag on">Auto-fix: on</span></div>
+            <span class="go">Start</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="num">2</div>
+        <div class="words">
+          <div class="who">PatchPilot</div>
+          <h3>Read the ingredients list</h3>
+          <p>Every project has a file that lists the outside libraries it uses, with exact versions. PatchPilot finds these files
+            and works out the languages by itself, so nobody has to tell it.</p>
+        </div>
+        <div class="pic">
+          <div class="tags">
+            <span class="tag on">Python</span><span class="tag on">JavaScript</span><span class="tag">Java</span><span class="tag">Go</span>
+            <span class="tag">PHP</span><span class="tag">.NET</span><span class="tag">Ruby</span><span class="tag">Rust</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="num">3</div>
+        <div class="words">
+          <div class="who">PatchPilot</div>
+          <h3>Look up known security problems</h3>
+          <p>Each library version is checked against a free public database of known security holes (OSV, run by Google).
+            It also checks a government list of holes that attackers are using right now.</p>
+        </div>
+        <div class="pic" aria-label="About 35 warnings, a few of them actively attacked">
+          <div class="alert-grid">
+            <i></i><i></i><i></i><i class="fire"></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i class="fire"></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i>
+          </div>
+          <p class="muted" style="font-size:14px;margin-top:6px">About 35 warnings on our demo project</p>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="num">4</div>
+        <div class="words">
+          <div class="who">PatchPilot + AI</div>
+          <h3>Keep only the warnings that matter</h3>
+          <p>A warning only matters if our code actually uses the broken part of the library. PatchPilot reads the code, finds the exact
+            line that uses it, and AI double-checks. This is what turns a long list into a short one.</p>
+        </div>
+        <div class="pic">
+          <div class="funnel">
+            <div class="bar b1">35 warnings</div>
+            <div class="bar b2">3 used</div>
+            <div class="bar b3">1</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="num">5</div>
+        <div class="words">
+          <div class="who">PatchPilot</div>
+          <h3>Rank by real risk</h3>
+          <p>Each real problem gets a score from how serious it is, whether outsiders can reach it through the website,
+            and whether attackers are using it. Then it gets a priority.</p>
+        </div>
+        <div class="pic">
+          <div class="prio">
+            <div><b class="p1">P1</b>Fix today</div>
+            <div><b class="p2">P2</b>Fix this week</div>
+            <div><b class="p3">P3</b>Plan it</div>
+            <div><b class="p4">P4</b>Low risk</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="num">6</div>
+        <div class="words">
+          <div class="who">PatchPilot + AI</div>
+          <h3>Fix it and prove the fix works</h3>
+          <p>PatchPilot moves the library to the nearest safe version and runs the project's own tests in a safe sandbox.
+            If something breaks, AI makes a small repair and tests again, up to two times. If it still fails, a person takes over.</p>
+        </div>
+        <div class="pic">
+          <div class="loop">
+            <div class="box">Upgrade</div><span class="arr">→</span>
+            <div class="box">Run tests</div><span class="arr">→</span>
+            <div class="box">Pass ✓</div>
+            <div class="back">Tests fail? AI repairs and tries again (max 2)</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="step boomi">
+        <div class="num">7</div>
+        <div class="words">
+          <div class="who">PatchPilot + Boomi</div>
+          <h3>Hand it to the right people</h3>
+          <p>The fix arrives as a <b>pull request</b> that the client's developers approve. It is never merged on its own.
+            Boomi then creates a <b>Jira ticket</b>, posts a <b>Teams message</b> and saves an <b>audit record</b> for security reviews.</p>
+        </div>
+        <div class="pic">
+          <div class="outputs">
+            <div class="out gh"><i></i>GitHub pull request, ready to approve</div>
+            <div class="out jira"><i></i>Jira ticket SEC-101</div>
+            <div class="out teams"><i></i>Teams alert to the security channel</div>
+            <div class="out log"><i></i>Audit record for compliance</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="num">8</div>
+        <div class="words">
+          <div class="who">Everyone</div>
+          <h3>See everything on the dashboard</h3>
+          <p>The web app shows each step live while it runs, then the results: what was found, the exact line, what was fixed,
+            and links to the pull request and the Jira ticket.</p>
+        </div>
+        <div class="pic">
+          <div class="dash">
+            <div><b>35</b><span>warnings</span></div>
+            <div><b>3</b><span>real risks</span></div>
+            <div><b>2</b><span>fixed</span></div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section aria-labelledby="t-h">
+    <h2 id="t-h">Who builds what</h2>
+    <div class="teams">
+      <div class="team">
+        <h3>Dev team</h3>
+        <ul>
+          <li>The web app (screens and live progress)</li>
+          <li>The engine for steps 2–6</li>
+          <li>The pull request in step 7</li>
+          <li>Putting it online</li>
+        </ul>
+      </div>
+      <div class="team b">
+        <h3>Boomi team</h3>
+        <ul>
+          <li>Starting the scan every morning (step 1)</li>
+          <li>Jira ticket and Teams message (step 7)</li>
+          <li>Audit record and compliance report</li>
+        </ul>
+      </div>
+    </div>
+    <p class="link">The two teams connect only through agreed web addresses and messages, so both can work at the same time.</p>
+  </section>
+
+  <footer>PatchPilot · EasyStepIn AI Hackathon 2026 · Details for builders: README, docs/USER_GUIDE.md and docs/walkthrough.html in the repo.</footer>
+</div>
+
+</body></html>
