@@ -4,7 +4,7 @@
 PatchPilot scans a client's GitHub repo for vulnerable dependencies, decides with AI whether the
 vulnerable function is actually reachable from the client's code, scores real risk (OSV + CISA KEV + EPSS),
 upgrades the library, runs tests, lets AI patch breakage (max 2 retries), opens a pull request, and
-notifies Boomi (Jira ticket, Teams alert, compliance log).
+notifies Boomi (Jira ticket, Slack alert, compliance log).
 
 To demo and test that, we need a small set of fake "client" repos on GitHub. Each one is a tiny,
 realistic app with deliberately old dependencies. Together they must cover: several languages,

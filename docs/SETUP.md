@@ -16,6 +16,6 @@
 ## Lead / shared accounts
 - [ ] GitHub repo for PatchPilot + separate demo-target repo
 - [ ] Render or Railway account (backend), Vercel account (frontend), cloudflared installed (fallback)
-- [ ] Jira project key for Boomi B2, Teams incoming webhook URL
+- [ ] Jira project key for Boomi B2, Slack incoming webhook URL
 - [ ] Boomi team has access to Boomi + docs/BOOMI_HANDOFF.md
 - [ ] Demo library versions confirmed on osv.dev

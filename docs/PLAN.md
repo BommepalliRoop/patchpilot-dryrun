@@ -17,7 +17,7 @@ Runs daily (Boomi scheduler) or on demand:
 4. Risk score = CVSS × reachability × exposure × exploit data (CISA KEV, EPSS) → P1–P4.
 5. Upgrade to the nearest safe version, run tests, AI patches broken code (max 2 retries).
 6. Open a GitHub PR with a full explanation.
-7. Boomi: Jira ticket, Teams alert, compliance log per client.
+7. Boomi: Jira ticket, Slack alert, compliance log per client.
 
 ## 4. Why this idea
 Daily use in every service company · goes beyond scanners (reasoning + tested fix) · real security and audit
@@ -33,7 +33,7 @@ impact · Boomi is the integration backbone · strong live demo.
 Backend: Python 3.11, FastAPI, SQLModel/SQLite, httpx, GitPython, PyGithub, OSV-Scanner CLI, pytest.
 AI: provider-agnostic LLM client (keys at kickoff), JSON outputs, prompts in `backend/app/prompts/`.
 Frontend: React 18, Vite, TypeScript, Tailwind CSS, Motion (`motion/react`), Lucide icons, Recharts, Shiki (code view).
-Integration: Boomi Integration built with Boomi Companion (Jira, Teams webhook, database/SharePoint).
+Integration: Boomi Integration built with Boomi Companion (Jira, Slack webhook, database/SharePoint).
 Deploy: backend Docker on Render/Railway (or laptop + Cloudflare Tunnel fallback), frontend on Vercel.
 
 ## 7. Timeline (Oct 28)
@@ -50,7 +50,7 @@ Deploy: backend Docker on Render/Railway (or laptop + Cloudflare Tunnel fallback
 
 ## 8. Prepare today (no code)
 - GitHub repo for PatchPilot and a separate demo target repo; fine-grained token with PR rights.
-- Boomi access for the Boomi team; Jira project key; Teams incoming webhook URL.
+- Boomi access for the Boomi team; Jira project key; Slack incoming webhook URL.
 - Render/Railway + Vercel accounts; Cloudflare Tunnel installed as fallback.
 - Choose old library versions for the demo target and confirm CVEs on osv.dev.
 - Ask organisers whether the demo target app may be prepared before the event. If not, T15 builds it.

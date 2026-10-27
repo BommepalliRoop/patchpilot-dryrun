@@ -15,24 +15,26 @@ maps and connections, deploy, and run the test calls in section 9. A process is 
 **Today's practice run:** build everything in a Boomi folder named `DRYRUN - PatchPilot` and do not reuse
 it tomorrow (hackathon rule: everything is built during the event). Tomorrow, rebuild in a fresh folder.
 
-**Version:** v3.6 (Oct 27). Changes since earlier copies:
+**Version:** v3.7 (Oct 27). Changes since earlier copies:
 - v2: idempotency (`Idempotency-Key` header, `finding_id` column in the compliance log), new `event` / `fix_status`
   values, optional `owner_email`.
 - v3: exploit data in B2 — `kev`, `epss`, `epss_percentile` (section 5); Jira label `actively-exploited` and an
-  "Exploit data" description line; Teams card shows the exploit line (section 6).
-- v3.1: compliance log also stores `jira_url` and `teams_sent` (needed for the idempotent replay); common response
-  rules for all endpoints (section 5a); Teams title for `finding.open`; B3 duplicate handling; schedule time zone.
+  "Exploit data" description line; Slack message shows the exploit line (section 6).
+- v3.1: compliance log also stores `jira_url` and `slack_sent` (needed for the idempotent replay); common response
+  rules for all endpoints (section 5a); Slack title for `finding.open`; B3 duplicate handling; schedule time zone.
 - v3.2: compliance log store decided — **PostgreSQL** (table SQL + the 3 queries in section 4); the Lead creates it
   and sends the connection details privately (section 4b). Google Sheet only as fallback.
 - v3.3: PatchPilot works for all languages — B2 has a new `ecosystem` field (PyPI, npm, Maven, Go, …) and a new
-  `fix_status` value `fixed_untested` (upgrade PR opened, tests not run). Show the language in Jira and Teams.
+  `fix_status` value `fixed_untested` (upgrade PR opened, tests not run). Show the language in Jira and Slack.
 - v3.4: section 2a "API reference" — every endpoint, payload, success and error response in one place;
   example `compliance_log_id` is now `log_fnd_07` (= `'log_' + finding_id`, as in section 4a).
 - v3.5: compliance database moved to **Supabase** (PostgreSQL). Same table and queries; new connection details in
   section 4b — use the Supabase **Session pooler** address (port 5432), not the direct `db.<ref>.supabase.co` host.
-- v3.6: B2 writes the database in a safe order — **insert the row first (Q2), then Jira (Q3 update), then Teams
+- v3.6: B2 writes the database in a safe order — **insert the row first (Q2), then Jira (Q3 update), then Slack
   (Q4 update)**; status changes update the row (Q5) and comment on the same Jira issue. Two new columns
   (`ecosystem`, `updated_at`). Step-by-step low-level flow for B0–B4: **`docs/BOOMI_FLOW.md`**.
+- v3.7: **Slack replaces Microsoft Teams** for alerts (B2) and summaries (B3): Slack incoming webhook + Block Kit message
+  (section 6); field `teams_sent` is now **`slack_sent`** everywhere (replies and the database column).
 If you started from an older copy, apply these changes; nothing else changed.
 
 **Working in parallel:** you do not wait for us. The dev team builds the app at the same time with Boomi in
@@ -43,10 +45,10 @@ sides at the times in section 10.
 | # | Deliverable | When (event day) | Done when |
 |---|---|---|---|
 | D1 | `BOOMI_BASE_URL` + exact paths for B2/B3/B4, `BOOMI_USER` (team chat), `BOOMI_TOKEN` (private message to the Lead) | 10:30 | We can call your B2 with curl |
-| D2 | Jira site URL + project key, Teams channel name | 10:30 | Shared in team chat |
-| D3 | **B2 live** — Jira issue + Teams card + compliance row + idempotency | 11:15 | Section 0 items 2.3–2.5 pass; screenshots shared |
+| D2 | Jira site URL + project key, Slack channel name | 10:30 | Shared in team chat |
+| D3 | **B2 live** — Jira issue + Slack message + compliance row + idempotency | 11:15 | Section 0 items 2.3–2.5 pass; screenshots shared |
 | D4 | **B1 live** — scheduled + manual "Execute" calls our `BACKEND_URL` | 11:40 | Execute returns 202 with a `scan_id` |
-| D5 | **B3 live** — Teams summary card | 11:50 | Test call shows the card |
+| D5 | **B3 live** — Slack summary message | 11:50 | Test call shows the message in Slack |
 | D6 | **B4 live** — compliance report | 11:50 | Test call returns the rows written by B2 |
 | D7 | Screenshots + notes in the repo `boomi/` folder | 12:15 | Pull request opened |
 | D8 | One person explains B1–B4 in 30 s during the demo | 12:25 | — |
@@ -60,19 +62,19 @@ Tick these in order. Times are for the event day (Oct 28); for the practice run,
 - [ ] 0.1 Every Boomi team member can log in to Boomi and open Boomi Companion.
 - [ ] 0.2 A Boomi **Atom Cloud** (or cloud Atom) is available with a public HTTPS URL (section 3).
 - [ ] 0.3 Jira Cloud site + a project (e.g. key `SEC`) + a Jira user email and API token.
-- [ ] 0.4 A Teams channel for alerts + its webhook URL (section 6).
+- [ ] 0.4 A Slack channel for alerts + its webhook URL (section 6).
 - [ ] 0.5 Compliance log database: PostgreSQL connection details received from the Lead (section 4b); table exists.
 - [ ] 0.6 You received from the Lead: the demo repo URL and the B1 client list (section 10).
 
 **B0 — Setup (by 10:00)**
 - [ ] 1.1 Shared Web Server: REST listener on, Basic auth, one user for PatchPilot (section 3).
-- [ ] 1.2 Connections: Jira, Teams HTTP, compliance log, PatchPilot HTTP (section 3).
+- [ ] 1.2 Connections: Jira, Slack HTTP, compliance log, PatchPilot HTTP (section 3).
 - [ ] 1.3 Send the Lead `BOOMI_BASE_URL`, `BOOMI_USER` (team chat) and `BOOMI_TOKEN` (private message only).
 
 **B2 — Finding notification (by 11:15) — the most important**
 - [ ] 2.1 Database connection in Boomi works: run the B4 query → returns 0 rows without error (section 4a).
 - [ ] 2.2 Build B2 with the Companion prompt (section 12) and the steps in section 5.
-- [ ] 2.3 Deploy; run the B2 test call (section 9) → a Jira issue (with the "Exploit data" line), a Teams card and a log row appear; response matches section 5.
+- [ ] 2.3 Deploy; run the B2 test call (section 9) → a Jira issue (with the "Exploit data" line), a Slack message and a log row appear; response matches section 5.
 - [ ] 2.4 Run the same call again with the same `Idempotency-Key` → **no** second Jira issue, same `jira_key` returned.
 - [ ] 2.5 Send a missing-field request → 400. Tell the Lead "B2 passes" + screenshots.
 
@@ -82,20 +84,20 @@ Tick these in order. Times are for the event day (Oct 28); for the practice run,
 - [ ] 3.3 Schedule it daily 09:00. Tell the Lead "B1 live".
 
 **B3 — Scan summary (by 11:50)**
-- [ ] 4.1 Build B3 (section 8); test call → Teams summary card; response `{ "ok": true, "teams_sent": true }`.
+- [ ] 4.1 Build B3 (section 8); test call → Slack summary message; response `{ "ok": true, "slack_sent": true }`.
 
 **B4 — Compliance report (by 11:50)**
 - [ ] 5.1 Build B4 (section 8); test call → JSON with the rows written by B2; empty result → `"items": []`.
 
 **Demo and wrap-up (11:50–12:20)**
-- [ ] 6.1 During the full demo run, watch Jira, Teams and the log; confirm each item appears within ~1 minute.
+- [ ] 6.1 During the full demo run, watch Jira, Slack and the log; confirm each item appears within ~1 minute.
 - [ ] 6.2 Screenshot each process canvas; add them to the repo `boomi/` folder (section 11).
 - [ ] 6.3 One person is ready to explain B1–B4 in 30 seconds during the demo.
 
 ## 1. What PatchPilot is (30 seconds)
 PatchPilot scans a client's code for vulnerable libraries, uses AI to find the few that our code actually
 calls, fixes them automatically and opens a GitHub pull request. **Boomi is the integration backbone:**
-it starts the daily scans (B1) and turns every finding into a Jira ticket, a Teams alert and a compliance
+it starts the daily scans (B1) and turns every finding into a Jira ticket, a Slack alert and a compliance
 log row (B2), posts a daily summary (B3), and serves the audit trail (B4).
 
 ```mermaid
@@ -105,9 +107,9 @@ flowchart LR
     PP -- "POST /patchpilot/scan-summary" --> B3[B3]
     PP -- "GET /patchpilot/compliance" --> B4[B4]
     B2 --> JIRA[Jira issue]
-    B2 --> TEAMS[Teams alert]
+    B2 --> SLACK[Slack alert]
     B2 --> LOG[(Compliance log)]
-    B3 --> TEAMS
+    B3 --> SLACK
     B4 --> LOG
 ```
 
@@ -115,15 +117,15 @@ flowchart LR
 | Order | ID | Process | Direction | Must work by | Why this order |
 |---|---|---|---|---|---|
 | 1 | **B0** | Setup: runtime, listener, auth, connections | — | 10:00 | Everything else needs it |
-| 2 | **B2** | Finding notification → Jira + Teams + log | PatchPilot → Boomi | 11:15 | The main demo moment |
+| 2 | **B2** | Finding notification → Jira + Slack + log | PatchPilot → Boomi | 11:15 | The main demo moment |
 | 3 | **B1** | Daily scan trigger | Boomi → PatchPilot | 11:40 | Shows "fully automated, every day" |
-| 4 | **B3** | Scan summary → Teams card | PatchPilot → Boomi | 11:50 | Nice-to-have |
+| 4 | **B3** | Scan summary → Slack message | PatchPilot → Boomi | 11:50 | Nice-to-have |
 | 5 | **B4** | Compliance report from the log | PatchPilot → Boomi | 11:50 | Nice-to-have (Compliance page) |
 
 If time is short, finish B0 → B2 → B1. Until your endpoints are live the dev team runs with
 `BOOMI_MODE=mock`, so nobody waits on anybody.
 
-**Tonight (no process building, only accounts):** get Boomi access, a Jira project, a Teams channel
+**Tonight (no process building, only accounts):** get Boomi access, a Jira project, a Slack channel
 with a webhook, and a place for the compliance log (section 4). Check with the organisers whether
 building processes before 9:20 is allowed; assume it is not.
 
@@ -133,8 +135,8 @@ Full field lists are in sections 5, 7 and 8; this section is the quick lookup.
 | # | Direction | Method + URL | Auth | Request body | Success | Errors |
 |---|---|---|---|---|---|---|
 | B1 | Boomi → PatchPilot | `POST ${BACKEND_URL}/api/scans` | header `X-API-Key` | client entry (below) | `202` `{scan_id, status}` | `400` `401` `429` |
-| B2 | PatchPilot → Boomi | `POST ${BOOMI_BASE_URL}/patchpilot/findings` | Basic + `Idempotency-Key: <finding_id>` | finding (section 5) | `200` `{ok, jira_key, jira_url, teams_sent, compliance_log_id, processed_at}` | `400` `401` `502` `500` |
-| B3 | PatchPilot → Boomi | `POST ${BOOMI_BASE_URL}/patchpilot/scan-summary` | Basic + `Idempotency-Key: <scan_id>` | scan summary (section 8) | `200` `{ok, teams_sent}` | `400` `401` `500` |
+| B2 | PatchPilot → Boomi | `POST ${BOOMI_BASE_URL}/patchpilot/findings` | Basic + `Idempotency-Key: <finding_id>` | finding (section 5) | `200` `{ok, jira_key, jira_url, slack_sent, compliance_log_id, processed_at}` | `400` `401` `502` `500` |
+| B3 | PatchPilot → Boomi | `POST ${BOOMI_BASE_URL}/patchpilot/scan-summary` | Basic + `Idempotency-Key: <scan_id>` | scan summary (section 8) | `200` `{ok, slack_sent}` | `400` `401` `500` |
 | B4 | PatchPilot → Boomi | `GET ${BOOMI_BASE_URL}/patchpilot/compliance?client_name=…&from=YYYY-MM-DD` | Basic | none (query parameters) | `200` `{client_name, from, items[]}` | `400` `401` `500` |
 
 All requests and responses use `Content-Type: application/json`, UTF-8, snake_case fields, timestamps in ISO-8601 UTC (`2026-10-28T05:11:40Z`).
@@ -172,8 +174,8 @@ Content-Type: application/json
 **B2 — responses** (Boomi sends back)
 ```json
 200 { "ok": true, "jira_key": "SEC-101", "jira_url": "https://<site>.atlassian.net/browse/SEC-101",
-      "teams_sent": true, "compliance_log_id": "log_fnd_07", "processed_at": "2026-10-28T05:11:40Z" }
-200 { "ok": true, "jira_key": "SEC-101", "jira_url": "...", "teams_sent": false, "compliance_log_id": "log_fnd_07", "processed_at": "..." }   ← Teams failed, Jira worked
+      "slack_sent": true, "compliance_log_id": "log_fnd_07", "processed_at": "2026-10-28T05:11:40Z" }
+200 { "ok": true, "jira_key": "SEC-101", "jira_url": "...", "slack_sent": false, "compliance_log_id": "log_fnd_07", "processed_at": "..." }   ← Slack failed, Jira worked
 400 { "ok": false, "error": "invalid_request", "message": "missing cve_id" }
 401 { "ok": false, "error": "unauthorized", "message": "bad credentials" }
 502 { "ok": false, "error": "jira_create_failed", "message": "Jira returned 400: project SEC not found" }
@@ -190,8 +192,8 @@ POST /ws/rest/patchpilot/scan-summary   (Basic auth, Idempotency-Key: scn_01)
   "stats": { "total_alerts": 35, "reachable": 3, "unsure": 1, "not_reachable": 31, "p1": 1, "p2": 1, "fixed": 2, "prs_opened": 2 },
   "dashboard_url": "https://patchpilot.vercel.app/scans/scn_01" }
 
-200 { "ok": true, "teams_sent": true }
-500 { "ok": false, "error": "internal_error", "message": "Teams webhook returned 400" }
+200 { "ok": true, "slack_sent": true }
+500 { "ok": false, "error": "internal_error", "message": "Slack webhook returned 400" }
 ```
 
 **B4 — request / responses**
@@ -220,7 +222,7 @@ The `/ws/rest` prefix is Boomi's usual REST path; use whatever your Atom shows a
    | Connection | Type | Settings |
    |---|---|---|
    | Jira | Jira connector, or HTTP Client | Jira Cloud site URL, user email + Jira API token (id.atlassian.com → Security → API tokens) |
-   | Teams | HTTP Client | Teams webhook URL (section 6) |
+   | Slack | HTTP Client | Slack webhook URL (section 6) |
    | Compliance log | Database connector (PostgreSQL) | Details from the Lead (section 4b); fallback Google Sheets connector |
    | PatchPilot | HTTP Client | `BACKEND_URL`, header `X-API-Key` (we send it privately) |
 5. Deploy each process to the environment attached to the runtime, then test with the curl calls in section 9.
@@ -234,7 +236,7 @@ The `/ws/rest` prefix is Boomi's usual REST path; use whatever your Atom shows a
 | detected_at | ISO-8601 UTC | B2 request |
 | fixed_at | ISO-8601 UTC, = processing time when `fix_status` = `fixed`, else empty (B4 returns `null`) | B2 |
 | jira_key, jira_url | string | Jira response (returned again on an idempotent replay) |
-| teams_sent | boolean | Result of the Teams post |
+| slack_sent | boolean | Result of the Slack post |
 | pr_url | string, may be empty | B2 request |
 | status | `fixed` / `needs_human` / `open` | B2 `fix_status` (`not_attempted` → `open`, `fixed_untested` → `needs_human`) |
 
@@ -261,7 +263,7 @@ CREATE TABLE compliance_log (
   fixed_at          TIMESTAMPTZ,
   jira_key          TEXT,
   jira_url          TEXT,
-  teams_sent        BOOLEAN NOT NULL DEFAULT FALSE,
+  slack_sent        BOOLEAN NOT NULL DEFAULT FALSE,
   pr_url            TEXT,
   status            TEXT NOT NULL CHECK (status IN ('fixed','needs_human','open')),
   created_at        TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -281,7 +283,7 @@ The six queries your processes use — **Q1–Q5 in B2, Q6 in B4**. Exact order,
 `docs/BOOMI_FLOW.md` (sections 3 and 6). Bind every value as a parameter, never join strings into SQL.
 ```sql
 -- Q1 (B2) lookup by finding_id
-SELECT compliance_log_id, status, jira_key, jira_url, teams_sent FROM public.compliance_log WHERE finding_id = ?;
+SELECT compliance_log_id, status, jira_key, jira_url, slack_sent FROM public.compliance_log WHERE finding_id = ?;
 
 -- Q2 (B2) reserve a new row BEFORE calling Jira (jira_key stays NULL until Q3)
 INSERT INTO public.compliance_log
@@ -293,8 +295,8 @@ ON CONFLICT (finding_id) DO NOTHING RETURNING compliance_log_id;
 -- Q3 (B2) after Jira is created
 UPDATE public.compliance_log SET jira_key = ?, jira_url = ?, updated_at = now() WHERE finding_id = ?;
 
--- Q4 (B2) after the Teams post
-UPDATE public.compliance_log SET teams_sent = ?, updated_at = now() WHERE finding_id = ?;
+-- Q4 (B2) after the Slack post
+UPDATE public.compliance_log SET slack_sent = ?, updated_at = now() WHERE finding_id = ?;
 
 -- Q5 (B2) same finding, new status (e.g. needs_human -> fixed after a manual re-fix)
 UPDATE public.compliance_log
@@ -334,8 +336,8 @@ row (duplicate ignored, `time_to_fix_minutes` = 2 as expected); the test row was
 Migration M1 (`ecosystem`, `updated_at`) applied the same day, and the full B2 order Q2 → Q2 again (ignored) → Q3 → Q4 → Q5
 was tested end to end (status `needs_human` → `fixed`, PR saved, one row only); test row removed, table empty.
 
-The Lead also sends, privately: Jira site URL, Jira user email, Jira API token, Jira project key, and the Teams
-webhook URL — unless your team already has its own Jira/Teams set up, in which case tell the Lead which ones you use.
+The Lead also sends, privately: Jira site URL, Jira user email, Jira API token, Jira project key, and the Slack
+webhook URL — unless your team already has its own Jira/Slack set up, in which case tell the Lead which ones you use.
 
 ## 5. B2 — Finding notification (the main one)
 `POST ${BOOMI_BASE_URL}/patchpilot/findings` · Basic auth · `Content-Type: application/json` · reply within 15 s.
@@ -387,16 +389,16 @@ Several findings in the same package share one `pr_url` (one PR per package) —
 2. **Q1** lookup by `finding_id` (= the `Idempotency-Key` header):
    - no row → step 3 (new finding);
    - row with `jira_key` NULL → step 4 (an earlier call failed half-way — resume, do not insert again);
-   - row with `jira_key` set and a **different** status → **Q5** update, Jira **comment** "status changed", Teams "updated"
+   - row with `jira_key` set and a **different** status → **Q5** update, Jira **comment** "status changed", Slack "updated"
      card, then step 6;
-   - row with `jira_key` set and the **same** status → pure retry: if `teams_sent` is false retry Teams (step 5),
+   - row with `jira_key` set and the **same** status → pure retry: if `slack_sent` is false retry Slack (step 5),
      otherwise reply with the stored values (step 7). Nothing new is created.
 3. **Q2** insert the row first (reserves it, `jira_key` NULL). Returns nothing → another call won the race → back to step 2.
 4. Decision on `priority` (P1/P2 urgent) → **create the Jira issue** → **Q3** save `jira_key`, `jira_url`.
    Jira fails → reply 502 `jira_create_failed` and stop (our retry resumes here).
-5. **Post the Teams card** (any 2xx = sent; a failure does not stop the flow).
-6. **Q4** save `teams_sent`.
-7. Reply 200 `{ ok, jira_key, jira_url, teams_sent, compliance_log_id, processed_at }`.
+5. **Post the Slack message** (any 2xx = sent; a failure does not stop the flow).
+6. **Q4** save `slack_sent`.
+7. Reply 200 `{ ok, jira_key, jira_url, slack_sent, compliance_log_id, processed_at }`.
 
 **Jira mapping**
 | Jira field | Value |
@@ -415,9 +417,9 @@ call `/rest/api/2/issue`, which accepts a plain-text description.
 **Response 200:**
 ```json
 { "ok": true, "jira_key": "SEC-101", "jira_url": "https://<site>.atlassian.net/browse/SEC-101",
-  "teams_sent": true, "compliance_log_id": "log_fnd_07", "processed_at": "2026-10-28T05:11:40Z" }
+  "slack_sent": true, "compliance_log_id": "log_fnd_07", "processed_at": "2026-10-28T05:11:40Z" }
 ```
-If Teams fails but Jira worked, still return 200 with `"teams_sent": false`.
+If Slack fails but Jira worked, still return 200 with `"slack_sent": false`.
 If Jira fails: 502 with `{ "ok": false, "error": "jira_create_failed", "message": "..." }`.
 
 ## 5a. Response rules for every Boomi endpoint (B2, B3, B4)
@@ -428,24 +430,20 @@ If Jira fails: 502 with `{ "ok": false, "error": "jira_create_failed", "message"
 - Answer within 15 seconds (our timeout). We retry once on a timeout or 5xx, with the same `Idempotency-Key`.
 - Timestamps are ISO-8601 UTC with `Z` (e.g. `2026-10-28T05:11:40Z`).
 
-## 6. Teams message (B2 and B3)
-Microsoft is retiring the old Office 365 "Incoming Webhook" connector. If you cannot create one, use the
-Teams **Workflows** app → template "Post to a channel when a webhook request is received"; it gives a URL
-that accepts an Adaptive Card wrapped like this:
-```json
-{ "type": "message",
-  "attachments": [ { "contentType": "application/vnd.microsoft.card.adaptive",
-                     "content": { "type": "AdaptiveCard", "version": "1.4", "body": [ ... ], "actions": [ ... ] } } ] }
-```
-**B2 card:** title by `event` — `finding.fixed`: `{priority} vulnerability fixed automatically`;
-`finding.needs_human`: `{priority} vulnerability needs review`; `fix_status` = `fixed_untested`:
-`{priority} upgrade PR ready — please run tests`; `finding.open`: `{priority} vulnerability found (auto-fix off)`.
-Hide the "Open pull request" button when `pr_url` is empty · facts: client, repo, CVE, package `installed → fixed`, why it is reachable
-(`ai_explanation`), evidence `file:line`, exploit data ("🔥 Actively exploited (CISA KEV)" when `kev`;
-"EPSS 6% · top 7%" from `epss`/`epss_percentile`, hidden when null) · buttons: "Open pull request" (`pr_url`), "Open Jira" (`jira_url`).
+## 6. Slack message (B2 and B3)
+Create a Slack **incoming webhook**: api.slack.com/apps → **Create New App** → From scratch (name `PatchPilot`, your
+workspace) → **Incoming Webhooks** → turn on → **Add New Webhook to Workspace** → pick the channel (e.g. `#security-alerts`)
+→ copy the URL `https://hooks.slack.com/services/T…/B…/…`. The URL is a secret: keep it only in the Boomi connection.
+Post JSON (Block Kit) to it; Slack answers `200` with body `ok`. Full B2 example payload: `docs/BOOMI_FLOW.md` section 3.5.
 
-**B3 card:** title `PatchPilot daily scan — {client_name}` · facts: total alerts, real risks (reachable),
-P1, P2, fixed, PRs opened · button: "Open dashboard" (`dashboard_url`).
+**B2 message:** header `{priority} vulnerability fixed automatically` (or the title for the case: `fixed_untested`
+"… upgrade PR ready — please run tests", `needs_human` "… needs review", `not_attempted` "… found (auto-fix off)") ·
+fields: client, CVE, package `installed → fixed` (ecosystem), where (`file:line`, web route), exploit data
+("🔥 Actively exploited (CISA KEV)" when `kev`; "EPSS 6% · top 7%"), Jira key · text: `ai_explanation` ·
+links: `<pr_url|Open pull request>` (left out when empty) and `<jira_url|Open Jira>`. Use plain links, not buttons.
+
+**B3 message:** header `PatchPilot daily scan — {client_name}` · fields: total alerts, real risks, P1, P2, fixed, PRs
+opened · link `<dashboard_url|Open dashboard>`.
 
 ## 7. B1 — Daily scan trigger (Boomi → PatchPilot)
 - Trigger: process schedule daily 09:00 **IST** (check the Atom's time zone), plus manual "Execute" during the demo.
@@ -473,7 +471,7 @@ Request (save as `b3.json` for the test call):
   "stats": { "total_alerts": 12, "reachable": 2, "unsure": 1, "not_reachable": 9, "p1": 1, "p2": 1, "fixed": 2, "prs_opened": 2 },
   "dashboard_url": "https://patchpilot.vercel.app/scans/scn_01" }
 ```
-Steps: map stats → B3 Teams card → respond `200 { "ok": true, "teams_sent": true }`.
+Steps: map stats → B3 Slack message → respond `200 { "ok": true, "slack_sent": true }`.
 We send header `Idempotency-Key: <scan_id>`. Skipping a repeated key is optional for B3 — a duplicate summary card
 is harmless; do it only if it is easy.
 
@@ -492,7 +490,7 @@ tell the Lead by 10:30 so we agree on an alternative before anyone builds it.
 Save the B2 request from section 5 as `b2.json` and the B3 request from section 8 as `b3.json`, then run in
 Git Bash / a terminal (or build the same calls in Postman). Set the variables first with your real values.
 ```bash
-# B2 — first call creates Jira + Teams + log row
+# B2 — first call creates Jira + Slack + log row
 curl -u "$BOOMI_USER:$BOOMI_TOKEN" -H "Content-Type: application/json" -H "Idempotency-Key: fnd_07" \
   -d @b2.json "$BOOMI_BASE_URL/patchpilot/findings"
 # B2 again, same Idempotency-Key — must return the same jira_key, no new issue
@@ -519,16 +517,16 @@ After T10 the dev team can also run `python -m app.services.boomi_client ping` t
 | `BOOMI_BASE_URL` and the exact paths for B2/B3/B4 | 10:30 | team chat |
 | `BOOMI_USER` | 10:30 | team chat |
 | `BOOMI_TOKEN` | 10:30 | **private message to the Lead only** — never in git or a shared channel |
-| Jira site URL + project key, Teams channel name (only if you use your own Jira/Teams) | 10:30 | team chat |
+| Jira site URL + project key, Slack channel name (only if you use your own Jira/Slack) | 10:30 | team chat |
 | "PostgreSQL driver works on our Atom" (or "we need the Google Sheet fallback") | B0 | team chat |
-| "B2 passes the curl test" | 11:15 | team chat + screenshot of the Jira issue and Teams card |
+| "B2 passes the curl test" | 11:15 | team chat + screenshot of the Jira issue and Slack message |
 | "B1 points at BACKEND_URL" | 11:40 | team chat |
 
 | We give you | When |
 |---|---|
 | `DEMO_REPO_URL` and the B1 client list | before you start |
 | PostgreSQL connection details (section 4b) | before you start, private message |
-| Jira site, email, API token, project key; Teams webhook URL | before you start, private message |
+| Jira site, email, API token, project key; Slack webhook URL | before you start, private message |
 | `BACKEND_URL`, `FRONTEND_URL` | ~11:40 (after deploy) |
 | `PATCHPILOT_API_KEY` | ~11:40, private message |
 
@@ -551,7 +549,7 @@ from the section named. Then review what Companion generated, deploy, and run th
 
 **B0**
 "Set up a Web Services Server REST listener with Basic authentication on my Atom Cloud. Create connections for:
-Jira Cloud (site URL, email, API token), an HTTP Client for a Microsoft Teams Workflows webhook, an HTTP Client
+Jira Cloud (site URL, email, API token), an HTTP Client for a Slack incoming webhook, an HTTP Client
 for an external REST API that needs an X-API-Key header, and a Database connection to PostgreSQL
 (JDBC URL, user, password from section 4b, SSL required) for the compliance_log table [paste the SQL from section 4a]. Show me where to find the Shared Web Server user name and token."
 
@@ -564,14 +562,14 @@ using a Database connection to PostgreSQL and bound parameters:
 2) If no row: run Q2 [paste Q2] to insert the row; if Q2 returns nothing, go back to step 1.
    If a row exists with jira_key NULL: continue at step 3 without inserting.
    If a row exists with jira_key set and a different status: run Q5 [paste Q5], add a comment to that Jira issue
-   saying the status changed, post an 'updated' Teams card, run Q4, and reply.
-   If a row exists with jira_key set and the same status: reply with the stored values (retry Teams first if teams_sent is false).
+   saying the status changed, post an 'updated' Slack message, run Q4, and reply.
+   If a row exists with jira_key set and the same status: reply with the stored values (retry Slack first if slack_sent is false).
 3) Decision on priority (P1/P2 urgent). Create a Jira issue with this mapping [paste Jira mapping table]
    (add label actively-exploited when kev is true). If Jira fails, reply 502 {ok:false, error:'jira_create_failed', message}.
    Otherwise run Q3 [paste Q3] with the new key and URL.
-4) Post an Adaptive Card to the Teams webhook with the CVE, package, ecosystem, explanation, exploit data and links to
+4) Post a Slack message to the Slack webhook with the CVE, package, ecosystem, explanation, exploit data and links to
    pr_url and the Jira issue. Treat any 2xx as sent; do not stop on failure.
-5) Run Q4 [paste Q4] with teams_sent.
+5) Run Q4 [paste Q4] with slack_sent.
 6) Return this JSON [paste the B2 response from section 5] with the real values."
 
 **B1**
@@ -581,8 +579,8 @@ from the 202 response."
 
 **B3**
 "Create a process with a Web Services Server listener for POST /patchpilot/scan-summary that accepts this JSON
-[paste the B3 request from section 8], posts an Adaptive Card summary to the Teams webhook with the stats and a
-link to dashboard_url, and returns {ok:true, teams_sent:true}."
+[paste the B3 request from section 8], posts a Slack message summary to the Slack webhook with the stats and a
+link to dashboard_url, and returns {ok:true, slack_sent:true}."
 
 **B4**
 "Create a process with a Web Services Server listener for GET /patchpilot/compliance with query parameters

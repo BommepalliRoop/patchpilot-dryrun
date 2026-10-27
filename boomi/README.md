@@ -7,8 +7,8 @@ so the repo shows the whole solution. How to contribute: `docs/BOOMI_HANDOFF.md`
 |---|---|---|
 | `B0/` | Setup: runtime, listener, auth, connections | todo |
 | `B1/` | Daily scan trigger (Boomi → PatchPilot) | todo |
-| `B2/` | Finding notification → Jira + Teams + compliance log | todo |
-| `B3/` | Scan summary → Teams card | todo |
+| `B2/` | Finding notification → Jira + Slack + compliance log | todo |
+| `B3/` | Scan summary → Slack message | todo |
 | `B4/` | Compliance report | todo |
 
 Each folder: `README.md` (what it does, shapes, connections — no secrets), `screenshot.png` (process canvas),

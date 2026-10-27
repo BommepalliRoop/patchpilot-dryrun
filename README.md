@@ -16,7 +16,7 @@ code the application never calls, so the dangerous ones stay open for weeks. Pat
 4. Scores real risk: CVSS × reachability × exposure × exploit data → P1–P4.
 5. Upgrades the library, runs the tests, lets AI patch broken code (max 2 retries).
 6. Opens a GitHub pull request with the explanation.
-7. Boomi creates the Jira ticket, posts the Teams alert and writes the compliance log.
+7. Boomi creates the Jira ticket, posts the Slack alert and writes the compliance log.
 
 ```mermaid
 flowchart LR
@@ -27,7 +27,7 @@ flowchart LR
     API --> GH[GitHub PR]
     API --> B2[Boomi B2/B3/B4]
     B2 --> J[Jira]
-    B2 --> T[Teams]
+    B2 --> T[Slack]
     B2 --> L[(Compliance log)]
 ```
 
@@ -41,7 +41,7 @@ flowchart LR
 - Tested fix: upgrade + test run + AI patch (max 2 tries) → `fixed` or `needs_human` (Python + npm at the event;
   other ecosystems get an upgrade PR marked "tests not run" when their toolchain is missing).
 - One GitHub PR per vulnerable package, never auto-merged.
-- Boomi: Jira issue + Teams alert + compliance log per finding; Teams summary per scan; compliance report per client.
+- Boomi: Jira issue + Slack alert + compliance log per finding; Slack summary per scan; compliance report per client.
 - Live dashboard: overview stats, live pipeline view, finding detail, integrations, compliance.
 
 **Non-functional**
@@ -49,7 +49,7 @@ flowchart LR
 - Mock mode for every external service (`LLM_MODE`, `BOOMI_MODE`, `GITHUB_MODE`) so lanes never block.
 - Security: only allowed repos are scanned, scanned code runs in a temp venv without our secrets, secrets masked in logs,
   AI patches restricted ([RISKS](docs/RISKS.md)).
-- Scan → Jira + Teams in under 2 minutes on the demo repo.
+- Scan → Jira + Slack in under 2 minutes on the demo repo.
 - Contracts are the source of truth ([API contracts](docs/API_CONTRACTS.md)).
 
 ## Tech stack

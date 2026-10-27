@@ -7,7 +7,7 @@
    and the threat chip "EPSS top 7% most likely to be exploited" (CISA KEV is checked too — say: "if it were on the
    government's actively-exploited list, it would jump the queue").
 5. (45 s) Fix card: version upgraded, AI patched one broken call, tests passed → open the real GitHub PR.
-6. (45 s) Boomi results: Jira ticket created, Teams alert in the channel, compliance log row (show B4 page).
+6. (45 s) Boomi results: Jira ticket created, Slack alert in the channel, compliance log row (show B4 page).
 7. (20 s) Close: "Every client, every day, no manual triage. 300 alerts become the 3 that matter — already fixed."
 
 Backup: if live services fail, flip to `*_MODE=mock` and run the seeded demo (T17 seed). Keep a screen recording of a full run.

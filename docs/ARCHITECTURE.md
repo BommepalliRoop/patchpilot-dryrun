@@ -15,7 +15,7 @@ GitHub client repos ───▶ │ cloner → scanner → symbols(AI) → reac
                                Fix pull request   SQLite + SSE    boomi_client
                                  (GitHub)         → Dashboard      │
                                                                    ▼
-                                    Boomi (B2/B3/B4): Jira · Teams · Compliance log
+                                    Boomi (B2/B3/B4): Jira · Slack · Compliance log
 ```
 
 ## Pipeline stages (backend/app/pipeline.py)
@@ -115,7 +115,7 @@ Priority: ≥9 P1, ≥7 P2, ≥4 P3, else P4.
   total_alerts, reachable_count, p1_count (the other `stats` fields are computed from findings)
 - findings: id, scan_id, cve_id, aliases_json, ecosystem, analysis, package, installed_version, fixed_version, summary, cvss, kev, kev_date_added,
   epss, epss_percentile, vulnerable_symbols_json,
-  reachability, confidence, evidence_json, ai_explanation, score, priority, status, fix_id, jira_key, jira_url, teams_sent,
+  reachability, confidence, evidence_json, ai_explanation, score, priority, status, fix_id, jira_key, jira_url, slack_sent,
   compliance_log_id, timeline_json
 - fixes: id, scan_id, package, new_version, patch_diff, tests_passed, attempts, pr_url, status
   (one row per package fix; findings point to it via fix_id)

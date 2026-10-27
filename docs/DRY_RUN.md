@@ -32,7 +32,7 @@ The hackathon says all code is written during the event. So:
 3. Everyone clones `patchpilot-dryrun`, opens it in Claude Code, checks `docs/SETUP.md` items.
 4. LLM key: no kickoff keys today — use a team member's own key, or run everything with `LLM_MODE=mock`
    (that is also a real test of the mock paths).
-5. Boomi team: Boomi access, Jira project, Teams channel + webhook, compliance log store (BOOMI_HANDOFF section 3–4).
+5. Boomi team: Boomi access, Jira project, Slack channel + webhook, compliance log store (BOOMI_HANDOFF section 3–4).
 
 ## Schedule (same as tomorrow, shift the clock to your start time)
 | Wave | Minutes from start | Dev team | Boomi team |
@@ -41,7 +41,7 @@ The hackathon says all code is written during the event. So:
 | 1 | 15–70 | T01 T02 T04 T10 T11 T15 | B0 → B2 |
 | 2 | 70–120 | T03 T05 T07 T06 T08 T12 T13 | B2 test with curl, then B1 |
 | 3 | 120–150 | T09 T14 T16, switch modes to live | B1 → our BACKEND_URL, B3, B4 |
-| 4 | 150–175 | T17 T18, full demo twice | watch Jira/Teams/log during demo |
+| 4 | 150–175 | T17 T18, full demo twice | watch Jira/Slack/log during demo |
 | — | 180 | Stop. Retro (15 min) | Retro |
 
 Run each task exactly like tomorrow: new session → model + effort from BOARD.md → `/run-task Txx` → follow the NEXT block.
@@ -82,7 +82,7 @@ demo run length, LLM cost/tokens if visible, any RISKS.md must-have that did not
 2. Where did lanes wait on each other? Did mock mode really unblock them?
 3. Which task-file instructions were unclear or wrong? (Fix the task file.)
 4. Did any contract field cause a mismatch between backend, frontend or Boomi? (Fix API_CONTRACTS.md + contracts/.)
-5. Boomi: which step took longest (auth, Jira, Teams, log)? What should be prepared tonight?
+5. Boomi: which step took longest (auth, Jira, Slack, log)? What should be prepared tonight?
 6. Is the demo under 5 minutes and still impressive?
 
 ## After the dry run
