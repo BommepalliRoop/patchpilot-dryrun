@@ -3,7 +3,7 @@
 import {
   MOCK_SCAN_ID,
   mockCompliance,
-  mockFindingDetail,
+  mockFindingDetails,
   mockElapsed,
   mockFindings,
   mockHealth,
@@ -198,8 +198,9 @@ export async function listFindings(filters: FindingFilters = {}): Promise<Findin
 export async function getFinding(findingId: string): Promise<FindingDetail> {
   if (USE_MOCK) {
     await delay()
-    if (findingId !== mockFindingDetail.finding_id) throw new ApiError(404, 'not_found', `Finding ${findingId} not found`)
-    return mockFindingDetail
+    const detail = mockFindingDetails[findingId]
+    if (!detail) throw new ApiError(404, 'not_found', `Finding ${findingId} not found`)
+    return detail
   }
   return request(`/api/findings/${encodeURIComponent(findingId)}`)
 }

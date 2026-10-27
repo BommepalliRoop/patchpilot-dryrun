@@ -92,6 +92,67 @@ export const mockFindingDetail: FindingDetail = {
   timeline: [{ stage: 'scan', at: '2026-10-28T05:10:05Z', message: 'Detected via OSV' }],
 }
 
+/** Extra detail fixtures for the states the page must handle (needs_human, fixed_untested, not_reachable). */
+const base = mockFindingDetail
+const notReachable = mockFindings.find((f) => f.finding_id === 'fnd_08')!
+const unsure = mockFindings.find((f) => f.finding_id === 'fnd_09')!
+export const mockFindingDetails: Record<string, FindingDetail> = {
+  [base.finding_id]: base,
+  fnd_08: {
+    ...notReachable,
+    summary: 'Requests leaks Proxy-Authorization header on redirect to HTTPS',
+    kev_date_added: null,
+    vulnerable_symbols: ['requests.Session.rebuild_proxies'],
+    evidence: [],
+    ai_explanation: 'No call to the vulnerable proxy code path exists in this repository; requests is only used for plain GET calls.',
+    fix: null,
+    integration: null,
+    timeline: [
+      { stage: 'scan', at: '2026-10-28T05:10:05Z', message: 'Detected via OSV' },
+      { stage: 'reachability', at: '2026-10-28T05:10:40Z', message: 'Vulnerable symbol never called: not reachable' },
+    ],
+  },
+  fnd_09: {
+    ...unsure,
+    summary: 'Jinja2 xmlattr filter allows attribute injection',
+    kev_date_added: null,
+    vulnerable_symbols: ['jinja2.filters.do_xmlattr'],
+    evidence: [],
+    ai_explanation: 'Templates are loaded dynamically, so the AI could not prove whether xmlattr is used. A human should check.',
+    fix: null,
+    integration: null,
+    timeline: [{ stage: 'reachability', at: '2026-10-28T05:10:41Z', message: 'Unsure (confidence 0.55)' }],
+  },
+  fnd_20: {
+    ...base,
+    finding_id: 'fnd_20', cve_id: 'CVE-2021-23337', package: 'lodash', installed_version: '4.17.20', fixed_version: '4.17.21',
+    cvss: 7.2, score: 9.1, priority: 'P2', status: 'needs_human', kev: true, epss: 0.41, epss_percentile: 0.97,
+    ecosystem: 'npm', analysis: 'generic',
+    summary: 'Command injection via template',
+    kev_date_added: '2026-09-02',
+    vulnerable_symbols: ['_.template'],
+    evidence: [
+      {
+        file: 'tools/render.js', line: 9, in_route: false, start_line: 5,
+        code_snippet:
+          "const _ = require('lodash')\nfunction render(tpl, data) {\n  // tpl comes from CLI args\n  return _.template(tpl)(data)\n}\n",
+      },
+    ],
+    ai_explanation: 'tools/render.js passes an externally supplied template string to _.template.',
+    fix: { new_version: '4.17.21', attempts: 2, tests_passed: false, patch_diff: '', pr_url: null, status: 'needs_human' },
+    integration: { jira_key: 'SEC-102', jira_url: 'https://example.atlassian.net/browse/SEC-102', slack_sent: true, compliance_log_id: 'log_fnd_20' },
+    timeline: [{ stage: 'fix', at: '2026-10-28T05:11:20Z', message: 'Tests still failing after 2 AI patch attempts' }],
+  },
+  fnd_21: {
+    ...base,
+    finding_id: 'fnd_21', cve_id: 'CVE-2023-30861', package: 'flask', installed_version: '1.1.2', fixed_version: '2.2.5',
+    cvss: 7.5, score: 6.4, priority: 'P3', status: 'fixed', kev: false, epss: null, epss_percentile: null,
+    ecosystem: 'Maven', analysis: 'generic',
+    fix: { ...base.fix!, new_version: '2.2.5', tests_passed: false, status: 'fixed_untested', attempts: 0 },
+    integration: { jira_key: null, jira_url: null, slack_sent: false, compliance_log_id: null },
+  },
+}
+
 export const mockIntegrationEvents: IntegrationEvent[] = [
   {
     id: 1, finding_id: 'fnd_07', process: 'B2', endpoint: '/patchpilot/findings', status_code: 200, ok: true,
