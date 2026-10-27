@@ -21,6 +21,8 @@ Run all stages in a background task and stream progress.
 - Only reachable or unsure(≥0.5) findings go to fix/pr/notify. Fix + PR run once **per package** (ARCHITECTURE "Group by package"); notify runs per finding. `auto_fix=false` → skip fix/pr, still notify with `event: finding.open`.
 - `POST /api/scans`: validate `repo_url` against `ALLOWED_REPO_PREFIXES` (400 `repo_not_allowed`); store optional `owner_email`.
 
+- When `POST /api/scans` is called with a valid `X-API-Key` (Boomi B1), record an integration event `process: B1`, `direction: inbound`, with the response status, so the Integrations page can show B1 health.
+
 ## Acceptance criteria
 - POST a scan → SSE stream shows every stage → ends with `done`; scan stats saved.
 - Pipeline survives a failing stage for one finding (marks that finding, continues others).
