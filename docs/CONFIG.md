@@ -68,7 +68,7 @@ These values never go into our `.env` or git. They go into Boomi connections. Se
 
 | # | Resource | How to create | Values to send to the Boomi team | Status |
 |---|---|---|---|---|
-| R1 | Compliance PostgreSQL | Neon (neon.tech) or Supabase → new project `patchpilot_compliance` → run the `CREATE TABLE` from BOOMI_HANDOFF section 4a in its SQL editor → create user `boomi_writer` (or use the default role) | host, port 5432, database, user, password, `sslmode=require`, JDBC URL | |
+| R1 | Compliance PostgreSQL | Neon (neon.tech) or Supabase → new project `patchpilot_compliance` → run the `CREATE TABLE` from BOOMI_HANDOFF section 4a in its SQL editor → create user `boomi_writer` (or use the default role) | host, port 5432, database, user, password, `sslmode=require`, JDBC URL | ✅ done Oct 27 — Neon `patchpilot`, db `neondb`, table created and tested; password not yet rotated |
 | R2 | Jira | Jira Cloud site → project `SEC` (Scrum/Kanban, any) → id.atlassian.com → Security → API tokens → create token | site URL, project key, user email, API token | |
 | R3 | Teams webhook | Teams channel → ⋯ → Workflows → "Post to a channel when a webhook request is received" (or Incoming Webhook if allowed) → copy URL | webhook URL, channel name | |
 | R4 | B1 client list | — | `[{"client_name":"Acme Retail","repo_url":"<DEMO_REPO_URL>","branch":"main","auto_fix":true,"owner_email":"<email>"}]` | |

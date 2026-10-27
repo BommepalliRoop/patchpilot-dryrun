@@ -207,13 +207,18 @@ ORDER BY detected_at DESC;
 ### 4b. Connection details (the Lead sends these privately)
 | Setting | Example |
 |---|---|
-| Host | `ep-xxxx.ap-southeast-1.aws.neon.tech` |
+| Host (direct, no pooler) | `ep-tiny-pine-b49rg2xc.c-6.us-east-2.aws.neon.tech` |
 | Port | `5432` |
-| Database | `patchpilot_compliance` |
-| User | `boomi_writer` |
-| Password | (private message only) |
+| Database | `neondb` |
+| User | `neondb_owner` |
+| Password | (private message from the Lead only) |
 | SSL | required (`sslmode=require`) |
-| JDBC URL | `jdbc:postgresql://<host>:5432/patchpilot_compliance?sslmode=require` |
+| JDBC URL | `jdbc:postgresql://ep-tiny-pine-b49rg2xc.c-6.us-east-2.aws.neon.tech:5432/neondb?sslmode=require` |
+
+Status (Oct 27): table `compliance_log` + index created in Neon project `patchpilot` (region AWS US East 2);
+the idempotency lookup, insert-with-`ON CONFLICT` and B4 report queries were tested with a test row
+(duplicate ignored, `time_to_fix_minutes` correct) and the test row was removed — the table is empty.
+Use the **direct** host above, not the `-pooler` host (the pooler can break JDBC prepared statements).
 
 The Lead also sends, privately: Jira site URL, Jira user email, Jira API token, Jira project key, and the Teams
 webhook URL — unless your team already has its own Jira/Teams set up, in which case tell the Lead which ones you use.
