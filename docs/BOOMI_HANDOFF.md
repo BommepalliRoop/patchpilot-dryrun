@@ -15,7 +15,7 @@ maps and connections, deploy, and run the test calls in section 9. A process is 
 **Today's practice run:** build everything in a Boomi folder named `DRYRUN - PatchPilot` and do not reuse
 it tomorrow (hackathon rule: everything is built during the event). Tomorrow, rebuild in a fresh folder.
 
-**Version:** v3.4 (Oct 27). Changes since earlier copies:
+**Version:** v3.5 (Oct 27). Changes since earlier copies:
 - v2: idempotency (`Idempotency-Key` header, `finding_id` column in the compliance log), new `event` / `fix_status`
   values, optional `owner_email`.
 - v3: exploit data in B2 — `kev`, `epss`, `epss_percentile` (section 5); Jira label `actively-exploited` and an
@@ -28,6 +28,8 @@ it tomorrow (hackathon rule: everything is built during the event). Tomorrow, re
   `fix_status` value `fixed_untested` (upgrade PR opened, tests not run). Show the language in Jira and Teams.
 - v3.4: section 2a "API reference" — every endpoint, payload, success and error response in one place;
   example `compliance_log_id` is now `log_fnd_07` (= `'log_' + finding_id`, as in section 4a).
+- v3.5: compliance database moved to **Supabase** (PostgreSQL). Same table and queries; new connection details in
+  section 4b — use the Supabase **Session pooler** address (port 5432), not the direct `db.<ref>.supabase.co` host.
 If you started from an older copy, apply these changes; nothing else changed.
 
 **Working in parallel:** you do not wait for us. The dev team builds the app at the same time with Boomi in
@@ -235,7 +237,7 @@ The `/ws/rest` prefix is Boomi's usual REST path; use whatever your Atom shows a
 `time_to_fix_minutes` for B4 = `fixed_at − detected_at` in whole minutes (`null` if not fixed).
 
 ### 4a. Store: PostgreSQL (decided)
-A free cloud PostgreSQL database (e.g. Neon or Supabase), created by the Lead. Use Boomi's **Database connector**
+A free **Supabase** project (PostgreSQL), created by the Lead. Use Boomi's **Database connector**
 (PostgreSQL JDBC). First thing in B0: confirm your Atom Cloud can use the PostgreSQL driver — if it cannot, tell the
 Lead immediately and use the fallback (a Google Sheet with the same columns via the Google Sheets connector).
 
@@ -288,20 +290,23 @@ ORDER BY detected_at DESC;
 (`not_attempted` → `open`, `fixed_untested` → `needs_human`).
 
 ### 4b. Connection details (the Lead sends these privately)
-| Setting | Example |
-|---|---|
-| Host (direct, no pooler) | `ep-tiny-pine-b49rg2xc.c-6.us-east-2.aws.neon.tech` |
-| Port | `5432` |
-| Database | `neondb` |
-| User | `neondb_owner` |
-| Password | (private message from the Lead only) |
-| SSL | required (`sslmode=require`) |
-| JDBC URL | `jdbc:postgresql://ep-tiny-pine-b49rg2xc.c-6.us-east-2.aws.neon.tech:5432/neondb?sslmode=require` |
+Where to find them: Supabase dashboard → project `patchpilot` → **Connect** → **Session pooler**.
 
-Status (Oct 27): table `compliance_log` + index created in Neon project `patchpilot` (region AWS US East 2);
-the idempotency lookup, insert-with-`ON CONFLICT` and B4 report queries were tested with a test row
-(duplicate ignored, `time_to_fix_minutes` correct) and the test row was removed — the table is empty.
-Use the **direct** host above, not the `-pooler` host (the pooler can break JDBC prepared statements).
+| Setting | Value |
+|---|---|
+| Host (Session pooler) | `aws-0-<region>.pooler.supabase.com` (filled in by the Lead) |
+| Port | `5432` (session mode) |
+| Database | `postgres` |
+| User | `postgres.<project-ref>` (filled in by the Lead) |
+| Password | the database password — private message from the Lead only |
+| SSL | required (`sslmode=require`) |
+| JDBC URL | `jdbc:postgresql://aws-0-<region>.pooler.supabase.com:5432/postgres?sslmode=require` |
+
+Why the Session pooler: Supabase's direct host `db.<project-ref>.supabase.co` is IPv6-only on the free plan, and many
+Boomi runtimes only speak IPv4. The Session pooler (port **5432**) works over IPv4 and supports JDBC prepared statements.
+Do **not** use the Transaction pooler (port 6543) — it breaks prepared statements.
+
+Status: table to be created by the Lead in Supabase → SQL Editor with the SQL above (same table and queries as before).
 
 The Lead also sends, privately: Jira site URL, Jira user email, Jira API token, Jira project key, and the Teams
 webhook URL — unless your team already has its own Jira/Teams set up, in which case tell the Lead which ones you use.

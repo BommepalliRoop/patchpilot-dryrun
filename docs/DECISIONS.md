@@ -50,6 +50,8 @@ components (shadcn/ui, Magic UI / Aceternity UI, Tremor) to save time — see do
   the 3-hour sprint has no slack, and our edge is reachability + tested fix, not the number of scanners.
 - **Added (Oct 27): CISA KEV + EPSS enrichment** — two free public feeds, ~25 min of build spread over T02/T07/T12/T13,
   no new scanner. Adds "actively exploited" to the risk score and the UI/Jira/Teams.
+- **Compliance database (Oct 27): Supabase PostgreSQL** (moved from Neon). Boomi connects through the Supabase
+  Session pooler (IPv4, port 5432). Our app database stays SQLite.
 - **Languages (Oct 27): the app is not Python-only.** Every ecosystem OSV understands is scanned and scored
   (Python, JavaScript/TypeScript, Java, Go, Rust, PHP, .NET, Ruby). Reachability: Python deep (AST), all others
   generic (text search + AI). Auto-fix with tests: Python + npm at the event; others get an upgrade PR marked

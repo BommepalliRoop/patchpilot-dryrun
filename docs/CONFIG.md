@@ -62,21 +62,21 @@ Anything starting with `VITE_` is shipped to the browser — never put a key the
 | Database | Used by | Engine | Config needed |
 |---|---|---|---|
 | App database (scans, findings, fixes, integration events) | Our backend only | **SQLite** file `backend/patchpilot.db` (via SQLModel) | None — created automatically on start. Boomi never touches it |
-| Compliance log (audit trail, B2 writes, B4 reads) | Boomi only | **PostgreSQL** (free cloud: Neon or Supabase) | Lead creates it and gives the Boomi team the connection details privately |
+| Compliance log (audit trail, B2 writes, B4 reads) | Boomi only | **PostgreSQL on Supabase** (free plan) | Lead creates it and gives the Boomi team the connection details privately |
 
 ## 5. Boomi-side resources — the Lead prepares and sends privately
 These values never go into our `.env` or git. They go into Boomi connections. Send them by private message.
 
 | # | Resource | How to create | Values to send to the Boomi team | Status |
 |---|---|---|---|---|
-| R1 | Compliance PostgreSQL | Neon (neon.tech) or Supabase → new project `patchpilot_compliance` → run the `CREATE TABLE` from BOOMI_HANDOFF section 4a in its SQL editor (default role `neondb_owner`) | host, port 5432, database, user, password, `sslmode=require`, JDBC URL | ✅ done Oct 27 — Neon `patchpilot`, db `neondb`, table created and tested; password not yet rotated |
+| R1 | Compliance PostgreSQL (Supabase) | supabase.com → New project `patchpilot` (pick a region, set and save a strong database password) → SQL Editor → run the `CREATE TABLE` + `CREATE INDEX` from BOOMI_HANDOFF section 4a → Connect → **Session pooler** | host `aws-0-<region>.pooler.supabase.com`, port 5432, database `postgres`, user `postgres.<project-ref>`, password, `sslmode=require`, JDBC URL | ⏳ to do — moved from Neon on Oct 27 |
 | R2 | Jira | Jira Cloud site → project `SEC` (Scrum/Kanban, any) → id.atlassian.com → Security → API tokens → create token | site URL, project key, user email, API token | |
 | R3 | Teams webhook | Teams channel → ⋯ → Workflows → "Post to a channel when a webhook request is received" (or Incoming Webhook if allowed) → copy URL | webhook URL, channel name | |
 | R4 | B1 client list | — | `[{"client_name":"Acme Retail","repo_url":"<DEMO_REPO_URL>","branch":"main","auto_fix":true,"owner_email":"<email>"}]` | |
 | R5 | PatchPilot access for B1 | after T16 deploy | `BACKEND_URL`, `PATCHPILOT_API_KEY` | |
 
 If the Boomi team already has its own Jira / Teams / database they prefer, they may use those — they just tell you which.
-Test R1 before sending: in the Neon/Supabase SQL editor run `SELECT count(*) FROM compliance_log;` → `0`.
+Test R1 before sending: in the Supabase SQL Editor run `SELECT count(*) FROM compliance_log;` → `0`.
 
 ## 6. Exchange sheet — what moves between teams
 | From → To | Item | When |
