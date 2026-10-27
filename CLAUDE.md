@@ -13,7 +13,7 @@ creates the Jira ticket, posts the Teams alert, and writes the compliance log.
 
 Background and decisions: `docs/DECISIONS.md`. Full plan: `docs/PLAN.md`. Architecture: `docs/ARCHITECTURE.md`
 (diagrams: `docs/DIAGRAMS.md`, stack: `docs/TECH_STACK.md`). API contracts: `docs/API_CONTRACTS.md`.
-Model, effort and the "what next" queue for every task: `tasks/BOARD.md`. Start each task in a fresh session.
+All env vars and who provides them: `docs/CONFIG.md`. Model, effort and the "what next" queue for every task: `tasks/BOARD.md`. Start each task in a fresh session.
 
 ## Hackathon rules that affect you
 - All code is written during the event (Oct 28, 2026, build sprint 9:20 AM – 12:20 PM). Code freeze 12:20 PM.

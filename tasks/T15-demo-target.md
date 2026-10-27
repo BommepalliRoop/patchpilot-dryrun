@@ -15,13 +15,14 @@ A small, realistic client app to scan (separate GitHub repo).
 
 ## Scope
 - Flask app `demo-target/` with ~6 files: routes (POST /import uses `yaml.load` on request data, unsafe), utils that import jinja2 but never use the sandbox, requests used only in a background job, etc.
-- `requirements.txt` pins old versions confirmed on osv.dev (decide today): e.g. PyYAML 5.3.1, Jinja2 2.10, requests 2.19.1, urllib3 1.24.1, Pillow (imported nowhere).
-- Target outcome: ~10–12 alerts, 2 reachable, 1 P1 in a route.
+- `requirements.txt` pins (checked on OSV.dev Oct 27, unique advisories after alias de-dup): Flask 1.1.2 (2), Werkzeug 1.0.1 (10), Jinja2 2.11.2 (5), MarkupSafe 1.1.1 (0), itsdangerous 1.1.0 (0), click 7.1.2 (0), PyYAML 5.3.1 (1: CVE-2020-14343), requests 2.25.1 (4), urllib3 1.26.4 (11) = **~33 alerts**. Do not add Pillow (100+ advisories would slow the demo).
+- Target outcome: ~30 alerts → 2 reachable (PyYAML in a POST route = P1; one requests call in a background job) → 1 P1.
+- `pip install -r requirements.txt` must succeed on Python 3.11 (PyYAML 5.3.1 builds from source; checked).
 - Tests with pytest that pass on old versions; include one call that breaks after the PyYAML upgrade (e.g. `yaml.load(x)` without Loader) so the AI patch step has real work.
 - Push to its own repo; put URL in `.env` as DEMO_REPO_URL.
 
 ## Acceptance criteria
-- osv-scanner on it reports the expected alerts; pytest passes on the old versions.
+- osv-scanner on it reports the expected alerts (record the real number in STATUS.md note; demo script and funnel use it); pytest passes on the old versions under Python 3.11.
 
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.

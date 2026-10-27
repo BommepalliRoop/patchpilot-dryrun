@@ -83,7 +83,7 @@ Payloads: `contracts/boomi/*.json`. Details: docs/BOOMI_HANDOFF.md. Dev team use
 
 ## 9. Demo plan
 Demo target: separate small Flask repo with old pinned libraries (e.g. PyYAML 5.3.1 used unsafely in a POST route,
-Jinja2/requests/urllib3/Pillow present but not reachable). Expected: ~12 alerts → 2 reachable → 1 P1 → fixed PR →
+Flask/Werkzeug/Jinja2/requests/urllib3 present but not reachable). Expected: ~30 alerts (pins checked on OSV.dev Oct 27, see T15) → 2 reachable → 1 P1 → fixed PR →
 Jira + Teams + compliance row. Script: docs/DEMO_SCRIPT.md. Backup: mock-mode run + screen recording.
 
 ## 10. Open items / to confirm

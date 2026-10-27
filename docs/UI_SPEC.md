@@ -10,7 +10,7 @@
 ## Motion (motion/react)
 - Page transitions: fade + 8px slide, 250 ms.
 - Stat counters count up on load (spring).
-- The signature animation — **Noise funnel**: 12 alert dots fall into a funnel and only 2 come out glowing red,
+- The signature animation — **Noise funnel**: N alert dots (N = total_alerts, ~30 on the demo repo; cap at 40 dots) fall into a funnel and only 2 come out glowing red,
   then 1 turns into a "Fixed" green check. Drive it from real scan stats.
 - Live pipeline stepper: 8 stages (clone → … → notify) light up as SSE events arrive; active stage pulses.
 - Lists animate in with stagger 40 ms. Priority badges pulse once when they appear.

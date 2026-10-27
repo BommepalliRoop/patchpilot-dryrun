@@ -11,7 +11,8 @@ EasyStepIn AI Hackathon 2026 · Team PatchPilot
 | Anyone | `docs/DECISIONS.md`, `docs/PLAN.md`, `docs/SETUP.md` |
 | Developer using Claude Code | `CLAUDE.md`, then `tasks/BOARD.md` |
 | Architect / reviewer | `docs/TECH_STACK.md`, `docs/ARCHITECTURE.md`, `docs/DIAGRAMS.md` |
-| Boomi team | `docs/BOOMI_HANDOFF.md` |
+| Boomi team | `docs/BOOMI_HANDOFF.md` (+ `boomi/` folder for their exports) |
+| Whoever collects keys and URLs | `docs/CONFIG.md` |
 | Presenter | `docs/DEMO_SCRIPT.md` |
 
 ## How we work on the day

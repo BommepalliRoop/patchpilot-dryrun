@@ -2,7 +2,7 @@
 
 1. (30 s) Problem: "Service companies get hundreds of vulnerability alerts. Most are noise; the real ones wait for weeks."
 2. (20 s) Show Integrations page: Boomi B1 schedules daily scans for every client repo.
-3. (60 s) Click Run scan on Acme Retail demo repo → live pipeline animates → Noise funnel: 12 alerts → 2 reachable → 1 P1.
+3. (60 s) Click Run scan on Acme Retail demo repo → live pipeline animates → Noise funnel: ~30 alerts → 2 reachable → 1 P1.
 4. (60 s) Open the P1 finding: CVE, the exact line calling yaml.load inside a web route, AI explanation, risk score.
 5. (45 s) Fix card: version upgraded, AI patched one broken call, tests passed → open the real GitHub PR.
 6. (45 s) Boomi results: Jira ticket created, Teams alert in the channel, compliance log row (show B4 page).

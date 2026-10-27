@@ -55,13 +55,16 @@ Rules: JSON only, validated; on invalid JSON retry once with the validation erro
 | B4 | PatchPilot → Boomi | `GET ${BOOMI_BASE_URL}/patchpilot/compliance` → audit rows |
 
 ## Modes and environment
+Full checklist with owners and sources: `docs/CONFIG.md`.
+
 | Variable | Values | Default | Effect |
 |---|---|---|---|
 | `LLM_MODE` | `mock` / `live` | `mock` | mock returns canned JSON per prompt |
 | `BOOMI_MODE` | `mock` / `live` | `mock` | mock returns fake `jira_key`, still logs integration events |
 | `GITHUB_MODE` | `mock` / `live` | `mock` | mock returns a fake PR URL, no push |
-| `LLM_PROVIDER`, `LLM_API_KEY`, `LLM_MODEL` | from kickoff | — | provider selection |
-| `BOOMI_BASE_URL`, `BOOMI_USER`, `BOOMI_TOKEN` | from Boomi team | — | B2–B4 calls |
+| `LLM_PROVIDER`, `LLM_API_KEY`, `LLM_MODEL`, `LLM_BASE_URL` | from kickoff | — | provider selection (base URL only for gateways) |
+| `BOOMI_BASE_URL`, `BOOMI_USER`, `BOOMI_TOKEN`, `BOOMI_B2/B3/B4_PATH` | from Boomi team | contract paths | B2–B4 calls |
+| `DEMO_REPO_URL` | demo-target repo | — | default repo for scans and B1 |
 | `GITHUB_TOKEN` | repo-scoped PAT | — | push branch + open PR on the demo target |
 | `PATCHPILOT_API_KEY` | shared secret | — | B1 auth |
 | `BACKEND_URL`, `FRONTEND_URL`, `VITE_API_BASE_URL` | URLs | localhost | CORS and client base URL |

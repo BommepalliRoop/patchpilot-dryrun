@@ -15,7 +15,7 @@ Produce a tested fix on a branch.
 
 ## Scope
 - Implement docs/ARCHITECTURE.md Fix engine. Work dir `/tmp/patchpilot/<scan_id>/fix-<finding_id>`; git branch `patchpilot/<cve>`.
-- Version bump preserves requirement formatting/comments; picks the smallest fixed version greater than installed.
+- Version bump preserves requirement formatting/comments; picks the smallest fixed version greater than installed. If `pip install` itself fails (not the tests), try the next fixed/newer releases up to the latest (max 3 tries) before giving up — e.g. PyYAML 5.4 / 5.4.1 do not build on Python 3.11+ with Cython 3, 6.0.1+ installs fine (checked Oct 27).
 - Test run in isolated venv with timeouts (install 180 s, pytest 120 s); capture output tail (last 200 lines).
 - Prompt `prompts/patch_code.md`: input {package, old→new version, failing test output, relevant file contents}; output `{diff (unified), explanation}`; apply with `git apply --3way`, reject edits outside the repo.
 - Max 2 AI attempts; final status fixed | needs_human; store patch_diff (full diff vs base).

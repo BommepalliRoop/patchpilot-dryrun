@@ -1,0 +1,73 @@
+# Configuration and keys checklist
+
+Every value PatchPilot needs, who provides it, where to get it, and when. Fill the "Value / status" column
+as you collect things. **Never write a secret in this file, in git, or in a chat.** Secrets go only into
+`.env` (gitignored, created by T00 from `.env.example`) and into the host's env settings (Render/Railway, Vercel).
+
+Legend: 🔒 = secret (only in `.env` / host settings) · 📄 = safe to write here and share
+
+## 1. Our backend `.env` (repo root)
+| Variable | 🔒/📄 | Example / format | Who provides | Where to get it | Needed by | Value / status |
+|---|---|---|---|---|---|---|
+| `LLM_PROVIDER` | 📄 | `anthropic` or `openai` | Organisers | Kickoff 9:00 | T04 | |
+| `LLM_API_KEY` | 🔒 | `sk-...` | Organisers | Kickoff 9:00 | T04 (live) | |
+| `LLM_MODEL` | 📄 | e.g. `claude-sonnet-5-5` | Organisers / us | Kickoff; pick the strongest allowed model | T04 | |
+| `LLM_BASE_URL` | 📄 | blank, or a gateway / Azure URL | Organisers | Only if keys come via a proxy or Azure | T04 | |
+| `LLM_MODE` | 📄 | `mock` → `live` | Us | Switch to `live` once T04 passes with the real key | all AI tasks | `mock` |
+| `GITHUB_TOKEN` | 🔒 | `github_pat_...` | Lead | GitHub → Settings → Developer settings → Fine-grained token. Repository access: **demo-target only**. Permissions: Contents RW, Pull requests RW, Metadata R. Expiry 7 days | T09 | |
+| `GITHUB_MODE` | 📄 | `mock` → `live` | Us | Switch after T09 | T09 | `mock` |
+| `DEMO_REPO_URL` | 📄 | `https://github.com/BommepalliRoop/demo-target` | Lead / Dev E | Create empty repo tonight; T15 fills it | T02, T15, T17 | |
+| `PATCHPILOT_API_KEY` | 🔒 | 32+ random chars | Us | `python -c "import secrets;print(secrets.token_urlsafe(32))"` — share privately with Boomi team for B1 | T03 (B1 auth) | |
+| `BOOMI_MODE` | 📄 | `mock` → `live` | Us | Switch after B2 test call works | T10 | `mock` |
+| `BOOMI_BASE_URL` | 📄 | `https://<atom-cloud-host>/ws/rest` | Boomi team | Their deployed Web Services Server base URL | T10 | |
+| `BOOMI_USER` | 📄 | Shared Web Server user name | Boomi team | Boomi Atom Management → Shared Web Server → User Management | T10 | |
+| `BOOMI_TOKEN` | 🔒 | token | Boomi team | Same place as `BOOMI_USER` | T10 | |
+| `BOOMI_B2_PATH` | 📄 | default `/patchpilot/findings` | Boomi team | Only if Boomi cannot use the contract path | T10 | |
+| `BOOMI_B3_PATH` | 📄 | default `/patchpilot/scan-summary` | Boomi team | same | T10 | |
+| `BOOMI_B4_PATH` | 📄 | default `/patchpilot/compliance` | Boomi team | same | T10 | |
+| `BACKEND_URL` | 📄 | `https://patchpilot-api.onrender.com` | Dev C | After T16 deploy | T16, Boomi B1 | |
+| `FRONTEND_URL` | 📄 | `https://patchpilot.vercel.app` | Dev C | After T16 deploy (used for CORS + dashboard links in B3) | T16 | |
+
+## 2. Frontend env (Vercel project settings, or `frontend/.env.local`)
+| Variable | 🔒/📄 | Value | Notes |
+|---|---|---|---|
+| `VITE_API_BASE_URL` | 📄 | `BACKEND_URL` | local: `http://localhost:8000` |
+| `VITE_USE_MOCK` | 📄 | `true` → `false` | `true` until T03 is merged |
+
+Anything starting with `VITE_` is shipped to the browser — never put a key there.
+
+## 3. Accounts and tools to have ready (tonight)
+| Item | Owner | How to check | Status |
+|---|---|---|---|
+| Python **3.11** (CLAUDE.md requires it; 3.13 alone is not enough) | everyone | `py -3.11 --version` | |
+| Node 20+ | everyone | `node --version` | |
+| Git + GitHub CLI logged in | everyone | `gh auth status` | |
+| Claude Code logged in | everyone | `claude` starts | |
+| OSV-Scanner | backend devs | `osv-scanner --version` | |
+| Docker (optional) | Dev C | `docker --version` | |
+| Collaborator access to `BommepalliRoop/patchpilot` | Lead | invite each dev + Boomi team | |
+| Empty `demo-target` repo | Lead | `gh repo create BommepalliRoop/demo-target --public` | |
+| Render or Railway account | Dev C | log in | |
+| Vercel account linked to GitHub | Dev C | log in | |
+| `cloudflared` (fallback tunnel) | Dev C | `cloudflared --version` | |
+
+## 4. Values that live only in Boomi (we never hold these)
+Jira site URL, Jira project key, Jira user email + API token, Teams webhook URL, compliance log store
+credentials. The Boomi team keeps them in Boomi connections. See `docs/BOOMI_HANDOFF.md`.
+
+## 5. Exchange sheet — what moves between teams
+| From → To | Item | When |
+|---|---|---|
+| Boomi → Dev | `BOOMI_BASE_URL`, `BOOMI_USER`, `BOOMI_TOKEN` (token sent privately) | by 10:30 |
+| Boomi → Dev | Final paths for B2/B3/B4 if they differ from the contract | by 10:30 |
+| Boomi → Dev | Jira site URL + project key, Teams channel name (for the demo script) | by 10:30 |
+| Dev → Boomi | `BACKEND_URL`, `PATCHPILOT_API_KEY` (sent privately) | after T16, ~11:40 |
+| Dev → Boomi | `FRONTEND_URL` (dashboard links in Teams cards) | after T16 |
+| Dev → Boomi | Client list for B1: `client_name`, `repo_url` (= `DEMO_REPO_URL`), `branch`, `auto_fix` | tonight |
+
+## 6. Switching from mock to live (on the day)
+1. All `*_MODE=mock` → everything works end to end with fixtures.
+2. `LLM_MODE=live` after T04 passes with the kickoff key.
+3. `GITHUB_MODE=live` after T09 opens a real PR on demo-target.
+4. `BOOMI_MODE=live` after `python -m app.services.boomi_client ping` returns `ok: true` (T10).
+5. Check `GET /api/health` shows the modes you expect; the sidebar badges show the same.
