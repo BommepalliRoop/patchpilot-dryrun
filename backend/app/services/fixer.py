@@ -180,6 +180,31 @@ def bump_requirements(text: str, package: str, version: str) -> str | None:
     return "".join(out) if found else None
 
 
+_REQ_INCLUDE = re.compile(r"^\s*(?:-r|--requirement)[\s=]+(\S+)", re.MULTILINE)
+
+
+def _pinning_manifest(repo: Path, manifest: str, package: str) -> str:
+    """The requirements file that really lists `package` (T17).
+
+    osv-scanner reports a package from every file that includes it (`requirements-dev.txt` with
+    `-r requirements.txt`), and which one wins the scanner merge depends on its output order. Follow `-r`
+    includes (inside the repo only) until a file pins the package; fall back to the reported one.
+    """
+    root = repo.resolve()
+    seen: set[Path] = set()
+    queue = [(repo / manifest).resolve()]
+    while queue:
+        path = queue.pop(0)
+        if path in seen or not path.is_file() or not path.is_relative_to(root):
+            continue
+        seen.add(path)
+        text = _read(path)
+        if bump_requirements(text, package, "0") is not None:
+            return path.relative_to(root).as_posix()
+        queue += [(path.parent / inc).resolve() for inc in _REQ_INCLUDE.findall(text)]
+    return manifest
+
+
 def bump_package_json(text: str, package: str, version: str) -> str | None:
     """Text-only bump of `package.json` (used when npm is missing); keeps the `^` / `~` prefix."""
     try:
@@ -367,7 +392,8 @@ class _PyPI(_Adapter):
         path = repo / manifest
         if not path.is_file():
             raise _Fail("unsupported_manifest", "repository has no requirements.txt")
-        if "--hash" in _read(path):
+        manifest = _pinning_manifest(repo, manifest, vulns[0].package) if vulns else manifest
+        if "--hash" in _read(repo / manifest):
             raise _Fail("unsupported_manifest", "hash-pinned requirements are not supported")
         return manifest
 
