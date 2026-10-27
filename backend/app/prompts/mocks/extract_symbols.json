@@ -1,0 +1,1 @@
+{"package": "PyYAML", "import_names": ["yaml"], "symbols": ["yaml.load", "yaml.load_all", "yaml.FullLoader", "yaml.UnsafeLoader"], "safe_usage_notes": "yaml.safe_load and Loader=yaml.SafeLoader are not affected.", "confidence": 0.9}

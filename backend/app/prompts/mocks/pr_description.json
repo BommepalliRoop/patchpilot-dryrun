@@ -1,0 +1,1 @@
+{"title": "Security: upgrade vulnerable dependency", "body": "## Risk summary\nA reachable vulnerability was found and fixed by upgrading the dependency.\n\n## Why this is reachable\nThe vulnerable function is called from application code.\n\n## Changes\nDependency upgraded.\n\n## Test results\nTests pass.\n\n## Rollback\nRevert this pull request."}
