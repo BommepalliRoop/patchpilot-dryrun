@@ -8,7 +8,6 @@ import type {
   Scan,
   ScanEvent,
 } from '../types'
-import { STAGES } from '../types'
 
 export const MOCK_SCAN_ID = 'scn_01'
 
@@ -46,6 +45,25 @@ export const mockFindings: FindingSummary[] = [
     fixed_version: '3.1.3', cvss: 5.4, reachability: 'unsure', confidence: 0.55, score: 3.2, priority: 'P4',
     status: 'open', kev: false, epss: 0.0035, epss_percentile: 0.67, ecosystem: 'PyPI', analysis: 'deep',
   },
+  ...(
+    [
+      ['CVE-2021-33503', 'urllib3', '1.26.4', '1.26.5', 7.5, 'PyPI', false],
+      ['CVE-2023-30861', 'flask', '1.1.2', '2.2.5', 7.5, 'PyPI', false],
+      ['CVE-2023-25577', 'werkzeug', '1.0.1', '2.2.3', 7.5, 'PyPI', false],
+      ['CVE-2022-23491', 'certifi', '2021.5.30', '2022.12.7', 6.8, 'PyPI', false],
+      ['CVE-2021-23337', 'lodash', '4.17.20', '4.17.21', 7.2, 'npm', true],
+      ['CVE-2020-8203', 'lodash', '4.17.20', '4.17.21', 7.4, 'npm', false],
+      ['CVE-2020-28500', 'lodash', '4.17.20', '4.17.21', 5.3, 'npm', false],
+      ['CVE-2021-3918', 'json-schema', '0.2.3', '0.4.0', 9.8, 'npm', false],
+      ['CVE-2022-24785', 'moment', '2.29.1', '2.29.2', 7.5, 'npm', false],
+    ] as const
+  ).map(([cve, pkg, inst, fixed, cvss, eco, kev], i): FindingSummary => ({
+    finding_id: `fnd_${String(10 + i).padStart(2, '0')}`, cve_id: cve, package: pkg, installed_version: inst,
+    fixed_version: fixed, cvss, reachability: 'not_reachable', confidence: 0.9,
+    score: Number((cvss * 0.3 * (kev ? 1.3 : 1)).toFixed(1)), priority: 'P4', status: 'open', kev,
+    epss: kev ? 0.41 : 0.004, epss_percentile: kev ? 0.97 : 0.55, ecosystem: eco,
+    analysis: eco === 'PyPI' ? 'deep' : 'generic',
+  })),
 ]
 
 export const mockFindingDetail: FindingDetail = {
@@ -95,12 +113,50 @@ export const mockCompliance: ComplianceReport = {
 
 export const mockHealth: Health = { status: 'ok', llm_mode: 'mock', boomi_mode: 'mock', github_mode: 'mock' }
 
-/** Canned SSE stream: one event per stage, then `done`. */
-export function mockScanEvents(scanId: string): ScanEvent[] {
-  const events: ScanEvent[] = STAGES.map((stage, i) => ({
-    scan_id: scanId, stage, status: 'running', message: `Stage ${stage} (mock)`,
-    progress: Number(((i + 1) / (STAGES.length + 1)).toFixed(2)), data: {},
+// ---- Scripted scan run (~25 s) -------------------------------------------------------------------
+// One entry per SSE event: [offset ms, stage, status, message, progress]. Mock mode replays this from the moment
+// startMockRun() is called, so the whole scan flow is watchable without the backend.
+type Step = [number, ScanEvent['stage'], string, string, number]
+const SCRIPT: Step[] = [
+  [600, 'clone', 'running', 'Cloning BommepalliRoop/demo-target@main', 0.03],
+  [2400, 'clone', 'completed', 'Cloned 41 files', 0.08],
+  [3000, 'scan', 'running', 'Detected PyPI (requirements.txt) and npm (tools/package-lock.json)', 0.12],
+  [5000, 'scan', 'running', 'OSV-Scanner found 12 vulnerable dependency versions', 0.2],
+  [6200, 'scan', 'completed', 'Threat intel: 1 on CISA KEV, EPSS loaded for 12 CVEs', 0.25],
+  [7000, 'symbols', 'running', 'Extracting vulnerable symbols for pyyaml, jinja2, lodash...', 0.3],
+  [9000, 'symbols', 'completed', 'Vulnerable symbols ready (yaml.load, yaml.full_load, _.template)', 0.38],
+  [9800, 'reachability', 'running', 'Checking yaml.load in app/routes.py', 0.45],
+  [12000, 'reachability', 'running', 'yaml.load reachable from POST /import (in route)', 0.52],
+  [14000, 'reachability', 'completed', '2 reachable, 1 unsure, 9 not reachable', 0.6],
+  [14800, 'risk', 'running', 'Scoring risk: CVSS x reachability x exposure x threat', 0.65],
+  [16200, 'risk', 'completed', '1 P1, 1 P2, 10 lower priority', 0.7],
+  [17000, 'fix', 'running', 'Upgrading PyYAML 5.3.1 -> 5.4.1 in a temporary venv', 0.74],
+  [19500, 'fix', 'running', 'pytest -q: all tests green (attempt 1)', 0.8],
+  [20500, 'fix', 'completed', '2 packages fixed', 0.85],
+  [21300, 'pr', 'running', 'Opening pull request for pyyaml', 0.88],
+  [22800, 'pr', 'completed', 'Pull requests opened (2)', 0.92],
+  [23500, 'notify', 'running', 'Notifying Boomi: Jira ticket, Slack alert, compliance log', 0.96],
+  [24500, 'notify', 'completed', 'Jira SEC-101 created, Slack sent', 0.99],
+  [25000, 'done', 'completed', 'Scan complete', 1],
+]
+export const MOCK_RUN_MS = SCRIPT[SCRIPT.length - 1][0]
+
+export function mockScanScript(scanId: string): { at: number; event: ScanEvent }[] {
+  return SCRIPT.map(([at, stage, status, message, progress]) => ({
+    at, event: { scan_id: scanId, stage, status, message, progress, data: {} },
   }))
-  events.push({ scan_id: scanId, stage: 'done', status: 'completed', message: 'Scan complete', progress: 1, data: {} })
-  return events
+}
+
+let runStartedAt: number | null = null
+export const startMockRun = () => {
+  runStartedAt = Date.now()
+}
+export const mockElapsed = () => (runStartedAt === null ? null : Date.now() - runStartedAt)
+
+/** Stage reached by the scripted run right now; `null` when no run is in progress (completed fixtures apply). */
+export function mockRunStage(): ScanEvent['stage'] | null {
+  const elapsed = mockElapsed()
+  if (elapsed === null || elapsed >= MOCK_RUN_MS - 100) return null
+  const reached = SCRIPT.filter(([at]) => at <= elapsed)
+  return reached.length ? reached[reached.length - 1][1] : 'clone'
 }
