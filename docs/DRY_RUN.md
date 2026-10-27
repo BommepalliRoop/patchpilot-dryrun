@@ -88,4 +88,6 @@ demo run length, LLM cost/tokens if visible, any RISKS.md must-have that did not
 ## After the dry run
 - Lead updates the planning docs in `patchpilot` (task files, BOARD timings, contracts, handoff) and pushes.
 - Archive or delete `patchpilot-dryrun` and `demo-target-dryrun`; Boomi team leaves the DRYRUN folder alone.
+- **Reset the Neon `neondb_owner` password** (it was shared during the practice) and send the new one privately to the
+  Boomi team. Empty the practice rows: `DELETE FROM compliance_log;` (practice data only).
 - Tomorrow: fresh clone of `patchpilot`, fresh `demo-target`, start at 9:20 with `/run-task T00`.
