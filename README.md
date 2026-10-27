@@ -14,6 +14,7 @@ EasyStepIn AI Hackathon 2026 · Team PatchPilot
 | Boomi team | `docs/BOOMI_HANDOFF.md` (+ `boomi/` folder for their exports) |
 | Whoever collects keys and URLs | `docs/CONFIG.md` |
 | Reviewer / judge questions on safety | `docs/RISKS.md` |
+| Practice run today | `docs/DRY_RUN.md` |
 | Presenter | `docs/DEMO_SCRIPT.md` |
 
 ## How we work on the day
