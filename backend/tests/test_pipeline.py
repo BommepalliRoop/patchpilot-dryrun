@@ -257,7 +257,7 @@ def test_pipeline_completes_with_every_other_stage_stubbed(client, monkeypatch, 
     assert events[-1]["stage"] == "done" and events[-1]["status"] == "completed"
     assert [s for s in STAGES if s in {e["stage"] for e in events}] == STAGES
     stub_lines = [r.getMessage() for r in caplog.records if "STUB" in r.getMessage()]
-    assert any("reachability" in m for m in stub_lines) and any("symbols" in m for m in stub_lines)
+    assert any("reachability" in m for m in stub_lines)  # symbols (T05) is real now
     assert len([m for m in stub_lines if "stage reachability" in m]) == 1  # once per run, not per finding
     scan = repo.get_scan(scan_id)
     assert scan.status == "completed" and scan.stats.total_alerts == 4 and scan.stats.unsure == 4

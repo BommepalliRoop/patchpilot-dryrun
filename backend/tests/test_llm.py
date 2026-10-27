@@ -39,7 +39,7 @@ class PrText(BaseModel):
 
 
 GOOD = {"package": "PyYAML", "import_names": ["yaml"], "symbols": ["yaml.load"], "confidence": 0.8}
-SYM_VARS = {"package": "PyYAML", "cve_id": "CVE-1", "summary": "s", "details": "d", "references": []}
+SYM_VARS = {"ecosystem": "PyPI", "package": "PyYAML", "cve_id": "CVE-1", "summary": "s", "details": "d", "references": []}
 KEY = "sk-test-secret-123456"
 
 
@@ -112,7 +112,7 @@ def test_render_fills_variables_single_pass():
 
 
 def test_render_missing_variable_raises():
-    with pytest.raises(LLMError, match="package"):
+    with pytest.raises(LLMError, match="ecosystem"):
         llm.render_prompt("extract_symbols", {})
 
 

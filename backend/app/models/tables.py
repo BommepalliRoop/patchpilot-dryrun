@@ -73,6 +73,16 @@ class FindingRow(SQLModel, table=True):
     timeline_json: str = "[]"
 
 
+class SymbolCacheRow(SQLModel, table=True):
+    """T05: extracted vulnerable symbols, cached per advisory so a re-scan costs no LLM call."""
+
+    __tablename__ = "symbol_cache"
+
+    key: str = Field(primary_key=True)  # "<cve_id>|<ecosystem>|<normalised package>"
+    result_json: str
+    created_at: str
+
+
 class IntegrationEventRow(SQLModel, table=True):
     __tablename__ = "integration_events"
 
