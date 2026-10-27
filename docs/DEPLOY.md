@@ -1,15 +1,49 @@
-# Deployment (filled in by T16)
+# Deployment (T16)
 
 ## Target
-- Backend: Docker on Render or Railway → `BACKEND_URL`
-- Frontend: Vercel → `FRONTEND_URL`, env `VITE_API_BASE_URL=${BACKEND_URL}`
+- Backend: Docker on Railway (preferred) or a paid Render instance → `BACKEND_URL`
+- Frontend: Vercel → `FRONTEND_URL`, env `VITE_API_BASE_URL=${BACKEND_URL}`, `VITE_USE_MOCK=false`
 - Fallback: local backend + `cloudflared tunnel --url http://localhost:8000`
 
+## Image (`backend/Dockerfile`)
+Python 3.11-slim + git + osv-scanner (pinned `OSV_SCANNER_VERSION`, sha256 verified) + Node.js 20/npm + app.
+Runs as non-root user `patchpilot`, has a `HEALTHCHECK` on `/api/health`.
+- Build from the repo root: `docker build -f backend/Dockerfile -t patchpilot-api .`
+- Local run: `docker run --rm -p 8000:8000 --env-file .env patchpilot-api` (`--env-file` passes host env vars; the file is never copied into the image — RISKS S2, enforced by `.dockerignore`).
+- SQLite lives at `/data/patchpilot.db` (`DATABASE_URL`), clones and venvs at `/tmp/patchpilot` (`WORK_DIR`). Mount a volume on `/data` to keep history across deploys.
+
+## Backend on Railway (recommended)
+1. New project → Deploy from GitHub repo. `railway.json` selects `backend/Dockerfile` and health check `/api/health`.
+2. Variables: copy from `.env.example`; keep all `*_MODE=mock` first. Required: `FRONTEND_URL` (exact Vercel origin, used for CORS — RISKS S12), `BACKEND_URL`, `PATCHPILOT_API_KEY`, `ALLOWED_REPO_PREFIXES`, `DEMO_REPO_URL`, `DEMO_MODE=true`.
+3. Add a volume mounted at `/data` (optional). Settings → Networking → Generate domain.
+4. `GET $BACKEND_URL/api/health` → `{"status":"ok", ...}`.
+
+## Backend on Render (alternative)
+`render.yaml` is a blueprint with `plan: starter` and a disk at `/data`. **Do not use the free plan**: it sleeps after ~15 min idle (30–60 s cold start) and wipes the disk on redeploy (RISKS N10).
+
+## N10: stay awake for the demo
+- Keep an always-on instance (Railway, or Render starter).
+- 5 minutes before the demo: `powershell -File scripts/warmup.ps1 $BACKEND_URL` (or `scripts/warmup.sh $BACKEND_URL`). It polls `/api/health` until it answers.
+- After every deploy that resets the disk, re-run the demo seed (T17) — the DB is empty on a fresh volume.
+
+## Frontend on Vercel
+1. Import the repo, **Root Directory = `frontend`** (`frontend/vercel.json` sets the Vite build and the SPA rewrite so deep links like `/findings/fnd_01` work).
+2. Env: `VITE_API_BASE_URL=<BACKEND_URL>` (no trailing slash needed), `VITE_USE_MOCK=false`. Only `VITE_*` public values; never a key.
+3. Copy the production URL into the backend's `FRONTEND_URL` and redeploy the backend (CORS allows only that origin and `http://localhost:5173` — RISKS S12).
+
+## Fallback: tunnel
+```
+cd backend && uvicorn app.main:app --port 8000
+cloudflared tunnel --url http://localhost:8000      # prints https://<random>.trycloudflare.com
+```
+Use that URL as `BACKEND_URL` for Boomi B1; set `FRONTEND_URL` to wherever the UI runs (`http://localhost:5173` works as is).
+
 ## Env vars (backend)
-See `.env.example`. Set all `*_MODE` to `mock` first, deploy, check `/api/health`, then switch to `live` one at a time.
+See `.env.example` and `docs/CONFIG.md`. Set all `*_MODE` to `mock` first, deploy, check `/api/health`, then switch to `live` one at a time.
 
 ## Checklist
 - [ ] `/api/health` public
 - [ ] CORS allows the Vercel domain
-- [ ] Boomi team has BACKEND_URL + PATCHPILOT_API_KEY for B1
+- [ ] Boomi team has BACKEND_URL + PATCHPILOT_API_KEY for B1 (send privately)
 - [ ] Frontend shows mode badges as live
+- [ ] Warm-up script run 5 min before the demo
