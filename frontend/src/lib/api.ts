@@ -4,12 +4,16 @@ import {
   MOCK_SCAN_ID,
   mockCompliance,
   mockFindingDetail,
+  mockElapsed,
   mockFindings,
   mockHealth,
   mockIntegrationEvents,
-  mockScanEvents,
+  mockRunStage,
+  mockScanScript,
   mockScans,
+  startMockRun,
 } from './mock'
+import { STAGES } from './types'
 import type {
   ApiErrorBody,
   ComplianceReport,
@@ -79,13 +83,47 @@ function query(params: Record<string, string | number | undefined>): string {
 
 /** POST /api/scans */
 export async function createScan(body: ScanCreateRequest): Promise<ScanCreated> {
-  if (USE_MOCK) return delay().then(() => ({ scan_id: MOCK_SCAN_ID, status: 'queued' as const }))
+  if (USE_MOCK) {
+    startMockRun()
+    return delay().then(() => ({ scan_id: MOCK_SCAN_ID, status: 'queued' as const }))
+  }
   return request('/api/scans', { method: 'POST', body: JSON.stringify(body) })
+}
+
+const stageIdx = (stage: string) => STAGES.indexOf(stage as (typeof STAGES)[number])
+
+/** While the scripted mock run is in progress the scan reports its live stage and partial stats. */
+function withMockProgress(scan: Scan): Scan {
+  const stage = mockRunStage()
+  if (!stage) return scan
+  const at = stageIdx(stage)
+  const s = scan.stats
+  return {
+    ...scan,
+    status: 'running',
+    current_stage: stage,
+    finished_at: null,
+    stats: {
+      total_alerts: at >= 1 ? s.total_alerts : 0,
+      reachable: at >= 4 ? s.reachable : 0,
+      unsure: at >= 4 ? s.unsure : 0,
+      not_reachable: at >= 4 ? s.not_reachable : 0,
+      p1: at >= 4 ? s.p1 : 0,
+      p2: at >= 4 ? s.p2 : 0,
+      fixed: at >= 6 ? s.fixed : 0,
+      prs_opened: at >= 6 ? s.prs_opened : 0,
+    },
+  }
+}
+
+/** Mock only: restarts the scripted 25 s run (the "Replay" button). */
+export function replayMockRun(): void {
+  startMockRun()
 }
 
 /** GET /api/scans (newest first) */
 export async function listScans(): Promise<Scan[]> {
-  if (USE_MOCK) return delay().then(() => mockScans)
+  if (USE_MOCK) return delay().then(() => mockScans.map(withMockProgress))
   return request('/api/scans')
 }
 
@@ -95,7 +133,7 @@ export async function getScan(scanId: string): Promise<Scan> {
     await delay()
     const scan = mockScans.find((s) => s.scan_id === scanId)
     if (!scan) throw new ApiError(404, 'not_found', `Scan ${scanId} not found`)
-    return scan
+    return withMockProgress(scan)
   }
   return request(`/api/scans/${encodeURIComponent(scanId)}`)
 }
@@ -109,9 +147,14 @@ export function subscribeScanEvents(
   scanId: string,
   onEvent: (event: ScanEvent) => void,
   onError?: () => void,
+  onOpen?: () => void,
 ): () => void {
   if (USE_MOCK) {
-    const timers = mockScanEvents(scanId).map((event, i) => setTimeout(() => onEvent(event), 400 * (i + 1)))
+    // Like the backend replay buffer: events already due fire at once, the rest on schedule.
+    const elapsed = mockElapsed() ?? 0
+    const timers = mockScanScript(scanId).map(({ at, event }) =>
+      setTimeout(() => onEvent(event), Math.max(0, at - elapsed)),
+    )
     return () => timers.forEach(clearTimeout)
   }
   const source = new EventSource(`${API_BASE_URL}/api/scans/${encodeURIComponent(scanId)}/events`)
@@ -124,6 +167,7 @@ export function subscribeScanEvents(
       /* ignore malformed frame (heartbeat comments never reach onmessage) */
     }
   }
+  source.onopen = () => onOpen?.()
   source.onerror = () => onError?.()
   return () => source.close()
 }
@@ -134,7 +178,14 @@ export function subscribeScanEvents(
 export async function listFindings(filters: FindingFilters = {}): Promise<FindingSummary[]> {
   if (USE_MOCK) {
     await delay()
-    return mockFindings.filter(
+    // During the scripted run findings exist only from the risk stage on; the P1 shows "fixing", then "fixed".
+    const stage = mockRunStage()
+    if (stage && stageIdx(stage) < 4) return []
+    const base =
+      stage && stageIdx(stage) < 6
+        ? mockFindings.map((f) => ({ ...f, status: f.priority === 'P1' && stage === 'fix' ? ('fixing' as const) : ('open' as const) }))
+        : mockFindings
+    return base.filter(
       (f) =>
         (!filters.priority || f.priority === filters.priority) &&
         (!filters.reachability || f.reachability === filters.reachability),

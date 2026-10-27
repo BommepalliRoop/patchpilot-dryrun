@@ -5,6 +5,7 @@ import { ClipboardCheck, LayoutDashboard, Play, Plug, Search, ShieldCheck } from
 import { USE_MOCK, getHealth } from '../lib/api'
 import type { Health } from '../lib/types'
 import { ModeBadge } from './ui/Badges'
+import DemoReset from './DemoReset'
 
 const NAV = [
   { to: '/', label: 'Overview', icon: LayoutDashboard, end: true },
@@ -41,6 +42,7 @@ export default function Layout() {
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-surface-2 focus:p-2">
         Skip to content
       </a>
+      <DemoReset />
       <aside className="flex w-60 shrink-0 flex-col gap-6 border-r border-border bg-surface px-4 py-5">
         <div className="flex items-center gap-2 text-lg font-semibold">
           <ShieldCheck className="text-accent" size={22} aria-hidden />
