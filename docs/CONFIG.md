@@ -27,9 +27,9 @@ Legend: 🔒 = secret (only in `.env` / host settings) · 📄 = safe to write h
 | `FIX_PYTHON` | 📄 | blank = backend Python; e.g. path to `python3.11` | Us | Interpreter for the fix venvs. The demo target needs Python 3.11 (requests 2.25.1 breaks on 3.12+); Docker image is 3.11 already | T08 | |
 | `PATCHPILOT_API_KEY` | 🔒 | 32+ random chars | Us | `python -c "import secrets;print(secrets.token_urlsafe(32))"` — share privately with Boomi team for B1 | T03 (B1 auth) | |
 | `BOOMI_MODE` | 📄 | `mock` → `live` | Us | Switch after B2 test call works | T10 | `mock` |
-| `BOOMI_BASE_URL` | 📄 | `https://<atom-cloud-host>/ws/rest` | Boomi team | Their deployed Web Services Server base URL | T10 | |
-| `BOOMI_USER` | 📄 | Shared Web Server user name | Boomi team | Boomi Atom Management → Shared Web Server → User Management | T10 | |
-| `BOOMI_TOKEN` | 🔒 | token | Boomi team | Same place as `BOOMI_USER` | T10 | |
+| `BOOMI_BASE_URL` | 📄 | `https://<atom-cloud-host>/ws/rest` | Boomi team | Their deployed Web Services Server base URL | T10 | `https://c01-sg.integrate.boomi.com/ws/rest` (host confirmed Oct 28; confirm the `/ws/rest` path on the Shared Web Server page) |
+| `BOOMI_USER` | 📄 | Shared Web Server user name | Boomi team | Boomi Atom Management → Shared Web Server → User Management | T10 | created Oct 28 (value in `.env` only) |
+| `BOOMI_TOKEN` | 🔒 | token | Boomi team | Same place as `BOOMI_USER` | T10 | created Oct 28 (in `.env` only; reset after the practice run) |
 | `BOOMI_B2_PATH` | 📄 | default `/patchpilot/findings` | Boomi team | Only if Boomi cannot use the contract path | T10 | |
 | `BOOMI_B3_PATH` | 📄 | default `/patchpilot/scan-summary` | Boomi team | same | T10 | |
 | `BOOMI_B4_PATH` | 📄 | default `/patchpilot/compliance` | Boomi team | same | T10 | |

@@ -23,4 +23,5 @@ Update your row when you start (`in_progress`) and finish (`done`). Keep notes t
 | T16 | Deployment | Dev C | Sonnet 5.5 | medium | 3 | T03, T11 | done | Dockerfile (py3.11 + git + osv-scanner 2.7.0 sha-checked + Node 20, non-root, healthcheck), .dockerignore, railway.json, render.yaml (starter), vercel.json, warmup scripts, docs/DEPLOY.md; S2,S12,N10 tested; 382 pass (3.13); docker build and real deploy not run (Docker daemon down, no host accounts) |
 | T17 | End-to-end integration and demo seed | Lead | Opus 5.5 | high | 4 | T03, T06, T08, T09, T10, T12, T13 | todo | |
 | T18 | Polish and rehearsal | Everyone | Sonnet 5.5 | medium | 4 | T17 | todo | |
-| B1–B4 | Boomi processes | Boomi team | Boomi Companion | — | 1–3 | contracts | todo | |
+| B0 | Boomi setup (runtime, listener, auth, connections) | Boomi team / Lead | Boomi Companion | — | 1 | contracts | in_progress | Atom Cloud + Shared Web Server user ready, Supabase compliance table created and tested; Boomi Companion plugin installed, workspace `D:\hackathon\boomi-workspace` created; AtomSphere API token and jq still to set up; Jira/Slack connections not made |
+| B1–B4 | Boomi processes | Boomi team | Boomi Companion | — | 1–3 | B0 | todo | Not built yet; real Boomi not exercised (backend runs `BOOMI_MODE=mock`) |
