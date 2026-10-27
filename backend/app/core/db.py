@@ -42,7 +42,9 @@ def reset_engine() -> None:
 
 
 def init_db() -> None:
-    """Create tables for every SQLModel imported so far (T01 adds the tables)."""
+    """Create all tables."""
+    from app.models import tables  # noqa: F401  (registers the tables on SQLModel.metadata)
+
     SQLModel.metadata.create_all(get_engine())
 
 

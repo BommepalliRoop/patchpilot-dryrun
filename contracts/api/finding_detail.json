@@ -1,0 +1,17 @@
+{
+  "finding_id": "fnd_07", "cve_id": "CVE-2020-14343", "package": "pyyaml", "installed_version": "5.3.1",
+  "fixed_version": "5.4", "cvss": 9.8, "reachability": "reachable", "confidence": 0.93,
+  "score": 10.0, "priority": "P1", "status": "fixed",
+  "kev": false, "epss": 0.0598, "epss_percentile": 0.9326, "ecosystem": "PyPI", "analysis": "deep",
+  "summary": "Arbitrary code execution via full_load / FullLoader",
+  "kev_date_added": null,
+  "vulnerable_symbols": ["yaml.load", "yaml.full_load"],
+  "evidence": [{ "file": "app/routes.py", "line": 42, "in_route": true,
+                 "code_snippet": "data = yaml.load(request.data, Loader=yaml.FullLoader)", "start_line": 27 }],
+  "ai_explanation": "User-supplied YAML from POST /import reaches yaml.load without SafeLoader.",
+  "fix": { "new_version": "5.4.1", "attempts": 1, "tests_passed": true,
+           "patch_diff": "--- a/requirements.txt\n+++ b/requirements.txt\n@@ -1 +1 @@\n-PyYAML==5.3.1\n+PyYAML==5.4.1\n",
+           "pr_url": "https://github.com/BommepalliRoop/demo-target/pull/3", "status": "fixed" },
+  "integration": { "jira_key": "SEC-101", "jira_url": "https://example.atlassian.net/browse/SEC-101", "slack_sent": true, "compliance_log_id": "log_fnd_07" },
+  "timeline": [{ "stage": "scan", "at": "2026-10-28T05:10:05Z", "message": "Detected via OSV" }]
+}
