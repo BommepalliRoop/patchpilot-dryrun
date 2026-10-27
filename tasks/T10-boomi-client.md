@@ -21,6 +21,8 @@ Call Boomi processes B2/B3/B4 exactly per contract.
 
 - B2 payload also carries `ecosystem`; `fix_status` may be `fixed_untested`.
 
+- After a manual re-fix (`POST /api/findings/{id}/fix`) send B2 again with the **same** `Idempotency-Key` (= `finding_id`) and the new `fix_status`; Boomi treats it as a status update (docs/BOOMI_FLOW.md section 3).
+
 ## Acceptance criteria
 - Pydantic validation test: generated payload == contract keys.
 - Mock and live paths both covered (live behind an env flag).

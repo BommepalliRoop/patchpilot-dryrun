@@ -109,7 +109,7 @@ effort per task in [tasks/BOARD.md](tasks/BOARD.md).
 | Anyone | [Decisions](docs/DECISIONS.md) · [Plan](docs/PLAN.md) · [Setup](docs/SETUP.md) |
 | Developer using Claude Code | [CLAUDE.md](CLAUDE.md), then [Task board](tasks/BOARD.md) |
 | Architect / reviewer | [Tech stack](docs/TECH_STACK.md) · [Architecture](docs/ARCHITECTURE.md) · [Diagrams](docs/DIAGRAMS.md) |
-| Boomi team | [Boomi handoff](docs/BOOMI_HANDOFF.md) (+ [boomi/](boomi/README.md) for their exports) |
+| Boomi team | [Boomi handoff](docs/BOOMI_HANDOFF.md) · [Boomi flow, low level](docs/BOOMI_FLOW.md) (+ [boomi/](boomi/README.md) for their exports) |
 | Whoever collects keys and URLs | [Config](docs/CONFIG.md) |
 | Safety questions | [Risks](docs/RISKS.md) |
 | Practice run | [Dry run](docs/DRY_RUN.md) |

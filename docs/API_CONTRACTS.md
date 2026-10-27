@@ -117,6 +117,8 @@ Auth to Boomi: HTTP Basic (`BOOMI_USER` / `BOOMI_TOKEN`) unless the Boomi team a
 Timeout on our side: 15 s. Our client retries once on 5xx or timeout.
 Every B2/B3 call carries header `Idempotency-Key: <finding_id>` (B3: `<scan_id>`). Boomi must treat a repeated key as the
 same request: return the earlier result (same `jira_key`) instead of creating a second Jira issue / Teams post.
+The same key with a **different** `fix_status` (e.g. after `POST /api/findings/{id}/fix`) is a status update: Boomi updates
+the compliance row and comments on the existing Jira issue. Step-by-step Boomi flow: `docs/BOOMI_FLOW.md`.
 
 ### B1 — Scheduled scan trigger (Boomi → PatchPilot)
 Boomi schedule (daily 9:00 AM; on demo day also a manual "Run now"). For each client repo in its config list

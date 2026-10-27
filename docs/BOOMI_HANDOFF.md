@@ -15,7 +15,7 @@ maps and connections, deploy, and run the test calls in section 9. A process is 
 **Today's practice run:** build everything in a Boomi folder named `DRYRUN - PatchPilot` and do not reuse
 it tomorrow (hackathon rule: everything is built during the event). Tomorrow, rebuild in a fresh folder.
 
-**Version:** v3.5 (Oct 27). Changes since earlier copies:
+**Version:** v3.6 (Oct 27). Changes since earlier copies:
 - v2: idempotency (`Idempotency-Key` header, `finding_id` column in the compliance log), new `event` / `fix_status`
   values, optional `owner_email`.
 - v3: exploit data in B2 — `kev`, `epss`, `epss_percentile` (section 5); Jira label `actively-exploited` and an
@@ -30,6 +30,9 @@ it tomorrow (hackathon rule: everything is built during the event). Tomorrow, re
   example `compliance_log_id` is now `log_fnd_07` (= `'log_' + finding_id`, as in section 4a).
 - v3.5: compliance database moved to **Supabase** (PostgreSQL). Same table and queries; new connection details in
   section 4b — use the Supabase **Session pooler** address (port 5432), not the direct `db.<ref>.supabase.co` host.
+- v3.6: B2 writes the database in a safe order — **insert the row first (Q2), then Jira (Q3 update), then Teams
+  (Q4 update)**; status changes update the row (Q5) and comment on the same Jira issue. Two new columns
+  (`ecosystem`, `updated_at`). Step-by-step low-level flow for B0–B4: **`docs/BOOMI_FLOW.md`**.
 If you started from an older copy, apply these changes; nothing else changed.
 
 **Working in parallel:** you do not wait for us. The dev team builds the app at the same time with Boomi in
@@ -176,7 +179,8 @@ Content-Type: application/json
 502 { "ok": false, "error": "jira_create_failed", "message": "Jira returned 400: project SEC not found" }
 500 { "ok": false, "error": "log_write_failed", "message": "compliance log insert failed" }
 ```
-A repeated `Idempotency-Key` returns the **same 200 body** as the first call (no new Jira issue).
+A repeated `Idempotency-Key` with the **same** `fix_status` returns the same 200 body as the first call (no new Jira issue).
+Same key with a **different** `fix_status` updates the row, comments on the existing Jira issue and replies with the same `jira_key`.
 
 **B3 — request / responses** (full body in section 8)
 ```json
@@ -266,29 +270,46 @@ CREATE INDEX compliance_log_client_date ON compliance_log (client_name, detected
 ALTER TABLE compliance_log ENABLE ROW LEVEL SECURITY;  -- blocks Supabase's public web API; Boomi (postgres user) is unaffected
 ```
 
-The three queries your processes need (`?` = parameters):
+Run once more by the Lead (migration M1, adds two columns):
 ```sql
--- B2 step 1: idempotency check (by finding_id)
-SELECT compliance_log_id, jira_key, jira_url, teams_sent
-FROM compliance_log WHERE finding_id = ?;
+ALTER TABLE public.compliance_log
+  ADD COLUMN IF NOT EXISTS ecosystem  TEXT,
+  ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
+```
 
--- B2 step 5: insert the row (compliance_log_id = 'log_' + finding_id)
-INSERT INTO compliance_log (compliance_log_id, finding_id, scan_id, client_name, repo_url, cve_id, package,
-  priority, kev, detected_at, fixed_at, jira_key, jira_url, teams_sent, pr_url, status)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?::timestamptz, ?::timestamptz, ?, ?, ?, ?, ?)
-ON CONFLICT (finding_id) DO NOTHING;
+The six queries your processes use — **Q1–Q5 in B2, Q6 in B4**. Exact order, parameters and the full step tables are in
+`docs/BOOMI_FLOW.md` (sections 3 and 6). Bind every value as a parameter, never join strings into SQL.
+```sql
+-- Q1 (B2) lookup by finding_id
+SELECT compliance_log_id, status, jira_key, jira_url, teams_sent FROM public.compliance_log WHERE finding_id = ?;
 
--- B4: compliance report
+-- Q2 (B2) reserve a new row BEFORE calling Jira (jira_key stays NULL until Q3)
+INSERT INTO public.compliance_log
+  (compliance_log_id, finding_id, scan_id, client_name, repo_url, cve_id, package, ecosystem,
+   priority, kev, detected_at, fixed_at, pr_url, status)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?::timestamptz, ?::timestamptz, ?, ?)
+ON CONFLICT (finding_id) DO NOTHING RETURNING compliance_log_id;
+
+-- Q3 (B2) after Jira is created
+UPDATE public.compliance_log SET jira_key = ?, jira_url = ?, updated_at = now() WHERE finding_id = ?;
+
+-- Q4 (B2) after the Teams post
+UPDATE public.compliance_log SET teams_sent = ?, updated_at = now() WHERE finding_id = ?;
+
+-- Q5 (B2) same finding, new status (e.g. needs_human -> fixed after a manual re-fix)
+UPDATE public.compliance_log
+SET status = ?, fixed_at = COALESCE(fixed_at, ?::timestamptz), pr_url = COALESCE(NULLIF(?, ''), pr_url), updated_at = now()
+WHERE finding_id = ? AND status <> ? RETURNING compliance_log_id;
+
+-- Q6 (B4) compliance report
 SELECT compliance_log_id, cve_id, package, priority, detected_at, fixed_at,
        CASE WHEN fixed_at IS NULL THEN NULL
             ELSE FLOOR(EXTRACT(EPOCH FROM (fixed_at - detected_at)) / 60)::int END AS time_to_fix_minutes,
        jira_key, pr_url, status
-FROM compliance_log
-WHERE client_name = ? AND detected_at >= ?::date
-ORDER BY detected_at DESC;
+FROM public.compliance_log WHERE client_name = ? AND detected_at >= ?::date ORDER BY detected_at DESC;
 ```
-`fixed_at` = processing time when `fix_status` = `fixed`, else NULL. `status`: `fixed` / `needs_human` / `open`
-(`not_attempted` → `open`, `fixed_untested` → `needs_human`).
+`compliance_log_id` = `'log_' + finding_id`. `fixed_at` = processing time when `fix_status` = `fixed`, else NULL.
+`status`: `fixed` / `needs_human` / `open` (`not_attempted` → `open`, `fixed_untested` → `needs_human`).
 
 ### 4b. Connection details (the Lead sends these privately)
 Where to find them: Supabase dashboard → project `patchpilot` → **Connect** → **Session pooler**.
@@ -310,6 +331,8 @@ Do **not** use the Transaction pooler (port 6543) — it breaks prepared stateme
 Status (Oct 27): table `public.compliance_log` + index created in Supabase project `patchpilot` (region ap-northeast-1),
 row level security on. The idempotency lookup, insert-with-`ON CONFLICT` and B4 report queries were tested with a test
 row (duplicate ignored, `time_to_fix_minutes` = 2 as expected); the test row was removed — the table is empty.
+Migration M1 (`ecosystem`, `updated_at`) applied the same day, and the full B2 order Q2 → Q2 again (ignored) → Q3 → Q4 → Q5
+was tested end to end (status `needs_human` → `fixed`, PR saved, one row only); test row removed, table empty.
 
 The Lead also sends, privately: Jira site URL, Jira user email, Jira API token, Jira project key, and the Teams
 webhook URL — unless your team already has its own Jira/Teams set up, in which case tell the Lead which ones you use.
@@ -358,17 +381,22 @@ Field notes: `event` finding.fixed / finding.needs_human / finding.open · `prio
 `fix_status` `fixed_untested` = upgrade PR opened but PatchPilot could not run the tests.
 Several findings in the same package share one `pr_url` (one PR per package) — still create one Jira issue per finding.
 
-**Process steps**
-1. Listener receives JSON → validate required fields (`finding_id`, `cve_id`, `package`, `priority`, `client_name`).
-   Missing → 400 `{ "ok": false, "error": "invalid_request", "message": "missing cve_id" }`.
-   **Idempotency:** read header `Idempotency-Key` (= `finding_id`). If the compliance log already has a row for that
-   `finding_id`, skip steps 2–5 and return the stored `jira_key`/`jira_url`/`teams_sent`/`compliance_log_id` (we retry after timeouts,
-   so without this you get duplicate Jira tickets). Store `finding_id` in the log row.
-2. Decision on `priority`: P1/P2 = urgent branch (Jira Highest/High, Teams card marked urgent); P3/P4 = normal.
-3. Create Jira issue (mapping below) → keep `key` and build `jira_url` = `<site>/browse/<key>`.
-4. Post Teams message (section 6) with links to `pr_url` and `jira_url`.
-5. Insert compliance log row (section 4).
-6. Return the response.
+**Process steps** (full table with shapes, DB calls and failure paths: `docs/BOOMI_FLOW.md` section 3)
+1. Listener receives JSON → validate `finding_id`, `cve_id`, `package`, `priority`, `client_name`, `fix_status`,
+   `detected_at`. Missing → 400 `{ "ok": false, "error": "invalid_request", "message": "missing cve_id" }`.
+2. **Q1** lookup by `finding_id` (= the `Idempotency-Key` header):
+   - no row → step 3 (new finding);
+   - row with `jira_key` NULL → step 4 (an earlier call failed half-way — resume, do not insert again);
+   - row with `jira_key` set and a **different** status → **Q5** update, Jira **comment** "status changed", Teams "updated"
+     card, then step 6;
+   - row with `jira_key` set and the **same** status → pure retry: if `teams_sent` is false retry Teams (step 5),
+     otherwise reply with the stored values (step 7). Nothing new is created.
+3. **Q2** insert the row first (reserves it, `jira_key` NULL). Returns nothing → another call won the race → back to step 2.
+4. Decision on `priority` (P1/P2 urgent) → **create the Jira issue** → **Q3** save `jira_key`, `jira_url`.
+   Jira fails → reply 502 `jira_create_failed` and stop (our retry resumes here).
+5. **Post the Teams card** (any 2xx = sent; a failure does not stop the flow).
+6. **Q4** save `teams_sent`.
+7. Reply 200 `{ ok, jira_key, jira_url, teams_sent, compliance_log_id, processed_at }`.
 
 **Jira mapping**
 | Jira field | Value |
@@ -529,14 +557,22 @@ for an external REST API that needs an X-API-Key header, and a Database connecti
 
 **B2**
 "Create a process with a Web Services Server listener for POST /patchpilot/findings that accepts this JSON
-[paste the B2 request from section 5]. Validate finding_id, cve_id, package, priority and client_name; return 400 {ok:false, error:'invalid_request', message} if missing.
-Read the Idempotency-Key header and run the idempotency query from section 4a [paste it]: if a row exists, return the
-stored jira_key, jira_url, teams_sent and compliance_log_id without creating anything.
-Add a Decision on priority: P1 or P2 go to an urgent branch. Create a Jira issue using this mapping
-[paste Jira mapping table] (add label actively-exploited when kev is true). Post an Adaptive Card to the Teams webhook with the CVE, package, explanation and
-links to pr_url and the new Jira issue. Insert a row into the compliance_log table with the insert query from section 4a [paste it]. Return this JSON
-[paste the B2 response from section 5]. If Teams fails, still return 200 with teams_sent false. If Jira fails,
-return 502 with {ok:false, error:'jira_create_failed', message}."
+[paste the B2 request from section 5]. Validate finding_id, cve_id, package, priority, client_name, fix_status and
+detected_at; return 400 {ok:false, error:'invalid_request', message} if any is missing. Then follow these steps exactly,
+using a Database connection to PostgreSQL and bound parameters:
+1) Run query Q1 [paste Q1] with finding_id.
+2) If no row: run Q2 [paste Q2] to insert the row; if Q2 returns nothing, go back to step 1.
+   If a row exists with jira_key NULL: continue at step 3 without inserting.
+   If a row exists with jira_key set and a different status: run Q5 [paste Q5], add a comment to that Jira issue
+   saying the status changed, post an 'updated' Teams card, run Q4, and reply.
+   If a row exists with jira_key set and the same status: reply with the stored values (retry Teams first if teams_sent is false).
+3) Decision on priority (P1/P2 urgent). Create a Jira issue with this mapping [paste Jira mapping table]
+   (add label actively-exploited when kev is true). If Jira fails, reply 502 {ok:false, error:'jira_create_failed', message}.
+   Otherwise run Q3 [paste Q3] with the new key and URL.
+4) Post an Adaptive Card to the Teams webhook with the CVE, package, ecosystem, explanation, exploit data and links to
+   pr_url and the Jira issue. Treat any 2xx as sent; do not stop on failure.
+5) Run Q4 [paste Q4] with teams_sent.
+6) Return this JSON [paste the B2 response from section 5] with the real values."
 
 **B1**
 "Create a scheduled process (daily 09:00 IST) that reads this client list [paste JSON from section 7] and for each
