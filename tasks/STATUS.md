@@ -11,7 +11,7 @@ Update your row when you start (`in_progress`) and finish (`done`). Keep notes t
 | T04 | Provider-agnostic LLM client | Dev B | Sonnet 5.5 | medium | 1 | T00 | done | llm.complete_json: anthropic+openai(+Azure) via httpx, mock canned JSON for 4 prompts, 1 retry on invalid JSON, 429/5xx backoff x3, concurrency 4, token+latency logs; N1,E9,O2 tested; 201 pass (3.13); live key test pending kickoff |
 | T05 | Vulnerable symbol extraction (AI) | Dev B | Sonnet 5.5 | medium | 2 | T04 | done | symbols.extract: seed map (pyyaml, jinja2, requests, urllib3, werkzeug, flask, lodash per-CVE) is source of truth in mock; live = LLM + seed fallback; memory+SQLite cache; S7,E10,L2,L3 tested; 225 pass (3.13) |
 | T06 | Reachability analyzer (AST + AI) | Dev B | Opus 5.5 | high | 2 | T04, T05 | done | Python AST (alias map, attr chains, getattr, instances, transitive in_route via call graph, add_url_rule) + generic regex for npm/Maven/Go/Rust/PHP/NuGet/Ruby; AST safe patterns (SafeLoader, fixed jinja2 template) skip LLM; S5,S7,E10,L3,L9,L11 tested; 263 pass (3.13); demo-target <0.2 s |
-| T07 | Risk scorer | Dev B | Haiku 5.5 | low | 2 | T00 | todo | |
+| T07 | Risk scorer | Dev B | Haiku 5.5 | low | 2 | T00 | done | risk.score per ARCHITECTURE formula (round 1 dp, cvss 0-10 ValueError); table tests for boundaries, KEV, EPSS, not_reachable+KEV; stub tests updated; 287 pass (3.13) |
 | T08 | Fix engine (upgrade, test, AI patch loop) | Dev C | Opus 5.5 | high | 2 | T04 | todo | |
 | T09 | GitHub pull request creator | Dev C | Sonnet 5.5 | medium | 3 | T08 | todo | |
 | T10 | Boomi client (mock + live) | Dev C | Sonnet 5.5 | medium | 1 | T00 (T01 for event logging) | todo | |

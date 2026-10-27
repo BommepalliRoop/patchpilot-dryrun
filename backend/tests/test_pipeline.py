@@ -20,7 +20,7 @@ from app.core.events import bus
 from app.models import repository as repo
 from app.models.domain import B2Response, B3Response, FixResult, RawVuln, Verdict, VulnSymbols
 from app.models.schemas import Evidence
-from app.services import boomi_client, cloner, fixer, github_pr, reachability, risk, scanner, symbols
+from app.services import boomi_client, cloner, fixer, github_pr, reachability, scanner, symbols
 from app.services.cloner import CloneError
 
 URL = "https://github.com/BommepalliRoop/demo-target"
@@ -71,7 +71,6 @@ class Fakes:
         monkeypatch.setattr(scanner, "scan", self.scan)
         for name, module, attr, fn in (("symbols", symbols, "extract", self.extract),
                                        ("reachability", reachability, "analyze", self.analyze),
-                                       ("risk", risk, "score", self.score),
                                        ("fix", fixer, "fix_package", self.fix_package),
                                        ("pr", github_pr, "open_pr", self.open_pr),
                                        ("notify", boomi_client, "notify_finding", self.notify),
@@ -104,9 +103,6 @@ class Fakes:
             return Verdict(reachable=reach, confidence=conf, evidence=ev, explanation=f"{reach} because test")
         finally:
             self.reach_active -= 1
-
-    def score(self, cvss, reach, evidence, kev, epss_percentile):  # noqa: ANN001, ANN201
-        return pipeline._stub_score(cvss, reach, evidence, kev, epss_percentile)
 
     async def fix_package(self, scan_id: str, repo_path: Path, package: str, vulns: list[RawVuln]) -> FixResult:
         self.fix_calls.append((package, sorted(v.cve_id for v in vulns)))
@@ -250,7 +246,7 @@ def test_needs_human_and_fixed_untested_map_to_b2(client, fakes):
 
 def test_pipeline_completes_with_every_other_stage_stubbed(client, monkeypatch, caplog):
     """Modules of lanes not merged yet raise NotImplementedError -> clearly logged stub results."""
-    f = Fakes(monkeypatch, stubs=("symbols", "reachability", "risk", "fix", "pr", "notify", "summary"))
+    f = Fakes(monkeypatch, stubs=("symbols", "reachability", "fix", "pr", "notify", "summary"))
     with caplog.at_level(logging.WARNING, logger="patchpilot.pipeline"):
         scan_id = _start(client)
     events = _events(client, scan_id)
@@ -258,7 +254,7 @@ def test_pipeline_completes_with_every_other_stage_stubbed(client, monkeypatch, 
     assert [s for s in STAGES if s in {e["stage"] for e in events}] == STAGES
     stub_lines = [r.getMessage() for r in caplog.records if "STUB" in r.getMessage()]
     assert not any("stage reachability" in m for m in stub_lines)  # symbols (T05) and reachability (T06) are real now
-    assert len([m for m in stub_lines if "stage risk" in m]) == 1  # once per run, not per finding
+    assert not any("stage risk" in m for m in stub_lines)  # risk (T07) is real now
     scan = repo.get_scan(scan_id)
     # the fake clone has no source code, so the real analyzer finds nothing imported
     assert scan.status == "completed" and scan.stats.total_alerts == 4 and scan.stats.not_reachable == 4
