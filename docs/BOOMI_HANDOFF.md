@@ -141,6 +141,9 @@ PatchPilot sends one call per reachable finding (usually 1–3 per scan). We ret
   "cvss": 9.8,
   "priority": "P1",
   "score": 10.0,
+  "kev": false,
+  "epss": 0.0598,
+  "epss_percentile": 0.9326,
   "reachability": "reachable",
   "confidence": 0.93,
   "summary": "Arbitrary code execution via full_load / FullLoader",
@@ -155,7 +158,9 @@ PatchPilot sends one call per reachable finding (usually 1–3 per scan). We ret
 ```
 Field notes: `event` finding.fixed / finding.needs_human / finding.open · `priority` P1–P4 ·
 `reachability` reachable / unsure · `fix_status` fixed / needs_human / not_attempted ·
-`pr_url` empty unless `fix_status` = `fixed` · `owner_email` may be empty · `evidence` has 1+ items.
+`pr_url` empty unless `fix_status` = `fixed` · `owner_email` may be empty · `evidence` has 1+ items ·
+`kev` true = CVE is on the CISA "actively exploited" list · `epss` = chance of exploitation in 30 days (0–1),
+`epss_percentile` (0–1); both may be `null`.
 Several findings in the same package share one `pr_url` (one PR per package) — still create one Jira issue per finding.
 
 **Process steps**
@@ -177,7 +182,8 @@ Several findings in the same package share one `pr_url` (one PR per package) —
 | Summary | `[{priority}] {cve_id} in {package} — {client_name}` |
 | Priority | P1→Highest, P2→High, P3→Medium, P4→Low |
 | Description | summary, ai_explanation, evidence `file:line` (+ "in web route" if `in_route`), `installed_version → fixed_version`, fix_status, tests_passed, pr_url |
-| Labels | `patchpilot`, `security`, client name slug (e.g. `acme-retail`) |
+| Labels | `patchpilot`, `security`, client name slug (e.g. `acme-retail`), plus `actively-exploited` when `kev` is true |
+| Description (extra line) | `Exploit data: CISA KEV = yes/no · EPSS {epss×100}% (top {(1−epss_percentile)×100}%)`; write `n/a` when null |
 
 Tip: Jira Cloud REST **v3** needs the description in Atlassian Document Format. If you use the HTTP Client,
 call `/rest/api/2/issue`, which accepts a plain-text description.
@@ -201,7 +207,8 @@ that accepts an Adaptive Card wrapped like this:
 ```
 **B2 card:** title `{priority} vulnerability fixed automatically` (or `{priority} vulnerability needs review`
 when `fix_status` = `needs_human`) · facts: client, repo, CVE, package `installed → fixed`, why it is reachable
-(`ai_explanation`), evidence `file:line` · buttons: "Open pull request" (`pr_url`), "Open Jira" (`jira_url`).
+(`ai_explanation`), evidence `file:line`, exploit data ("🔥 Actively exploited (CISA KEV)" when `kev`;
+"EPSS 6% · top 7%" from `epss`/`epss_percentile`, hidden when null) · buttons: "Open pull request" (`pr_url`), "Open Jira" (`jira_url`).
 
 **B3 card:** title `PatchPilot daily scan — {client_name}` · facts: total alerts, real risks (reachable),
 P1, P2, fixed, PRs opened · button: "Open dashboard" (`dashboard_url`).
@@ -315,7 +322,7 @@ compliance log with columns: [paste section 4 table]. Show me where to find the 
 Read the Idempotency-Key header: if the compliance log already has a row with that finding_id, return the stored
 jira_key, jira_url and compliance_log_id without creating anything.
 Add a Decision on priority: P1 or P2 go to an urgent branch. Create a Jira issue using this mapping
-[paste Jira mapping table]. Post an Adaptive Card to the Teams webhook with the CVE, package, explanation and
+[paste Jira mapping table] (add label actively-exploited when kev is true). Post an Adaptive Card to the Teams webhook with the CVE, package, explanation and
 links to pr_url and the new Jira issue. Insert a row into the compliance log. Return this JSON
 [paste the B2 response from section 5]. If Teams fails, still return 200 with teams_sent false. If Jira fails,
 return 502 with {ok:false, error:'jira_create_failed', message}."

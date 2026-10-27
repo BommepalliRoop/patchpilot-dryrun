@@ -15,6 +15,7 @@ The pages judges will stare at.
 
 ## Scope
 - Overview per UI_SPEC: hero stats, Noise funnel animation driven by stats, recent scans table, Run scan modal (POST /api/scans).
+- Findings table shows a small flame icon for `kev` findings and EPSS percentile on hover.
 - Scan live view: subscribe to SSE (`EventSource`), animate PipelineStepper, terminal-style log stream, findings table with filters and staggered rows.
 - Mock mode replays a scripted SSE sequence from fixtures so it works without the backend.
 

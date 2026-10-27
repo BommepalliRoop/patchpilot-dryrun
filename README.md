@@ -10,10 +10,10 @@ EasyStepIn AI Hackathon 2026 · Team PatchPilot
 IT service companies maintain many client codebases. Dependency scanners report hundreds of CVEs, mostly in library
 code the application never calls, so the dangerous ones stay open for weeks. PatchPilot, for every client repo:
 
-1. Scans dependencies (OSV-Scanner).
+1. Scans dependencies (OSV-Scanner) and tags each CVE with real-world exploit data (CISA KEV, EPSS).
 2. AI extracts the vulnerable functions from each advisory.
 3. Python AST + AI prove whether our code actually calls them (file:line evidence, inside a web route or not).
-4. Scores real risk: CVSS × reachability × exposure → P1–P4.
+4. Scores real risk: CVSS × reachability × exposure × exploit data → P1–P4.
 5. Upgrades the library, runs the tests, lets AI patch broken code (max 2 retries).
 6. Opens a GitHub pull request with the explanation.
 7. Boomi creates the Jira ticket, posts the Teams alert and writes the compliance log.
@@ -63,6 +63,7 @@ Full details with reasons: [docs/TECH_STACK.md](docs/TECH_STACK.md).
 | HTTP client | httpx |
 | Git / GitHub | GitPython · PyGithub |
 | Vulnerability data | OSV-Scanner CLI (fallback: OSV.dev API) |
+| Exploit data | CISA KEV feed + FIRST EPSS API |
 | CVSS score | `cvss` |
 | Versions / names | `packaging` |
 | Code analysis | Python `ast` |

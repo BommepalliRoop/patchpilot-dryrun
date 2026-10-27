@@ -35,6 +35,7 @@ flowchart LR
     subgraph External
         GH[(GitHub<br/>client repos)]
         OSV[OSV-Scanner / OSV.dev]
+        TI[CISA KEV feed<br/>FIRST EPSS API]
         LLM[LLM provider<br/>keys at kickoff]
     end
 
@@ -53,6 +54,7 @@ flowchart LR
     PIPE <--> DB
     PIPE -- clone / push branch / open PR --> GH
     PIPE -- vulnerable deps --> OSV
+    PIPE -- exploit data --> TI
     PIPE -- JSON prompts --> LLM
     API -- "SSE progress" --> UI
     PIPE -- "POST /patchpilot/findings" --> B2
@@ -69,7 +71,7 @@ flowchart LR
 Only `reachable` findings, and `unsure` with confidence ≥ 0.5, go on to fix / PR / notify automatically.
 ```mermaid
 flowchart TD
-    A[clone<br/>cloner.py] --> B[scan<br/>scanner.py · OSV]
+    A[clone<br/>cloner.py] --> B[scan + threat intel<br/>scanner.py · OSV<br/>threat_intel.py · KEV, EPSS]
     B --> C[symbols<br/>symbols.py · LLM]
     C --> D[reachability<br/>reachability.py · AST + LLM]
     D --> E[risk<br/>risk.py]
@@ -135,6 +137,7 @@ sequenceDiagram
     Pipe->>Bus: {stage: clone, status: done}
     Pipe->>Svc: scanner.scan(path)
     Svc-->>Pipe: list[RawVuln]
+    Pipe->>Svc: threat_intel.enrich(vulns) · CISA KEV + EPSS
     Pipe->>Bus: {stage: scan, progress}
 
     loop each RawVuln
@@ -196,6 +199,7 @@ flowchart TB
     subgraph services[app/services]
         cloner
         scanner
+        threat_intel
         symbols
         reachability
         risk
@@ -239,7 +243,8 @@ flowchart TD
     V --> O[Verdict: reachable / unsure / not_reachable<br/>+ confidence + explanation]
 ```
 
-Risk: `score = min(10, cvss × reach_w × exposure_w)`; reach_w 1.0 / 0.6 / 0.3; exposure_w 1.5 if any `in_route`.
+Risk: `score = min(10, cvss × reach_w × exposure_w × threat_w)`; reach_w 1.0 / 0.6 / 0.3; exposure_w 1.5 if any `in_route`;
+threat_w 1.3 if in CISA KEV, 1.1 if EPSS percentile ≥ 0.9.
 Priority ≥9 P1, ≥7 P2, ≥4 P3, else P4.
 
 ## 7. LLD — fix engine state machine
@@ -292,6 +297,10 @@ erDiagram
         string fixed_version
         string summary
         float cvss
+        bool kev
+        date kev_date_added
+        float epss
+        float epss_percentile
         json vulnerable_symbols_json
         string reachability
         float confidence

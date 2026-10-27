@@ -19,6 +19,7 @@ Legend: 🔒 = secret (only in `.env` / host settings) · 📄 = safe to write h
 | `DEMO_REPO_URL` | 📄 | `https://github.com/BommepalliRoop/demo-target` | Lead / Dev E | Create empty repo tonight; T15 fills it | T02, T15, T17 | |
 | `ALLOWED_REPO_PREFIXES` | 📄 | `https://github.com/BommepalliRoop/` (comma-separated) | Us | Only these repos may be scanned (the engine runs their tests) | T03 | |
 | `WORK_DIR` | 📄 | blank = `<system temp>/patchpilot` | Us | Override only if temp space is small | T02, T08 | |
+| `THREAT_INTEL` | 📄 | `live` / `mock` / `off` (default `live`) | Us | CISA KEV + FIRST EPSS enrichment; no key needed (public feeds) | T02 | `live` |
 | `DEMO_MODE` | 📄 | `true` on demo day, else `false` | Us | Enables `/api/demo/reset` (still needs the API key) | T01, T17 | |
 | `SCAN_TIMEOUT_S` | 📄 | `600` | Us | Whole-scan timeout | T03 | |
 | `MAX_SCANS_PER_HOUR` | 📄 | `20` | Us | Abuse / credit protection | T03 | |
@@ -71,7 +72,7 @@ credentials. The Boomi team keeps them in Boomi connections. See `docs/BOOMI_HAN
 | Dev → Boomi | Client list for B1: `client_name`, `repo_url` (= `DEMO_REPO_URL`), `branch`, `auto_fix` | tonight |
 
 ## 6. Switching from mock to live (on the day)
-1. All `*_MODE=mock` → everything works end to end with fixtures.
+1. All `*_MODE=mock` (and `THREAT_INTEL=mock` if offline) → everything works end to end with fixtures.
 2. `LLM_MODE=live` after T04 passes with the kickoff key.
 3. `GITHUB_MODE=live` after T09 opens a real PR on demo-target.
 4. `BOOMI_MODE=live` after `python -m app.services.boomi_client ping` returns `ok: true` (T10).

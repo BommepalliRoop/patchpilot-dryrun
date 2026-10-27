@@ -24,7 +24,7 @@ Each stage emits an SSE event `{scan_id, stage, status, message, progress, data}
 | # | Stage | Module | Input → Output |
 |---|---|---|---|
 | 1 | clone | services/cloner.py | repo_url, branch → local path `/tmp/patchpilot/<scan_id>/repo` |
-| 2 | scan | services/scanner.py | path → list[RawVuln] (osv-scanner `--format json`) |
+| 2 | scan | services/scanner.py + services/threat_intel.py | path → list[RawVuln] (osv-scanner `--format json`), each enriched with `kev`, `kev_date_added`, `epss`, `epss_percentile` |
 | 3 | symbols | services/symbols.py | RawVuln advisory text → VulnSymbols {package, symbols[]} (LLM) |
 | 4 | reachability | services/reachability.py | repo path + symbols → Verdict {reachable, confidence, evidence[]} |
 | 5 | risk | services/risk.py | cvss, verdict, exposure → score 0–10, priority P1–P4 |
@@ -39,6 +39,15 @@ but still notifies Boomi (`event: finding.open`, `fix_status: not_attempted`).
 once per package: bump to the smallest version that fixes *all* its routed CVEs, one branch, one PR listing every
 CVE. Stage 8 still sends one B2 call per finding; findings of the same package share the `pr_url`.
 
+## Threat intelligence (services/threat_intel.py)
+- CISA KEV: one JSON file `https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json` (~1.8 MB, ~1,800 CVEs).
+  Download once per day, cache on disk under `WORK_DIR/cache/kev.json`; look up by `cveID`.
+- FIRST EPSS: `https://api.first.org/data/v1/epss?cve=<id1>,<id2>,...` — batch up to 100 CVE ids per call; cache per CVE for 24 h.
+- Timeout 10 s each, no retry storm (one retry). Feed down → `kev=false`, `epss=null`, timeline note
+  "threat feed unavailable"; the scan never fails because of these feeds.
+- Mock/offline: fixtures `backend/tests/fixtures/kev_sample.json`, `epss_sample.json` when `THREAT_INTEL=mock`.
+- Checked Oct 27: none of the demo CVEs is in KEV; PyYAML CVE-2020-14343 EPSS 0.06 = top 7% (percentile 0.93).
+
 ## Reachability algorithm
 1. Walk all `.py` files (skip venv, tests, migrations) with `ast`.
 2. Build an import alias map: `import yaml as y` → `y` means `yaml`; `from yaml import load` → `load` means `yaml.load`.
@@ -49,8 +58,10 @@ CVE. Stage 8 still sends one B2 call per finding; findings of the same package s
 6. No matches → `not_reachable` without an LLM call (fast, cheap).
 
 ## Risk score
-`score = min(10, cvss × reach_w × exposure_w)`; reach_w: reachable 1.0, unsure 0.6, not_reachable 0.3;
-exposure_w: 1.5 if any evidence `in_route` else 1.0.
+`score = min(10, cvss × reach_w × exposure_w × threat_w)`; reach_w: reachable 1.0, unsure 0.6, not_reachable 0.3;
+exposure_w: 1.5 if any evidence `in_route` else 1.0;
+threat_w: 1.3 if `kev` (actively exploited), else 1.1 if `epss_percentile` ≥ 0.9, else 1.0.
+A `not_reachable` finding stays below P1 even when in KEV (max score 10 × 0.3 × 1.3 = 3.9 → P4) — reachability decides.
 Priority: ≥9 P1, ≥7 P2, ≥4 P3, else P4.
 
 ## Fix engine
@@ -66,7 +77,8 @@ Priority: ≥9 P1, ≥7 P2, ≥4 P3, else P4.
 ## Data model (SQLite via SQLModel)
 - scans: id, client_name, repo_url, branch, auto_fix, owner_email, status, current_stage, started_at, finished_at,
   total_alerts, reachable_count, p1_count (the other `stats` fields are computed from findings)
-- findings: id, scan_id, cve_id, aliases_json, package, installed_version, fixed_version, summary, cvss, vulnerable_symbols_json,
+- findings: id, scan_id, cve_id, aliases_json, package, installed_version, fixed_version, summary, cvss, kev, kev_date_added,
+  epss, epss_percentile, vulnerable_symbols_json,
   reachability, confidence, evidence_json, ai_explanation, score, priority, status, fix_id, jira_key, jira_url, teams_sent,
   compliance_log_id, timeline_json
 - fixes: id, scan_id, package, new_version, patch_diff, tests_passed, attempts, pr_url, status

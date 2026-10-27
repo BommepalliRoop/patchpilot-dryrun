@@ -14,10 +14,10 @@
 Pure function scoring.
 
 ## Scope
-- `risk.score(cvss, reachability, evidence) -> (score, priority)` exactly per docs/ARCHITECTURE.md.
+- `risk.score(cvss, reachability, evidence, kev, epss_percentile) -> (score, priority)` exactly per docs/ARCHITECTURE.md (includes `threat_w`).
 
 ## Acceptance criteria
-- Table-driven tests for every priority boundary.
+- Table-driven tests for every priority boundary, plus KEV boost, EPSS ≥ 0.9 boost, `epss_percentile=None`, and not_reachable + KEV stays P4.
 
 ## Hardening (docs/RISKS.md)
 Implement and test these rows: — (pure function; still reject cvss outside 0–10 with ValueError).

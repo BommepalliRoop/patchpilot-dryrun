@@ -14,7 +14,8 @@
 Show the proof and the fix.
 
 ## Scope
-- Header with CVE, package, score ring (animated), priority badge.
+- Header with CVE, package, score ring (animated), priority badge, threat chips: red "Actively exploited (CISA KEV)" when `kev`,
+  and "EPSS 6% · top 7%" from `epss` / `epss_percentile` (hide when null).
 - Evidence CodeViewer with highlighted line and in-route tag; AI explanation card.
 - Fix card: DiffViewer, tests passed, attempts, Open PR button; Integration card: Jira link, Teams sent, compliance id; vertical Timeline.
 - Re-run fix button (POST /api/findings/{id}/fix).

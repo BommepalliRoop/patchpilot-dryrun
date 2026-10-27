@@ -48,7 +48,8 @@ components (shadcn/ui, Magic UI / Aceternity UI, Tremor) to save time — see do
 ## Scope lock (Oct 27)
 - Vulnerability source: **OSV only** (OSV-Scanner, fallback OSV.dev API). No extra scanners for the event —
   the 3-hour sprint has no slack, and our edge is reachability + tested fix, not the number of scanners.
+- **Added (Oct 27): CISA KEV + EPSS enrichment** — two free public feeds, ~25 min of build spread over T02/T07/T12/T13,
+  no new scanner. Adds "actively exploited" to the risk score and the UI/Jira/Teams.
 - Roadmap (pitch slide only, not built at the event):
-  1. CISA KEV + EPSS enrichment ("actively exploited in the wild" boost in the risk score).
-  2. AI-written security proof test in each PR (fails before the fix, passes after).
-  3. Secret scanning (gitleaks), code scanning (Bandit/Semgrep), container scanning, more languages, license checks.
+  1. AI-written security proof test in each PR (fails before the fix, passes after).
+  2. Secret scanning (gitleaks), code scanning (Bandit/Semgrep), container scanning, more languages, license checks.

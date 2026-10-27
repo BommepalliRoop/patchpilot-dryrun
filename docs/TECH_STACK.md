@@ -13,6 +13,7 @@ One page for "what do we use, where, and why". Exact library versions are pinned
 | HTTP client | httpx | Async, timeouts and retries for OSV, Boomi and LLM calls |
 | Git | GitPython (clone, branch, commit) + PyGithub (pull requests) | Mature, simple APIs |
 | Vulnerability data | OSV-Scanner CLI (`--format json`); fallback OSV.dev `querybatch` API | Free, open, covers PyPI with fixed-version ranges |
+| Exploit data | CISA KEV JSON feed + FIRST EPSS API (`services/threat_intel.py`) | Free, no key; tells which CVEs attackers actually use — boosts real risk |
 | Code analysis | Python `ast` (import alias map + call resolution) | Deterministic, fast; AI only judges the matches |
 | Tests | pytest (our code and the scanned repo's tests inside a temp venv) | Standard; fixer uses it to prove the upgrade is safe |
 | AI | Provider-agnostic client `app/services/llm.py` (`LLM_PROVIDER=anthropic|openai`) | Keys and provider are only known at kickoff |

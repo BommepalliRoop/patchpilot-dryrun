@@ -11,12 +11,19 @@
   "cvss": 9.8,
   "priority": "P1",
   "score": 10.0,
+  "kev": false,
+  "epss": 0.0598,
+  "epss_percentile": 0.9326,
   "reachability": "reachable",
   "confidence": 0.93,
   "summary": "Arbitrary code execution via full_load / FullLoader",
   "ai_explanation": "User-supplied YAML from POST /import reaches yaml.load without SafeLoader.",
   "evidence": [
-    { "file": "app/routes.py", "line": 42, "in_route": true }
+    {
+      "file": "app/routes.py",
+      "line": 42,
+      "in_route": true
+    }
   ],
   "fix_status": "fixed",
   "tests_passed": true,

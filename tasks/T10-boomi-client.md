@@ -15,7 +15,7 @@ Call Boomi processes B2/B3/B4 exactly per contract.
 
 ## Scope
 - `boomi_client.notify_finding(payload) -> B2Response`, `send_scan_summary(payload)`, `get_compliance(client, from)`.
-- Builds payloads from DB objects to match `contracts/boomi/*.json` exactly; Basic auth; paths from BOOMI_B2_PATH / BOOMI_B3_PATH / BOOMI_B4_PATH (default to the contract paths); 15 s timeout; retry once on 5xx; logs every call to integration_events.
+- Builds payloads from DB objects to match `contracts/boomi/*.json` exactly (B2 includes `kev`, `epss`, `epss_percentile`); Basic auth; paths from BOOMI_B2_PATH / BOOMI_B3_PATH / BOOMI_B4_PATH (default to the contract paths); 15 s timeout; retry once on 5xx; logs every call to integration_events.
 - `BOOMI_MODE=mock`: returns contract example responses with generated jira keys (`SEC-1xx`).
 - Tiny CLI: `python -m app.services.boomi_client ping` sends the sample B2 request to the live URL (for the Boomi team to test).
 

@@ -43,6 +43,7 @@ of that code to an LLM. Most risks come from that.
 | N8 | Page opened after the scan started, or reconnect after a drop → missed events | Event bus keeps a per-scan replay buffer (last 200 events); new subscribers get the replay first. Frontend also fetches `GET /api/scans/{id}` on (re)connect and on `done` | T03, T12 |
 | N9 | Boomi B1 retries create duplicate scans | Same as S9: a running scan for the same repo+branch is returned instead of starting another | T03 |
 | N10 | Free-tier host sleeps / cold start during the demo | See T16 (Railway or paid instance, warm-up call before the demo) | T16 |
+| N12 | CISA KEV / FIRST EPSS feed slow or down | 10 s timeout, one retry, daily cache for KEV and 24 h cache for EPSS; failure → `kev=false`, `epss=null` + timeline note; never fails the scan | T02 |
 | N11 | GitHub API errors (branch exists, PR exists, 422) | Branch name includes the version; if the branch or PR already exists, reuse/update it and return the existing PR URL | T09 |
 
 ## 3. Error handling and exceptions

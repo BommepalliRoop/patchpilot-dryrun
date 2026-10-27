@@ -14,7 +14,7 @@ Runs daily (Boomi scheduler) or on demand:
 1. Scan dependencies with OSV-Scanner.
 2. AI extracts the vulnerable functions from each advisory.
 3. AST + AI check whether our code actually calls them (file and line as evidence).
-4. Risk score = CVSS × reachability × exposure → P1–P4.
+4. Risk score = CVSS × reachability × exposure × exploit data (CISA KEV, EPSS) → P1–P4.
 5. Upgrade to the nearest safe version, run tests, AI patches broken code (max 2 retries).
 6. Open a GitHub PR with a full explanation.
 7. Boomi: Jira ticket, Teams alert, compliance log per client.

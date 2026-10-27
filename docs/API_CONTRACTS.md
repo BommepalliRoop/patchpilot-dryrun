@@ -57,14 +57,20 @@ Response 200: `[FindingSummary]`
 ```json
 [{ "finding_id": "fnd_07", "cve_id": "CVE-2020-14343", "package": "pyyaml", "installed_version": "5.3.1",
    "fixed_version": "5.4", "cvss": 9.8, "reachability": "reachable", "confidence": 0.93,
-   "score": 10.0, "priority": "P1", "status": "fixed" }]
+   "score": 10.0, "priority": "P1", "status": "fixed",
+   "kev": false, "epss": 0.0598, "epss_percentile": 0.9326 }]
 ```
+
+Threat fields: `kev` = CVE is on the CISA Known Exploited Vulnerabilities list (actively exploited);
+`epss` = FIRST EPSS probability of exploitation in the next 30 days (0–1); `epss_percentile` (0–1).
+`epss`/`epss_percentile` are `null` and `kev` is `false` when the feeds are unavailable or have no data.
 
 ### GET /api/findings/{finding_id}
 Response 200 — FindingDetail = FindingSummary +
 ```json
 {
   "summary": "Arbitrary code execution via full_load / FullLoader",
+  "kev_date_added": null,
   "vulnerable_symbols": ["yaml.load", "yaml.full_load"],
   "evidence": [{ "file": "app/routes.py", "line": 42, "in_route": true,
                  "code_snippet": "...", "start_line": 27 }],

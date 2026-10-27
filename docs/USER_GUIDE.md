@@ -48,7 +48,7 @@ a Jira issue per real finding, a Teams alert, and a compliance log row for audit
 | # | Stage | What you see |
 |---|---|---|
 | 1 | clone | Repo downloaded to a temp folder |
-| 2 | scan | Total alerts found by OSV (e.g. ~30 on the demo repo) |
+| 2 | scan | Total alerts found by OSV (e.g. ~30 on the demo repo), each tagged with CISA KEV + EPSS exploit data |
 | 3 | symbols | AI names the dangerous function for each alert (e.g. `yaml.load`) |
 | 4 | reachability | Each alert marked reachable / unsure / not reachable, with file:line evidence |
 | 5 | risk | Score 0–10 and priority P1–P4 |
@@ -64,6 +64,7 @@ Use the T15 demo repo. Run each check and tick it.
 - [ ] Run scan → all 8 stages light up in order; log stream moves; ends with `done`.
 - [ ] Findings table: ~30 alerts; filter "reachable" leaves only pyyaml (+ requests) findings.
 - [ ] PyYAML finding: P1, evidence `app/routes.py:<line>` highlighted, "in route" tag, AI explanation.
+- [ ] Threat chips: "EPSS … top 7%" on PyYAML; no KEV chip (not on the KEV list); `THREAT_INTEL=off` hides chips, scan still works.
 - [ ] Fix card: version `5.3.1 → 6.0.x`, attempts shown, tests passed, fake PR link.
 - [ ] Integration card: fake Jira key (`SEC-1xx`), Teams sent, compliance id.
 - [ ] Integrations page: B2/B3 events appear in the activity feed.
