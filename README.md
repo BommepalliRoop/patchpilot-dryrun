@@ -4,7 +4,32 @@ EasyStepIn AI Hackathon 2026 · Team PatchPilot
 
 > 300 alerts become the 3 that matter — each with a tested fix, a Jira ticket and an audit trail. Automatically, every day.
 
-**Status:** planning complete — no application code yet. All code is written during the event (Oct 28, 9:20–12:20).
+## Project status (Oct 28)
+This repository is the **practice-run copy** (`patchpilot-dryrun`): the plan plus the code built during the rehearsal.
+The real event repo (`BommepalliRoop/patchpilot`) holds only the plan; its code is written during the event (Oct 28, 9:20–12:20).
+
+| Area | Tasks | State |
+|---|---|---|
+| Backend (FastAPI, Python) | T00–T10: scaffold, data layer, cloner + OSV scanner, pipeline + SSE, LLM client, symbols, reachability, risk, fixer, GitHub PR, Boomi client | ✅ done · 375 tests pass (mock mode) |
+| Frontend (React + Vite) | T11–T14: design system, overview + live scan, finding page, integrations + compliance | ✅ done · 43 tests pass |
+| Demo target repo | T15: `github.com/BommepalliRoop/demo-target` (Python + Node, ~35 alerts) | ✅ done |
+| Deployment | T16: Dockerfile, Railway / Render / Vercel configs ([DEPLOY](docs/DEPLOY.md)) | ✅ done (not deployed yet) |
+| End-to-end + live modes | T17: LLM → GitHub → Boomi switched to live, demo seed, two full runs | ⏳ next |
+| Polish + rehearsal | T18 | ⏳ after T17 |
+| Boomi (B0–B4) | Setup, finding notification (Jira + Slack + compliance log), daily trigger, summary, compliance report | ⏳ in progress: account, runtime, plugin and compliance table ready; processes not built ([boomi/](boomi/README.md)) |
+
+Everything runs in **mock mode** by default (`LLM_MODE`, `BOOMI_MODE`, `GITHUB_MODE`); no real keys have been exercised yet.
+Per-task detail: [tasks/STATUS.md](tasks/STATUS.md).
+
+## Quick start (local)
+```bash
+cp .env.example .env                 # then fill in values; .env is gitignored, never commit it
+cd backend && pip install -r requirements.txt && uvicorn app.main:app --reload --port 8000
+cd frontend && npm install && npm run dev        # http://localhost:5173 (VITE_USE_MOCK=true works without the backend)
+cd backend && pytest -q                          # backend tests
+cd frontend && npx vitest run                    # frontend tests
+```
+Windows without `make`: `powershell -File scripts/dev.ps1` starts both apps. Python 3.11 is the target; the practice run used 3.13.
 
 ## What it does
 IT service companies maintain many client codebases. Dependency scanners report hundreds of CVEs, mostly in library
@@ -115,7 +140,8 @@ effort per task in [tasks/BOARD.md](tasks/BOARD.md).
 | Practice run | [Dry run](docs/DRY_RUN.md) |
 | Team briefing, simple (8 steps) | [overview.html](docs/overview.html) — download and open in a browser |
 | Team briefing (visual walkthrough) | [walkthrough.html](docs/walkthrough.html) — download and open in a browser |
-| Presenter | [Demo script](docs/DEMO_SCRIPT.md) |
+| Presenter | [Demo script](docs/DEMO_SCRIPT.md) · [Demo repos](docs/DEMO_REPOS.md) |
+| Deploying | [Deploy](docs/DEPLOY.md) |
 | Using / testing the app | [User guide](docs/USER_GUIDE.md) |
 | UI developers | [UI spec](docs/UI_SPEC.md) |
 
