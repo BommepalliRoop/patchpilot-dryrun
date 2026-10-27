@@ -92,6 +92,10 @@ SIGNATURES = {
 }
 
 
+# Modules whose task has landed: signatures stay frozen, but they no longer raise NotImplementedError.
+IMPLEMENTED = {"app.services.cloner", "app.services.ecosystems", "app.services.scanner", "app.services.threat_intel"}
+
+
 @pytest.mark.parametrize("module_name", SIGNATURES)
 async def test_service_stubs_have_signatures_and_raise_not_implemented(module_name):
     module = importlib.import_module(module_name)
@@ -99,6 +103,8 @@ async def test_service_stubs_have_signatures_and_raise_not_implemented(module_na
         func = getattr(module, func_name)
         assert list(inspect.signature(func).parameters) == params
         assert func.__doc__, f"{module_name}.{func_name} needs a docstring"
+        if module_name in IMPLEMENTED:
+            continue
         args = [None] * len(params)
         with pytest.raises(NotImplementedError):
             result = func(*args)

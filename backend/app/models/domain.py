@@ -32,6 +32,7 @@ class RawVuln(BaseModel):
     kev_date_added: str | None = None
     epss: float | None = None
     epss_percentile: float | None = None
+    threat_feed_unavailable: bool = False  # set by threat_intel when a feed was down (pipeline adds a timeline note)
 
 
 class VulnSymbols(BaseModel):

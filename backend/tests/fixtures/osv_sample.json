@@ -1,0 +1,2870 @@
+{
+ "results": [
+  {
+   "source": {
+    "path": "/work/repo/requirements.txt",
+    "type": "lockfile"
+   },
+   "packages": [
+    {
+     "package": {
+      "name": "PyYAML",
+      "version": "5.3.1",
+      "ecosystem": "PyPI"
+     },
+     "vulnerabilities": [
+      {
+       "id": "GHSA-8q59-q68h-6hv4",
+       "summary": "Improper Input Validation in PyYAML",
+       "details": "A vulnerability was discovered in the PyYAML library in versions before 5.4, where it is susceptible to arbitrary code execution when it processes untrusted YAML files through the full_load method or with the FullLoader loader. Applications that use the library to process untrusted input may be vulnerable to this flaw. This flaw allows an attacker to execute arbitrary code on the system by abusing the python/object/new constructor. This flaw is due to an incomplete fix for CVE-2020-1747.",
+       "aliases": [
+        "CVE-2020-14343",
+        "PYSEC-2021-142"
+       ],
+       "modified": "2026-02-04T03:33:10.792778Z",
+       "published": "2021-03-25T21:26:26Z",
+       "related": [
+        "CVE-2026-24009"
+       ],
+       "database_specific": {
+        "github_reviewed_at": "2021-03-25T21:15:23Z",
+        "nvd_published_at": "2021-02-09T21:15:00Z",
+        "cwe_ids": [
+         "CWE-20"
+        ],
+        "severity": "CRITICAL",
+        "github_reviewed": true
+       },
+       "references": [
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-14343"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/SeldonIO/seldon-core/issues/2252"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/yaml/pyyaml/issues/420"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/yaml/pyyaml/issues/420#issuecomment-663673966"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/yaml/pyyaml/commit/a001f2782501ad2d24986959f0239a354675f9dc"
+        },
+        {
+         "type": "WEB",
+         "url": "https://bugzilla.redhat.com/show_bug.cgi?id=1860466"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://github.com/advisories/GHSA-8q59-q68h-6hv4"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/pypa/advisory-database/tree/main/vulns/pyyaml/PYSEC-2021-142.yaml"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/yaml/pyyaml"
+        },
+        {
+         "type": "WEB",
+         "url": "https://pypi.org/project/PyYAML"
+        },
+        {
+         "type": "WEB",
+         "url": "https://www.oracle.com/security-alerts/cpuapr2022.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://www.oracle.com/security-alerts/cpujul2022.html"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "pyyaml",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/pyyaml"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "5.4"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/03/GHSA-8q59-q68h-6hv4/GHSA-8q59-q68h-6hv4.json"
+         }
+        }
+       ],
+       "schema_version": "1.9.0",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        },
+        {
+         "type": "CVSS_V4",
+         "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N"
+        }
+       ]
+      },
+      {
+       "id": "PYSEC-2021-142",
+       "details": "A vulnerability was discovered in the PyYAML library in versions before 5.4, where it is susceptible to arbitrary code execution when it processes untrusted YAML files through the full_load method or with the FullLoader loader. Applications that use the library to process untrusted input may be vulnerable to this flaw. This flaw allows an attacker to execute arbitrary code on the system by abusing the python/object/new constructor. This flaw is due to an incomplete fix for CVE-2020-1747.",
+       "aliases": [
+        "CVE-2020-14343",
+        "GHSA-8q59-q68h-6hv4"
+       ],
+       "modified": "2023-11-08T04:02:26.414885Z",
+       "published": "2021-02-09T21:15:00Z",
+       "references": [
+        {
+         "type": "REPORT",
+         "url": "https://bugzilla.redhat.com/show_bug.cgi?id=1860466"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://github.com/advisories/GHSA-8q59-q68h-6hv4"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "pyyaml",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/pyyaml"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "5.4"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/pypa/advisory-database/blob/main/vulns/pyyaml/PYSEC-2021-142.yaml"
+         }
+        }
+       ],
+       "schema_version": "1.7.3"
+      }
+     ],
+     "groups": []
+    },
+    {
+     "package": {
+      "name": "requests",
+      "version": "2.25.1",
+      "ecosystem": "PyPI"
+     },
+     "vulnerabilities": [
+      {
+       "id": "GHSA-9hjg-9r4m-mvj7",
+       "summary": "Requests vulnerable to .netrc credentials leak via malicious URLs",
+       "details": "### Impact\n\nDue to a URL parsing issue, Requests releases prior to 2.32.4 may leak .netrc credentials to third parties for specific maliciously-crafted URLs.\n\n### Workarounds\nFor older versions of Requests, use of the .netrc file can be disabled with `trust_env=False` on your Requests Session ([docs](https://requests.readthedocs.io/en/latest/api/#requests.Session.trust_env)).\n\n### References\nhttps://github.com/psf/requests/pull/6965\nhttps://seclists.org/fulldisclosure/2025/Jun/2",
+       "aliases": [
+        "CVE-2024-47081",
+        "PYSEC-2026-1872"
+       ],
+       "modified": "2026-10-19T20:00:04.716114530Z",
+       "published": "2025-06-09T19:06:08Z",
+       "database_specific": {
+        "github_reviewed_at": "2025-06-09T19:06:08Z",
+        "nvd_published_at": "2025-06-09T18:15:24Z",
+        "cwe_ids": [
+         "CWE-522"
+        ],
+        "severity": "MODERATE",
+        "github_reviewed": true
+       },
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/security/advisories/GHSA-9hjg-9r4m-mvj7"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-47081"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/pull/6965"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/commit/96ba401c1296ab1dda74a2365ef36d88f7d144ef"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://github.com/advisories/GHSA-9hjg-9r4m-mvj7"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/psf/requests"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/releases/tag/v2.32.4"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/pypa/advisory-database/tree/main/vulns/requests/PYSEC-2026-1872.yaml"
+        },
+        {
+         "type": "WEB",
+         "url": "https://pypi.org/project/requests"
+        },
+        {
+         "type": "WEB",
+         "url": "https://requests.readthedocs.io/en/latest/api/#requests.Session.trust_env"
+        },
+        {
+         "type": "WEB",
+         "url": "https://seclists.org/fulldisclosure/2025/Jun/2"
+        },
+        {
+         "type": "WEB",
+         "url": "http://www.openwall.com/lists/oss-security/2025/06/03/11"
+        },
+        {
+         "type": "WEB",
+         "url": "http://www.openwall.com/lists/oss-security/2025/06/03/9"
+        },
+        {
+         "type": "WEB",
+         "url": "http://www.openwall.com/lists/oss-security/2025/06/04/1"
+        },
+        {
+         "type": "WEB",
+         "url": "http://www.openwall.com/lists/oss-security/2025/06/04/6"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "requests",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/requests"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "2.32.4"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2025/06/GHSA-9hjg-9r4m-mvj7/GHSA-9hjg-9r4m-mvj7.json"
+         }
+        }
+       ],
+       "schema_version": "1.9.0",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N"
+        }
+       ]
+      },
+      {
+       "id": "GHSA-9wx4-h78v-vm56",
+       "summary": "Requests `Session` object does not verify requests after making first request with verify=False",
+       "details": "When using a `requests.Session`, if the first request to a given origin is made with `verify=False`, TLS certificate verification may remain disabled for all subsequent requests to that origin, even if `verify=True` is explicitly specified later.\n\nThis occurs because the underlying connection is reused from the session's connection pool, causing the initial TLS verification setting to persist for the lifetime of the pooled connection. As a result, applications may unintentionally send requests without certificate verification, leading to potential man-in-the-middle attacks and compromised confidentiality or integrity.\n\nThis behavior affects versions of `requests` prior to 2.32.0.",
+       "aliases": [
+        "CVE-2024-35195",
+        "PYSEC-2026-1873"
+       ],
+       "modified": "2026-09-10T03:50:13.740879755Z",
+       "published": "2024-05-20T20:15:00Z",
+       "database_specific": {
+        "github_reviewed_at": "2024-05-20T20:15:00Z",
+        "nvd_published_at": "2024-05-20T21:15:09Z",
+        "cwe_ids": [
+         "CWE-670"
+        ],
+        "severity": "MODERATE",
+        "github_reviewed": true
+       },
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/security/advisories/GHSA-9wx4-h78v-vm56"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-35195"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/pull/6655"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/commit/a58d7f2ffb4d00b46dca2d70a3932a0b37e22fac"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/psf/requests"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IYLSNK5TL46Q6XPRVMHVWS63MVJQOK4Q"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/N7WP6EYDSUOCOJYHDK5NX43PYZ4SNHGZ"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "requests",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/requests"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "2.32.0"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2024/05/GHSA-9wx4-h78v-vm56/GHSA-9wx4-h78v-vm56.json"
+         }
+        }
+       ],
+       "schema_version": "1.9.0",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:U/C:H/I:H/A:N"
+        }
+       ]
+      },
+      {
+       "id": "GHSA-gc5v-m9x4-r6x2",
+       "summary": "Requests has Insecure Temp File Reuse in its extract_zipped_paths() utility function",
+       "details": "### Impact\nThe `requests.utils.extract_zipped_paths()` utility function uses a predictable filename when extracting files from zip archives into the system temporary directory. If the target file already exists, it is reused without validation. A local attacker with write access to the temp directory could pre-create a malicious file that would be loaded in place of the legitimate one.\n\n### Affected usages\n**Standard usage of the Requests library is not affected by this vulnerability.** Only applications that call `extract_zipped_paths()` directly are impacted.\n\n### Remediation\nUpgrade to at least Requests 2.33.0, where the library now extracts files to a non-deterministic location.\n\nIf developers are unable to upgrade, they can set `TMPDIR` in their environment to a directory with restricted write access.",
+       "aliases": [
+        "CVE-2026-25645",
+        "PYSEC-2026-2275"
+       ],
+       "modified": "2026-09-10T03:50:39.207922076Z",
+       "published": "2026-03-25T16:56:28Z",
+       "database_specific": {
+        "github_reviewed_at": "2026-03-25T16:56:28Z",
+        "nvd_published_at": "2026-03-25T17:16:52Z",
+        "cwe_ids": [
+         "CWE-377"
+        ],
+        "severity": "MODERATE",
+        "github_reviewed": true
+       },
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/security/advisories/GHSA-gc5v-m9x4-r6x2"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-25645"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/commit/66d21cb07bd6255b1280291c4fafb71803cdb3b7"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/psf/requests"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/releases/tag/v2.33.0"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "requests",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/requests"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "2.33.0"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/03/GHSA-gc5v-m9x4-r6x2/GHSA-gc5v-m9x4-r6x2.json"
+         }
+        }
+       ],
+       "schema_version": "1.9.0",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:L/AC:H/PR:L/UI:R/S:U/C:N/I:H/A:N"
+        }
+       ]
+      },
+      {
+       "id": "GHSA-j8r2-6x86-q33q",
+       "summary": "Unintended leak of Proxy-Authorization header in requests",
+       "details": "### Impact\n\nSince Requests v2.3.0, Requests has been vulnerable to potentially leaking `Proxy-Authorization` headers to destination servers, specifically during redirects to an HTTPS origin. This is a product of how `rebuild_proxies` is used to recompute and [reattach the `Proxy-Authorization` header](https://github.com/psf/requests/blob/f2629e9e3c7ce3c3c8c025bcd8db551101cbc773/requests/sessions.py#L319-L328) to requests when redirected. Note this behavior has _only_ been observed to affect proxied requests when credentials are supplied in the URL user information component (e.g. `https://username:password@proxy:8080`).\n\n**Current vulnerable behavior(s):**\n\n1. HTTP \u2192 HTTPS: **leak**\n2. HTTPS \u2192 HTTP: **no leak**\n3. HTTPS \u2192 HTTPS: **leak**\n4. HTTP \u2192 HTTP: **no leak**\n\nFor HTTP connections sent through the proxy, the proxy will identify the header in the request itself and remove it prior to forwarding to the destination server. However when sent over HTTPS, the `Proxy-Authorization` header must be sent in the CONNECT request as the proxy has no visibility into further tunneled requests. This results in Requests forwarding the header to the destination server unintentionally, allowing a malicious actor to potentially exfiltrate those credentials.\n\nThe reason this currently works for HTTPS connections in Requests is the `Proxy-Authorization` header is also handled by urllib3 with our usage of the ProxyManager in adapters.py with [`proxy_manager_for`](https://github.com/psf/requests/blob/f2629e9e3c7ce3c3c8c025bcd8db551101cbc773/requests/adapters.py#L199-L235). This will compute the required proxy headers in `proxy_headers` and pass them to the Proxy Manager, avoiding attaching them directly to the Request object. This will be our preferred option going forward for default usage.\n\n### Patches\nStarting in Requests v2.31.0, Requests will no longer attach this header to redirects with an HTTPS destination. This should have no negative impacts on the default behavior of the library as the proxy credentials are already properly being handled by urllib3's ProxyManager.\n\nFor users with custom adapters, this _may_ be potentially breaking if you were already working around this behavior. The previous functionality of `rebuild_proxies` doesn't make sense in any case, so we would encourage any users impacted to migrate any handling of Proxy-Authorization directly into their custom adapter.\n\n### Workarounds\nFor users who are not able to update Requests immediately, there is one potential workaround.\n\nYou may disable redirects by setting `allow_redirects` to `False` on all calls through Requests top-level APIs. Note that if you're currently relying on redirect behaviors, you will need to capture the 3xx response codes and ensure a new request is made to the redirect destination.\n```\nimport requests\nr = requests.get('http://github.com/', allow_redirects=False)\n```\n\n### Credits\n\nThis vulnerability was discovered and disclosed by the following individuals.\n\nDennis Brinkrolf, Haxolot (https://haxolot.com/)\nTobias Funke, (tobiasfunke93@gmail.com)",
+       "aliases": [
+        "CVE-2023-32681",
+        "PYSEC-2023-74"
+       ],
+       "modified": "2026-09-10T03:50:01.756149727Z",
+       "published": "2023-05-22T20:36:32Z",
+       "database_specific": {
+        "github_reviewed_at": "2023-05-22T20:36:32Z",
+        "nvd_published_at": "2023-05-26T18:15:14Z",
+        "cwe_ids": [
+         "CWE-200"
+        ],
+        "severity": "MODERATE",
+        "github_reviewed": true
+       },
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/security/advisories/GHSA-j8r2-6x86-q33q"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-32681"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/commit/74ea7cf7a6a27a4eeb2ae24e162bcc942a6706d5"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/psf/requests"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/releases/tag/v2.31.0"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/pypa/advisory-database/tree/main/vulns/requests/PYSEC-2023-74.yaml"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.debian.org/debian-lts-announce/2023/06/msg00018.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/AW7HNFGYP44RT3DUDQXG2QT3OEV2PJ7Y"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/KOYASTZDGQG2BWLSNBPL3TQRL2G7QYNZ"
+        },
+        {
+         "type": "WEB",
+         "url": "https://security.gentoo.org/glsa/202309-08"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "requests",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/requests"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "2.3.0"
+            },
+            {
+             "fixed": "2.31.0"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2023/05/GHSA-j8r2-6x86-q33q/GHSA-j8r2-6x86-q33q.json"
+         }
+        }
+       ],
+       "schema_version": "1.9.0",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:H/I:N/A:N"
+        }
+       ]
+      },
+      {
+       "id": "PYSEC-2023-74",
+       "details": "Requests is a HTTP library. Since Requests 2.3.0, Requests has been leaking Proxy-Authorization headers to destination servers when redirected to an HTTPS endpoint. This is a product of how we use `rebuild_proxies` to reattach the `Proxy-Authorization` header to requests. For HTTP connections sent through the tunnel, the proxy will identify the header in the request itself and remove it prior to forwarding to the destination server. However when sent over HTTPS, the `Proxy-Authorization` header must be sent in the CONNECT request as the proxy has no visibility into the tunneled request. This results in Requests forwarding proxy credentials to the destination server unintentionally, allowing a malicious actor to potentially exfiltrate sensitive information. This issue has been patched in version 2.31.0.\n\n",
+       "aliases": [
+        "CVE-2023-32681",
+        "GHSA-j8r2-6x86-q33q"
+       ],
+       "modified": "2023-11-08T04:12:35.436175Z",
+       "published": "2023-05-26T18:15:00Z",
+       "references": [
+        {
+         "type": "ADVISORY",
+         "url": "https://github.com/psf/requests/security/advisories/GHSA-j8r2-6x86-q33q"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/releases/tag/v2.31.0"
+        },
+        {
+         "type": "FIX",
+         "url": "https://github.com/psf/requests/commit/74ea7cf7a6a27a4eeb2ae24e162bcc942a6706d5"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/AW7HNFGYP44RT3DUDQXG2QT3OEV2PJ7Y/"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "requests",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/requests"
+         },
+         "ranges": [
+          {
+           "type": "GIT",
+           "repo": "https://github.com/psf/requests",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "74ea7cf7a6a27a4eeb2ae24e162bcc942a6706d5"
+            }
+           ]
+          },
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "2.3.0"
+            },
+            {
+             "fixed": "2.31.0"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/pypa/advisory-database/blob/main/vulns/requests/PYSEC-2023-74.yaml"
+         }
+        }
+       ],
+       "schema_version": "1.7.3"
+      },
+      {
+       "id": "PYSEC-2026-1872",
+       "summary": "Requests vulnerable to .netrc credentials leak via malicious URLs",
+       "details": "### Impact\n\nDue to a URL parsing issue, Requests releases prior to 2.32.4 may leak .netrc credentials to third parties for specific maliciously-crafted URLs.\n\n### Workarounds\nFor older versions of Requests, use of the .netrc file can be disabled with `trust_env=False` on your Requests Session ([docs](https://requests.readthedocs.io/en/latest/api/#requests.Session.trust_env)).\n\n### References\nhttps://github.com/psf/requests/pull/6965\nhttps://seclists.org/fulldisclosure/2025/Jun/2",
+       "aliases": [
+        "CVE-2024-47081",
+        "GHSA-9hjg-9r4m-mvj7"
+       ],
+       "modified": "2026-07-07T17:47:00.332079836Z",
+       "published": "2026-07-07T16:02:54.151964Z",
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/security/advisories/GHSA-9hjg-9r4m-mvj7"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-47081"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/pull/6965"
+        },
+        {
+         "type": "FIX",
+         "url": "https://github.com/psf/requests/commit/96ba401c1296ab1dda74a2365ef36d88f7d144ef"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/psf/requests"
+        },
+        {
+         "type": "WEB",
+         "url": "https://requests.readthedocs.io/en/latest/api/#requests.Session.trust_env"
+        },
+        {
+         "type": "WEB",
+         "url": "https://seclists.org/fulldisclosure/2025/Jun/2"
+        },
+        {
+         "type": "WEB",
+         "url": "http://seclists.org/fulldisclosure/2025/Jun/2"
+        },
+        {
+         "type": "WEB",
+         "url": "http://www.openwall.com/lists/oss-security/2025/06/03/11"
+        },
+        {
+         "type": "WEB",
+         "url": "http://www.openwall.com/lists/oss-security/2025/06/03/9"
+        },
+        {
+         "type": "WEB",
+         "url": "http://www.openwall.com/lists/oss-security/2025/06/04/1"
+        },
+        {
+         "type": "WEB",
+         "url": "http://www.openwall.com/lists/oss-security/2025/06/04/6"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://pypi.org/project/requests"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://github.com/advisories/GHSA-9hjg-9r4m-mvj7"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "requests",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/requests"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "2.32.4"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/pypa/advisory-database/blob/main/vulns/requests/PYSEC-2026-1872.yaml"
+         }
+        }
+       ],
+       "schema_version": "1.7.5",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N"
+        }
+       ]
+      },
+      {
+       "id": "PYSEC-2026-1873",
+       "summary": "Requests `Session` object does not verify requests after making first request with verify=False",
+       "details": "When using a `requests.Session`, if the first request to a given origin is made with `verify=False`, TLS certificate verification may remain disabled for all subsequent requests to that origin, even if `verify=True` is explicitly specified later.\n\nThis occurs because the underlying connection is reused from the session's connection pool, causing the initial TLS verification setting to persist for the lifetime of the pooled connection. As a result, applications may unintentionally send requests without certificate verification, leading to potential man-in-the-middle attacks and compromised confidentiality or integrity.\n\nThis behavior affects versions of `requests` prior to 2.32.0.",
+       "aliases": [
+        "CVE-2024-35195",
+        "GHSA-9wx4-h78v-vm56"
+       ],
+       "modified": "2026-07-07T17:46:36.762141019Z",
+       "published": "2026-07-07T11:45:42.890131Z",
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/security/advisories/GHSA-9wx4-h78v-vm56"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-35195"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/psf/requests/pull/6655"
+        },
+        {
+         "type": "FIX",
+         "url": "https://github.com/psf/requests/commit/a58d7f2ffb4d00b46dca2d70a3932a0b37e22fac"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/psf/requests"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IYLSNK5TL46Q6XPRVMHVWS63MVJQOK4Q"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/N7WP6EYDSUOCOJYHDK5NX43PYZ4SNHGZ"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://pypi.org/project/requests"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://github.com/advisories/GHSA-9wx4-h78v-vm56"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "requests",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/requests"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "2.32.0"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/pypa/advisory-database/blob/main/vulns/requests/PYSEC-2026-1873.yaml"
+         }
+        }
+       ],
+       "schema_version": "1.7.5",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:U/C:H/I:H/A:N"
+        }
+       ]
+      },
+      {
+       "id": "PYSEC-2026-2275",
+       "details": "Requests is a HTTP library. Prior to version 2.33.0, the `requests.utils.extract_zipped_paths()` utility function uses a predictable filename when extracting files from zip archives into the system temporary directory. If the target file already exists, it is reused without validation. A local attacker with write access to the temp directory could pre-create a malicious file that would be loaded in place of the legitimate one. Standard usage of the Requests library is not affected by this vulnerability. Only applications that call `extract_zipped_paths()` directly are impacted. Starting in version 2.33.0, the library extracts files to a non-deterministic location. If developers are unable to upgrade, they can set `TMPDIR` in their environment to a directory with restricted write access.",
+       "aliases": [
+        "CVE-2026-25645",
+        "GHSA-gc5v-m9x4-r6x2"
+       ],
+       "modified": "2026-07-13T07:15:43.964902190Z",
+       "published": "2026-03-25T17:16:52.970Z",
+       "references": [
+        {
+         "type": "ADVISORY",
+         "url": "https://github.com/psf/requests/releases/tag/v2.33.0"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://github.com/psf/requests/security/advisories/GHSA-gc5v-m9x4-r6x2"
+        },
+        {
+         "type": "FIX",
+         "url": "https://github.com/psf/requests/commit/66d21cb07bd6255b1280291c4fafb71803cdb3b7"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "requests",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/requests"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "2.33.0"
+            }
+           ]
+          }
+         ],
+         "ecosystem_specific": {},
+         "database_specific": {
+          "source": "https://github.com/pypa/advisory-database/blob/main/vulns/requests/PYSEC-2026-2275.yaml"
+         }
+        }
+       ],
+       "schema_version": "1.7.5",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N"
+        }
+       ]
+      }
+     ],
+     "groups": []
+    },
+    {
+     "package": {
+      "name": "Jinja2",
+      "version": "2.11.2",
+      "ecosystem": "PyPI"
+     },
+     "vulnerabilities": [
+      {
+       "id": "GHSA-cpwx-vrp4-4pq7",
+       "summary": "Jinja2 vulnerable to sandbox breakout through attr filter selecting format method",
+       "details": "An oversight in how the Jinja sandboxed environment interacts with the `|attr` filter allows an attacker that controls the content of a template to execute arbitrary Python code.\n\nTo exploit the vulnerability, an attacker needs to control the content of a template. Whether that is the case depends on the type of application using Jinja. This vulnerability impacts users of applications which execute untrusted templates.\n\nJinja's sandbox does catch calls to `str.format` and ensures they don't escape the sandbox. However, it's possible to use the `|attr` filter to get a reference to a string's plain format method, bypassing the sandbox. After the fix, the `|attr` filter no longer bypasses the environment's attribute lookup.",
+       "aliases": [
+        "CVE-2025-27516",
+        "PYSEC-2026-1471"
+       ],
+       "modified": "2026-09-10T03:49:48.526758681Z",
+       "published": "2025-03-05T20:40:14Z",
+       "database_specific": {
+        "severity": "MODERATE",
+        "github_reviewed": true,
+        "github_reviewed_at": "2025-03-05T20:40:14Z",
+        "nvd_published_at": "2025-03-05T21:15:20Z",
+        "cwe_ids": [
+         "CWE-1336"
+        ]
+       },
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/security/advisories/GHSA-cpwx-vrp4-4pq7"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-27516"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/commit/90457bbf33b8662926ae65cdde4c4c32e756e403"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/pallets/jinja"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.debian.org/debian-lts-announce/2025/04/msg00022.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.debian.org/debian-lts-announce/2025/04/msg00045.html"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "jinja2",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/jinja2"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "3.1.6"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "last_known_affected_version_range": "<= 3.1.5",
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2025/03/GHSA-cpwx-vrp4-4pq7/GHSA-cpwx-vrp4-4pq7.json"
+         }
+        }
+       ],
+       "schema_version": "1.9.0",
+       "severity": [
+        {
+         "type": "CVSS_V4",
+         "score": "CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:P/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N"
+        }
+       ]
+      },
+      {
+       "id": "GHSA-g3rq-g295-4j3m",
+       "summary": "Regular Expression Denial of Service (ReDoS) in Jinja2",
+       "details": "This affects the package jinja2 from 0.0.0 and before 2.11.3. The ReDOS vulnerability of the regex is mainly due to the sub-pattern [a-zA-Z0-9._-]+.[a-zA-Z0-9._-]+ This issue can be mitigated by Markdown to format user content instead of the urlize filter, or by implementing request timeouts and limiting process memory.",
+       "aliases": [
+        "CVE-2020-28493",
+        "PYSEC-2021-66",
+        "SNYK-PYTHON-JINJA2-1012994"
+       ],
+       "modified": "2025-02-14T05:26:14.565160Z",
+       "published": "2021-03-19T21:28:05Z",
+       "database_specific": {
+        "cwe_ids": [
+         "CWE-400"
+        ],
+        "severity": "MODERATE",
+        "github_reviewed": true,
+        "github_reviewed_at": "2021-03-13T01:08:09Z",
+        "nvd_published_at": "2021-02-01T20:15:00Z"
+       },
+       "references": [
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-28493"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/pull/1343"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/commit/15ef8f09b659f9100610583938005a7a10472d4d"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://github.com/advisories/GHSA-g3rq-g295-4j3m"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/pallets/jinja"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/blob/ab81fd9c277900c85da0c322a2ff9d68a235b2e6/src/jinja2/utils.py%23L20"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/pypa/advisory-database/tree/main/vulns/jinja2/PYSEC-2021-66.yaml"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/PVAKCOO7VBVUBM3Q6CBBTPBFNP5NDXF4"
+        },
+        {
+         "type": "WEB",
+         "url": "https://security.gentoo.org/glsa/202107-19"
+        },
+        {
+         "type": "WEB",
+         "url": "https://snyk.io/vuln/SNYK-PYTHON-JINJA2-1012994"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "jinja2",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/jinja2"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "2.11.3"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/03/GHSA-g3rq-g295-4j3m/GHSA-g3rq-g295-4j3m.json"
+         }
+        }
+       ],
+       "schema_version": "1.9.0",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+        },
+        {
+         "type": "CVSS_V4",
+         "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N"
+        }
+       ]
+      },
+      {
+       "id": "GHSA-h5c8-rqwp-cp95",
+       "summary": "Jinja vulnerable to HTML attribute injection when passing user input as keys to xmlattr filter",
+       "details": "The `xmlattr` filter in affected versions of Jinja accepts keys containing spaces. XML/HTML attributes cannot contain spaces, as each would then be interpreted as a separate attribute. If an application accepts keys (as opposed to only values) as user input, and renders these in pages that other users see as well, an attacker could use this to inject other attributes and perform XSS. Note that accepting keys as user input is not common or a particularly intended use case of the `xmlattr` filter, and an application doing so should already be verifying what keys are provided regardless of this fix.",
+       "aliases": [
+        "CVE-2024-22195",
+        "PYSEC-2026-1473"
+       ],
+       "modified": "2026-09-10T03:50:00.236017440Z",
+       "published": "2024-01-11T15:20:48Z",
+       "database_specific": {
+        "github_reviewed": true,
+        "github_reviewed_at": "2024-01-11T15:20:48Z",
+        "nvd_published_at": "2024-01-11T03:15:11Z",
+        "cwe_ids": [
+         "CWE-79"
+        ],
+        "severity": "MODERATE"
+       },
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/security/advisories/GHSA-h5c8-rqwp-cp95"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-22195"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/commit/716795349a41d4983a9a4771f7d883c96ea17be7"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/pallets/jinja"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/releases/tag/3.1.3"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.debian.org/debian-lts-announce/2024/01/msg00010.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.debian.org/debian-lts-announce/2024/12/msg00009.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5XCWZD464AJJJUBOO7CMPXQ4ROBC6JX2"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DELCVUUYX75I5K4Q5WMJG4MUZJA6VAIP"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/O7YWRBX6JQCWC2XXCTZ55C7DPMGICCN3"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "jinja2",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/jinja2"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "3.1.3"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2024/01/GHSA-h5c8-rqwp-cp95/GHSA-h5c8-rqwp-cp95.json"
+         }
+        }
+       ],
+       "schema_version": "1.9.0",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N"
+        }
+       ]
+      },
+      {
+       "id": "GHSA-h75v-3vvj-5mfj",
+       "summary": "Jinja vulnerable to HTML attribute injection when passing user input as keys to xmlattr filter",
+       "details": "The `xmlattr` filter in affected versions of Jinja accepts keys containing non-attribute characters. XML/HTML attributes cannot contain spaces, `/`, `>`, or `=`, as each would then be interpreted as starting a separate attribute. If an application accepts keys (as opposed to only values) as user input, and renders these in pages that other users see as well, an attacker could use this to inject other attributes and perform XSS. The fix for the previous GHSA-h5c8-rqwp-cp95 CVE-2024-22195 only addressed spaces but not other characters.\n\nAccepting keys as user input is now explicitly considered an unintended use case of the `xmlattr` filter, and code that does so without otherwise validating the input should be flagged as insecure, regardless of Jinja version. Accepting _values_ as user input continues to be safe.",
+       "aliases": [
+        "CVE-2024-34064",
+        "PYSEC-2026-1474"
+       ],
+       "modified": "2026-09-10T03:50:13.786450101Z",
+       "published": "2024-05-06T14:20:59Z",
+       "database_specific": {
+        "github_reviewed": true,
+        "github_reviewed_at": "2024-05-06T14:20:59Z",
+        "nvd_published_at": "2024-05-06T15:15:23Z",
+        "cwe_ids": [
+         "CWE-79"
+        ],
+        "severity": "MODERATE"
+       },
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/security/advisories/GHSA-h75v-3vvj-5mfj"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-34064"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/commit/0668239dc6b44ef38e7a6c9f91f312fd4ca581cb"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/pallets/jinja"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.debian.org/debian-lts-announce/2024/12/msg00009.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/567XIGSZMABG6TSMYWD7MIYNJSUQQRUC"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GCLF44KY43BSVMTE6S53B4V5WP3FRRSE"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/SSCBHIL6BYKR5NRCBXP4XMP2CEEKGFVS"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZALNWE3TXPPHVPSI3AZ5CTMSTAVN5UMS"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "jinja2",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/jinja2"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "3.1.4"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2024/05/GHSA-h75v-3vvj-5mfj/GHSA-h75v-3vvj-5mfj.json"
+         }
+        }
+       ],
+       "schema_version": "1.9.0",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N"
+        }
+       ]
+      },
+      {
+       "id": "GHSA-q2x7-8rv6-6q7h",
+       "summary": "Jinja has a sandbox breakout through indirect reference to format method",
+       "details": "An oversight in how the Jinja sandboxed environment detects calls to `str.format` allows an attacker that controls the content of a template to execute arbitrary Python code.\n\nTo exploit the vulnerability, an attacker needs to control the content of a template. Whether that is the case depends on the type of application using Jinja. This vulnerability impacts users of applications which execute untrusted templates.\n\nJinja's sandbox does catch calls to `str.format` and ensures they don't escape the sandbox. However, it's possible to store a reference to a malicious string's `format` method, then pass that to a filter that calls it. No such filters are built-in to Jinja, but could be present through custom filters in an application. After the fix, such indirect calls are also handled by the sandbox.",
+       "aliases": [
+        "CVE-2024-56326",
+        "PYSEC-2026-1475"
+       ],
+       "modified": "2026-09-10T03:50:21.662855250Z",
+       "published": "2024-12-23T17:56:08Z",
+       "database_specific": {
+        "cwe_ids": [
+         "CWE-693"
+        ],
+        "severity": "MODERATE",
+        "github_reviewed": true,
+        "github_reviewed_at": "2024-12-23T17:56:08Z",
+        "nvd_published_at": "2024-12-23T16:15:07Z"
+       },
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/security/advisories/GHSA-q2x7-8rv6-6q7h"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-56326"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/commit/48b0687e05a5466a91cd5812d604fa37ad0943b4"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/pallets/jinja"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/releases/tag/3.1.5"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.debian.org/debian-lts-announce/2025/04/msg00022.html"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "jinja2",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/jinja2"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "3.1.5"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "last_known_affected_version_range": "<= 3.1.4",
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2024/12/GHSA-q2x7-8rv6-6q7h/GHSA-q2x7-8rv6-6q7h.json"
+         }
+        }
+       ],
+       "schema_version": "1.9.0",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H"
+        },
+        {
+         "type": "CVSS_V4",
+         "score": "CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:P/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N"
+        }
+       ]
+      },
+      {
+       "id": "PYSEC-2021-66",
+       "details": "This affects the package jinja2 from 0.0.0 and before 2.11.3. The ReDoS vulnerability is mainly due to the `_punctuation_re regex` operator and its use of multiple wildcards. The last wildcard is the most exploitable as it searches for trailing punctuation. This issue can be mitigated by Markdown to format user content instead of the urlize filter, or by implementing request timeouts and limiting process memory.",
+       "aliases": [
+        "CVE-2020-28493",
+        "GHSA-g3rq-g295-4j3m",
+        "SNYK-PYTHON-JINJA2-1012994"
+       ],
+       "modified": "2023-11-08T04:03:28.543308Z",
+       "published": "2021-02-01T20:15:00Z",
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/blob/ab81fd9c277900c85da0c322a2ff9d68a235b2e6/src/jinja2/utils.py%23L20"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/pull/1343"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://snyk.io/vuln/SNYK-PYTHON-JINJA2-1012994"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/PVAKCOO7VBVUBM3Q6CBBTPBFNP5NDXF4/"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://github.com/advisories/GHSA-g3rq-g295-4j3m"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "jinja2",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/jinja2"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "2.11.3"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/pypa/advisory-database/blob/main/vulns/jinja2/PYSEC-2021-66.yaml"
+         }
+        }
+       ],
+       "schema_version": "1.7.3"
+      },
+      {
+       "id": "PYSEC-2026-1471",
+       "summary": "Jinja2 vulnerable to sandbox breakout through attr filter selecting format method",
+       "details": "An oversight in how the Jinja sandboxed environment interacts with the `|attr` filter allows an attacker that controls the content of a template to execute arbitrary Python code.\n\nTo exploit the vulnerability, an attacker needs to control the content of a template. Whether that is the case depends on the type of application using Jinja. This vulnerability impacts users of applications which execute untrusted templates.\n\nJinja's sandbox does catch calls to `str.format` and ensures they don't escape the sandbox. However, it's possible to use the `|attr` filter to get a reference to a string's plain format method, bypassing the sandbox. After the fix, the `|attr` filter no longer bypasses the environment's attribute lookup.",
+       "aliases": [
+        "CVE-2025-27516",
+        "GHSA-cpwx-vrp4-4pq7"
+       ],
+       "modified": "2026-07-07T17:46:43.358335981Z",
+       "published": "2026-07-07T14:34:50.446969Z",
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/security/advisories/GHSA-cpwx-vrp4-4pq7"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-27516"
+        },
+        {
+         "type": "FIX",
+         "url": "https://github.com/pallets/jinja/commit/90457bbf33b8662926ae65cdde4c4c32e756e403"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/pallets/jinja"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.debian.org/debian-lts-announce/2025/04/msg00022.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.debian.org/debian-lts-announce/2025/04/msg00045.html"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://pypi.org/project/jinja2"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://github.com/advisories/GHSA-cpwx-vrp4-4pq7"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "jinja2",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/jinja2"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "3.1.6"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/pypa/advisory-database/blob/main/vulns/jinja2/PYSEC-2026-1471.yaml"
+         }
+        }
+       ],
+       "schema_version": "1.7.5",
+       "severity": [
+        {
+         "type": "CVSS_V4",
+         "score": "CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:P/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N"
+        }
+       ]
+      },
+      {
+       "id": "PYSEC-2026-1473",
+       "summary": "Jinja vulnerable to HTML attribute injection when passing user input as keys to xmlattr filter",
+       "details": "The `xmlattr` filter in affected versions of Jinja accepts keys containing spaces. XML/HTML attributes cannot contain spaces, as each would then be interpreted as a separate attribute. If an application accepts keys (as opposed to only values) as user input, and renders these in pages that other users see as well, an attacker could use this to inject other attributes and perform XSS. Note that accepting keys as user input is not common or a particularly intended use case of the `xmlattr` filter, and an application doing so should already be verifying what keys are provided regardless of this fix.",
+       "aliases": [
+        "CVE-2024-22195",
+        "GHSA-h5c8-rqwp-cp95"
+       ],
+       "modified": "2026-07-07T17:46:13.853151947Z",
+       "published": "2026-07-07T11:45:29.949639Z",
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/security/advisories/GHSA-h5c8-rqwp-cp95"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-22195"
+        },
+        {
+         "type": "FIX",
+         "url": "https://github.com/pallets/jinja/commit/716795349a41d4983a9a4771f7d883c96ea17be7"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/pallets/jinja"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/releases/tag/3.1.3"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.debian.org/debian-lts-announce/2024/01/msg00010.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.debian.org/debian-lts-announce/2024/12/msg00009.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5XCWZD464AJJJUBOO7CMPXQ4ROBC6JX2"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DELCVUUYX75I5K4Q5WMJG4MUZJA6VAIP"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/O7YWRBX6JQCWC2XXCTZ55C7DPMGICCN3"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://pypi.org/project/jinja2"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://github.com/advisories/GHSA-h5c8-rqwp-cp95"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "jinja2",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/jinja2"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "3.1.3"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/pypa/advisory-database/blob/main/vulns/jinja2/PYSEC-2026-1473.yaml"
+         }
+        }
+       ],
+       "schema_version": "1.7.5",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N"
+        }
+       ]
+      },
+      {
+       "id": "PYSEC-2026-1474",
+       "summary": "Jinja vulnerable to HTML attribute injection when passing user input as keys to xmlattr filter",
+       "details": "The `xmlattr` filter in affected versions of Jinja accepts keys containing non-attribute characters. XML/HTML attributes cannot contain spaces, `/`, `>`, or `=`, as each would then be interpreted as starting a separate attribute. If an application accepts keys (as opposed to only values) as user input, and renders these in pages that other users see as well, an attacker could use this to inject other attributes and perform XSS. The fix for the previous GHSA-h5c8-rqwp-cp95 CVE-2024-22195 only addressed spaces but not other characters.\n\nAccepting keys as user input is now explicitly considered an unintended use case of the `xmlattr` filter, and code that does so without otherwise validating the input should be flagged as insecure, regardless of Jinja version. Accepting _values_ as user input continues to be safe.",
+       "aliases": [
+        "CVE-2024-34064",
+        "GHSA-h75v-3vvj-5mfj"
+       ],
+       "modified": "2026-07-07T17:46:13.832160246Z",
+       "published": "2026-07-07T11:45:41.875280Z",
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/security/advisories/GHSA-h75v-3vvj-5mfj"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-34064"
+        },
+        {
+         "type": "FIX",
+         "url": "https://github.com/pallets/jinja/commit/0668239dc6b44ef38e7a6c9f91f312fd4ca581cb"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/pallets/jinja"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.debian.org/debian-lts-announce/2024/12/msg00009.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/567XIGSZMABG6TSMYWD7MIYNJSUQQRUC"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GCLF44KY43BSVMTE6S53B4V5WP3FRRSE"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/SSCBHIL6BYKR5NRCBXP4XMP2CEEKGFVS"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZALNWE3TXPPHVPSI3AZ5CTMSTAVN5UMS"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://pypi.org/project/jinja2"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://github.com/advisories/GHSA-h75v-3vvj-5mfj"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "jinja2",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/jinja2"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "3.1.4"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/pypa/advisory-database/blob/main/vulns/jinja2/PYSEC-2026-1474.yaml"
+         }
+        }
+       ],
+       "schema_version": "1.7.5",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N"
+        }
+       ]
+      },
+      {
+       "id": "PYSEC-2026-1475",
+       "summary": "Jinja has a sandbox breakout through indirect reference to format method",
+       "details": "An oversight in how the Jinja sandboxed environment detects calls to `str.format` allows an attacker that controls the content of a template to execute arbitrary Python code.\n\nTo exploit the vulnerability, an attacker needs to control the content of a template. Whether that is the case depends on the type of application using Jinja. This vulnerability impacts users of applications which execute untrusted templates.\n\nJinja's sandbox does catch calls to `str.format` and ensures they don't escape the sandbox. However, it's possible to store a reference to a malicious string's `format` method, then pass that to a filter that calls it. No such filters are built-in to Jinja, but could be present through custom filters in an application. After the fix, such indirect calls are also handled by the sandbox.",
+       "aliases": [
+        "CVE-2024-56326",
+        "GHSA-q2x7-8rv6-6q7h"
+       ],
+       "modified": "2026-07-07T17:46:13.842466429Z",
+       "published": "2026-07-07T14:34:47.732576Z",
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/security/advisories/GHSA-q2x7-8rv6-6q7h"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-56326"
+        },
+        {
+         "type": "FIX",
+         "url": "https://github.com/pallets/jinja/commit/48b0687e05a5466a91cd5812d604fa37ad0943b4"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/pallets/jinja"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/pallets/jinja/releases/tag/3.1.5"
+        },
+        {
+         "type": "WEB",
+         "url": "https://lists.debian.org/debian-lts-announce/2025/04/msg00022.html"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://pypi.org/project/jinja2"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://github.com/advisories/GHSA-q2x7-8rv6-6q7h"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "jinja2",
+          "ecosystem": "PyPI",
+          "purl": "pkg:pypi/jinja2"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "3.1.5"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/pypa/advisory-database/blob/main/vulns/jinja2/PYSEC-2026-1475.yaml"
+         }
+        }
+       ],
+       "schema_version": "1.7.5",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H"
+        },
+        {
+         "type": "CVSS_V4",
+         "score": "CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:P/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N"
+        }
+       ]
+      }
+     ],
+     "groups": []
+    }
+   ]
+  },
+  {
+   "source": {
+    "path": "/work/repo/tools/package-lock.json",
+    "type": "lockfile"
+   },
+   "packages": [
+    {
+     "package": {
+      "name": "lodash",
+      "version": "4.17.15",
+      "ecosystem": "npm"
+     },
+     "vulnerabilities": [
+      {
+       "id": "GHSA-29mw-wpgm-hmr9",
+       "summary": "Regular Expression Denial of Service (ReDoS) in lodash",
+       "details": "All versions of package lodash prior to 4.17.21 are vulnerable to Regular Expression Denial of Service (ReDoS) via the `toNumber`, `trim` and `trimEnd` functions. \n\nSteps to reproduce (provided by reporter Liyuan Chen):\n```js\nvar lo = require('lodash');\n\nfunction build_blank(n) {\n    var ret = \"1\"\n    for (var i = 0; i < n; i++) {\n        ret += \" \"\n    }\n    return ret + \"1\";\n}\nvar s = build_blank(50000) var time0 = Date.now();\nlo.trim(s) \nvar time_cost0 = Date.now() - time0;\nconsole.log(\"time_cost0: \" + time_cost0);\nvar time1 = Date.now();\nlo.toNumber(s) var time_cost1 = Date.now() - time1;\nconsole.log(\"time_cost1: \" + time_cost1);\nvar time2 = Date.now();\nlo.trimEnd(s);\nvar time_cost2 = Date.now() - time2;\nconsole.log(\"time_cost2: \" + time_cost2);\n```",
+       "aliases": [
+        "CVE-2020-28500"
+       ],
+       "modified": "2025-09-29T21:12:31.102523Z",
+       "published": "2022-01-06T20:30:46Z",
+       "database_specific": {
+        "severity": "MODERATE",
+        "github_reviewed": true,
+        "github_reviewed_at": "2021-03-19T22:45:28Z",
+        "nvd_published_at": "2021-02-15T11:15:00Z",
+        "cwe_ids": [
+         "CWE-1333",
+         "CWE-400"
+        ]
+       },
+       "references": [
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-28500"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/github/advisory-database/pull/6139"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/lodash/lodash/pull/5065"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/lodash/lodash/pull/5065/commits/02906b8191d3c100c193fe6f7b27d1c40f200bb7"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/lodash/lodash/commit/c4847ebe7d14540bb28a8b932a9ce1b9ecbfee1a"
+        },
+        {
+         "type": "WEB",
+         "url": "https://www.oracle.com/security-alerts/cpuoct2021.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://www.oracle.com/security-alerts/cpujul2022.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://www.oracle.com/security-alerts/cpujan2022.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://www.oracle.com//security-alerts/cpujul2021.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://snyk.io/vuln/SNYK-JS-LODASH-1018905"
+        },
+        {
+         "type": "WEB",
+         "url": "https://snyk.io/vuln/SNYK-JAVA-ORGWEBJARSNPM-1074893"
+        },
+        {
+         "type": "WEB",
+         "url": "https://snyk.io/vuln/SNYK-JAVA-ORGWEBJARSBOWERGITHUBLODASH-1074895"
+        },
+        {
+         "type": "WEB",
+         "url": "https://snyk.io/vuln/SNYK-JAVA-ORGWEBJARSBOWER-1074892"
+        },
+        {
+         "type": "WEB",
+         "url": "https://snyk.io/vuln/SNYK-JAVA-ORGWEBJARS-1074894"
+        },
+        {
+         "type": "WEB",
+         "url": "https://snyk.io/vuln/SNYK-JAVA-ORGFUJIONWEBJARS-1074896"
+        },
+        {
+         "type": "WEB",
+         "url": "https://security.netapp.com/advisory/ntap-20210312-0006"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/rubysec/ruby-advisory-db/blob/master/gems/lodash-rails/CVE-2020-28500.yml"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/lodash/lodash/blob/npm/trimEnd.js%23L8"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/lodash/lodash"
+        },
+        {
+         "type": "WEB",
+         "url": "https://cert-portal.siemens.com/productcert/pdf/ssa-637483.pdf"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "lodash",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "4.0.0"
+            },
+            {
+             "fixed": "4.17.21"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/01/GHSA-29mw-wpgm-hmr9/GHSA-29mw-wpgm-hmr9.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash-es",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash-es"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "4.0.0"
+            },
+            {
+             "fixed": "4.17.21"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/01/GHSA-29mw-wpgm-hmr9/GHSA-29mw-wpgm-hmr9.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash.trimend",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash.trimend"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "4.0.0"
+            },
+            {
+             "last_affected": "4.5.1"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/01/GHSA-29mw-wpgm-hmr9/GHSA-29mw-wpgm-hmr9.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash.trim",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash.trim"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "4.0.0"
+            },
+            {
+             "last_affected": "4.5.1"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/01/GHSA-29mw-wpgm-hmr9/GHSA-29mw-wpgm-hmr9.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash-rails",
+          "ecosystem": "RubyGems",
+          "purl": "pkg:gem/lodash-rails"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "4.0.0"
+            },
+            {
+             "fixed": "4.17.21"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/01/GHSA-29mw-wpgm-hmr9/GHSA-29mw-wpgm-hmr9.json"
+         }
+        }
+       ],
+       "schema_version": "1.9.0",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+        }
+       ]
+      },
+      {
+       "id": "GHSA-35jh-r3h4-6jhm",
+       "summary": "Command Injection in lodash",
+       "details": "`lodash` versions prior to 4.17.21 are vulnerable to Command Injection via the template function.",
+       "aliases": [
+        "CVE-2021-23337"
+       ],
+       "modified": "2026-10-17T02:55:38.085813876Z",
+       "published": "2021-05-06T16:05:51Z",
+       "database_specific": {
+        "nvd_published_at": "2021-02-15T13:15:00Z",
+        "cwe_ids": [
+         "CWE-77",
+         "CWE-94"
+        ],
+        "severity": "HIGH",
+        "github_reviewed": true,
+        "github_reviewed_at": "2021-03-31T23:59:26Z"
+       },
+       "references": [
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-23337"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/lodash/lodash/commit/3469357cff396a26c363f8c1b5a91dde28ba4b1c"
+        },
+        {
+         "type": "WEB",
+         "url": "https://www.oracle.com/security-alerts/cpuoct2021.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://www.oracle.com/security-alerts/cpujul2022.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://www.oracle.com/security-alerts/cpujan2022.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://www.oracle.com//security-alerts/cpujul2021.html"
+        },
+        {
+         "type": "WEB",
+         "url": "https://snyk.io/vuln/SNYK-JS-LODASH-1040724"
+        },
+        {
+         "type": "WEB",
+         "url": "https://snyk.io/vuln/SNYK-JAVA-ORGWEBJARSNPM-1074929"
+        },
+        {
+         "type": "WEB",
+         "url": "https://snyk.io/vuln/SNYK-JAVA-ORGWEBJARSBOWERGITHUBLODASH-1074931"
+        },
+        {
+         "type": "WEB",
+         "url": "https://snyk.io/vuln/SNYK-JAVA-ORGWEBJARSBOWER-1074928"
+        },
+        {
+         "type": "WEB",
+         "url": "https://snyk.io/vuln/SNYK-JAVA-ORGWEBJARS-1074930"
+        },
+        {
+         "type": "WEB",
+         "url": "https://snyk.io/vuln/SNYK-JAVA-ORGFUJIONWEBJARS-1074932"
+        },
+        {
+         "type": "WEB",
+         "url": "https://security.netapp.com/advisory/ntap-20210312-0006"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/rubysec/ruby-advisory-db/blob/master/gems/lodash-rails/CVE-2021-23337.yml"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/lodash/lodash/blob/ddfd9b11a0126db2302cb70ec9973b66baec0975/lodash.js#L14851"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/lodash/lodash"
+        },
+        {
+         "type": "WEB",
+         "url": "https://cert-portal.siemens.com/productcert/pdf/ssa-637483.pdf"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "lodash",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "4.17.21"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/05/GHSA-35jh-r3h4-6jhm/GHSA-35jh-r3h4-6jhm.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash-es",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash-es"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "4.17.21"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/05/GHSA-35jh-r3h4-6jhm/GHSA-35jh-r3h4-6jhm.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash.template",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash.template"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "last_affected": "4.5.0"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/05/GHSA-35jh-r3h4-6jhm/GHSA-35jh-r3h4-6jhm.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash-template",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash-template"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "last_affected": "1.0.0"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/05/GHSA-35jh-r3h4-6jhm/GHSA-35jh-r3h4-6jhm.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash-rails",
+          "ecosystem": "RubyGems",
+          "purl": "pkg:gem/lodash-rails"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "4.17.21"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/05/GHSA-35jh-r3h4-6jhm/GHSA-35jh-r3h4-6jhm.json"
+         }
+        }
+       ],
+       "schema_version": "1.9.0",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H"
+        }
+       ]
+      },
+      {
+       "id": "GHSA-f23m-r3pf-42rh",
+       "summary": "lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit`",
+       "details": "### Impact\n\nLodash versions 4.17.23 and earlier are vulnerable to prototype pollution in the `_.unset` and `_.omit` functions. The fix for [CVE-2025-13465](https://github.com/lodash/lodash/security/advisories/GHSA-xxjr-mmjv-4gpg) only guards against string key members, so an attacker can bypass the check by passing array-wrapped path segments. This allows deletion of properties from built-in prototypes such as `Object.prototype`, `Number.prototype`, and `String.prototype`.\n\nThe issue permits deletion of prototype properties but does not allow overwriting their original behavior.\n\n### Patches\n\nThis issue is patched in 4.18.0.\n\n### Workarounds\n\nNone. Upgrade to the patched version.",
+       "aliases": [
+        "CVE-2026-2950"
+       ],
+       "modified": "2026-10-17T02:56:13.084362346Z",
+       "published": "2026-04-01T23:50:27Z",
+       "database_specific": {
+        "nvd_published_at": "2026-03-31T20:16:26Z",
+        "cwe_ids": [
+         "CWE-1321"
+        ],
+        "severity": "MODERATE",
+        "github_reviewed": true,
+        "github_reviewed_at": "2026-04-01T23:50:27Z"
+       },
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/lodash/lodash/security/advisories/GHSA-f23m-r3pf-42rh"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/lodash/lodash/security/advisories/GHSA-xxjr-mmjv-4gpg"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-2950"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/lodash/lodash"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "lodash",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "4.18.0"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "last_known_affected_version_range": "<= 4.17.23",
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/04/GHSA-f23m-r3pf-42rh/GHSA-f23m-r3pf-42rh.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash-es",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash-es"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "4.18.0"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "last_known_affected_version_range": "<= 4.17.23",
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/04/GHSA-f23m-r3pf-42rh/GHSA-f23m-r3pf-42rh.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash-amd",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash-amd"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "fixed": "4.18.0"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "last_known_affected_version_range": "<= 4.17.23",
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/04/GHSA-f23m-r3pf-42rh/GHSA-f23m-r3pf-42rh.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash.unset",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash.unset"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "4.0.0"
+            },
+            {
+             "fixed": "4.18.0"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/04/GHSA-f23m-r3pf-42rh/GHSA-f23m-r3pf-42rh.json"
+         }
+        }
+       ],
+       "schema_version": "1.9.0",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:L"
+        }
+       ]
+      },
+      {
+       "id": "GHSA-p6mc-m468-83gw",
+       "summary": "Prototype Pollution in lodash",
+       "details": "Versions of lodash prior to 4.17.19 are vulnerable to Prototype Pollution. The functions `pick`, `set`, `setWith`, `update`, `updateWith`, and `zipObjectDeep` allow a malicious user to modify the prototype of Object if the property identifiers are user-supplied. Being affected by this issue requires manipulating objects based on user-provided property values or arrays.\n\nThis vulnerability causes the addition or modification of an existing property that will exist on all objects and may lead to Denial of Service or Code Execution under specific circumstances.",
+       "aliases": [
+        "CVE-2020-8203"
+       ],
+       "modified": "2025-08-12T21:56:17.174859Z",
+       "published": "2020-07-15T19:15:48Z",
+       "database_specific": {
+        "nvd_published_at": "2020-07-15T17:15:00Z",
+        "cwe_ids": [
+         "CWE-1321",
+         "CWE-770"
+        ],
+        "severity": "HIGH",
+        "github_reviewed": true,
+        "github_reviewed_at": "2020-07-15T19:14:58Z"
+       },
+       "references": [
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-8203"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/lodash/lodash/issues/4744"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/lodash/lodash/issues/4874"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/github/advisory-database/pull/2884"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/lodash/lodash/commit/c84fe82760fb2d3e03a63379b297a1cc1a2fce12"
+        },
+        {
+         "type": "WEB",
+         "url": "https://hackerone.com/reports/712065"
+        },
+        {
+         "type": "WEB",
+         "url": "https://hackerone.com/reports/864701"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/lodash/lodash"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/lodash/lodash/wiki/Changelog#v41719"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/rubysec/ruby-advisory-db/blob/master/gems/lodash-rails/CVE-2020-8203.yml"
+        },
+        {
+         "type": "WEB",
+         "url": "https://security.netapp.com/advisory/ntap-20200724-0006"
+        },
+        {
+         "type": "WEB",
+         "url": "https://web.archive.org/web/20210914001339/https://github.com/lodash/lodash/issues/4744"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "lodash",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "3.7.0"
+            },
+            {
+             "fixed": "4.17.19"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2020/07/GHSA-p6mc-m468-83gw/GHSA-p6mc-m468-83gw.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash-es",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash-es"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "3.7.0"
+            },
+            {
+             "fixed": "4.17.20"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2020/07/GHSA-p6mc-m468-83gw/GHSA-p6mc-m468-83gw.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash.pick",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash.pick"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "4.0.0"
+            },
+            {
+             "last_affected": "4.4.0"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2020/07/GHSA-p6mc-m468-83gw/GHSA-p6mc-m468-83gw.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash.set",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash.set"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "3.7.0"
+            },
+            {
+             "last_affected": "4.3.2"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2020/07/GHSA-p6mc-m468-83gw/GHSA-p6mc-m468-83gw.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash.setwith",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash.setwith"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "last_affected": "4.3.2"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2020/07/GHSA-p6mc-m468-83gw/GHSA-p6mc-m468-83gw.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash.update",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash.update"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "last_affected": "4.10.2"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2020/07/GHSA-p6mc-m468-83gw/GHSA-p6mc-m468-83gw.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash.updatewith",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash.updatewith"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "0"
+            },
+            {
+             "last_affected": "4.10.2"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2020/07/GHSA-p6mc-m468-83gw/GHSA-p6mc-m468-83gw.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash-rails",
+          "ecosystem": "RubyGems",
+          "purl": "pkg:gem/lodash-rails"
+         },
+         "ranges": [
+          {
+           "type": "ECOSYSTEM",
+           "events": [
+            {
+             "introduced": "3.7.0"
+            },
+            {
+             "fixed": "4.17.19"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2020/07/GHSA-p6mc-m468-83gw/GHSA-p6mc-m468-83gw.json"
+         }
+        }
+       ],
+       "schema_version": "1.9.0",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:H"
+        }
+       ]
+      },
+      {
+       "id": "GHSA-r5fr-rjxr-66jc",
+       "summary": "lodash vulnerable to Code Injection via `_.template` imports key names",
+       "details": "### Impact\n\nThe fix for [CVE-2021-23337](https://github.com/advisories/GHSA-35jh-r3h4-6jhm) added validation for the `variable` option in `_.template` but did not apply the same validation to `options.imports` key names. Both paths flow into the same `Function()` constructor sink.\n\nWhen an application passes untrusted input as `options.imports` key names, an attacker can inject default-parameter expressions that execute arbitrary code at template compilation time.\n\nAdditionally, `_.template` uses `assignInWith` to merge imports, which enumerates inherited properties via `for..in`. If `Object.prototype` has been polluted by any other vector, the polluted keys are copied into the imports object and passed to `Function()`.\n\n### Patches\n\nUsers should upgrade to version 4.18.0.\n\nThe fix applies two changes:\n1. Validate `importsKeys` against the existing `reForbiddenIdentifierChars` regex (same check already used for the `variable` option)\n2. Replace `assignInWith` with `assignWith` when merging imports, so only own properties are enumerated\n\n### Workarounds\n\nDo not pass untrusted input as key names in `options.imports`. Only use developer-controlled, static key names.",
+       "aliases": [
+        "CVE-2026-4800"
+       ],
+       "modified": "2026-10-17T02:56:15.633068434Z",
+       "published": "2026-04-01T23:51:12Z",
+       "database_specific": {
+        "github_reviewed": true,
+        "github_reviewed_at": "2026-04-01T23:51:12Z",
+        "nvd_published_at": "2026-03-31T20:16:29Z",
+        "cwe_ids": [
+         "CWE-94"
+        ],
+        "severity": "HIGH"
+       },
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/lodash/lodash/security/advisories/GHSA-r5fr-rjxr-66jc"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-4800"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/lodash/lodash/commit/3469357cff396a26c363f8c1b5a91dde28ba4b1c"
+        },
+        {
+         "type": "WEB",
+         "url": "https://cna.openjsf.org/security-advisories.html"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://github.com/advisories/GHSA-35jh-r3h4-6jhm"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/lodash/lodash"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "lodash",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "4.0.0"
+            },
+            {
+             "fixed": "4.18.0"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "last_known_affected_version_range": "<= 4.17.23",
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/04/GHSA-r5fr-rjxr-66jc/GHSA-r5fr-rjxr-66jc.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash-es",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash-es"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "4.0.0"
+            },
+            {
+             "fixed": "4.18.0"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/04/GHSA-r5fr-rjxr-66jc/GHSA-r5fr-rjxr-66jc.json",
+          "last_known_affected_version_range": "<= 4.17.23"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash-amd",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash-amd"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "4.0.0"
+            },
+            {
+             "fixed": "4.18.0"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "last_known_affected_version_range": "<= 4.17.23",
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/04/GHSA-r5fr-rjxr-66jc/GHSA-r5fr-rjxr-66jc.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash.template",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash.template"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "4.0.0"
+            },
+            {
+             "fixed": "4.18.0"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/04/GHSA-r5fr-rjxr-66jc/GHSA-r5fr-rjxr-66jc.json"
+         }
+        }
+       ],
+       "schema_version": "1.9.0",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        }
+       ]
+      },
+      {
+       "id": "GHSA-xxjr-mmjv-4gpg",
+       "summary": "Lodash has Prototype Pollution Vulnerability in `_.unset` and `_.omit` functions",
+       "details": "### Impact\n\nLodash versions 4.0.0 through 4.17.22 are vulnerable to prototype pollution in the `_.unset` and `_.omit` functions. An attacker can pass crafted paths which cause Lodash to delete methods from global prototypes. \n\nThe issue permits deletion of properties but does not allow overwriting their original behavior.  \n\n### Patches\n\nThis issue is patched on 4.17.23.",
+       "aliases": [
+        "CVE-2025-13465"
+       ],
+       "modified": "2026-10-17T02:55:54.229635593Z",
+       "published": "2026-01-21T23:01:22Z",
+       "database_specific": {
+        "github_reviewed": true,
+        "github_reviewed_at": "2026-01-21T23:01:22Z",
+        "nvd_published_at": "2026-01-21T20:16:05Z",
+        "cwe_ids": [
+         "CWE-1321"
+        ],
+        "severity": "MODERATE"
+       },
+       "references": [
+        {
+         "type": "WEB",
+         "url": "https://github.com/lodash/lodash/security/advisories/GHSA-xxjr-mmjv-4gpg"
+        },
+        {
+         "type": "ADVISORY",
+         "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-13465"
+        },
+        {
+         "type": "WEB",
+         "url": "https://github.com/lodash/lodash/commit/edadd452146f7e4bad4ea684e955708931d84d81"
+        },
+        {
+         "type": "WEB",
+         "url": "https://cert-portal.siemens.com/productcert/html/ssa-253495.html"
+        },
+        {
+         "type": "PACKAGE",
+         "url": "https://github.com/lodash/lodash"
+        }
+       ],
+       "affected": [
+        {
+         "package": {
+          "name": "lodash",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "4.0.0"
+            },
+            {
+             "fixed": "4.17.23"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "last_known_affected_version_range": "<= 4.17.22",
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/01/GHSA-xxjr-mmjv-4gpg/GHSA-xxjr-mmjv-4gpg.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash.unset",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash.unset"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "4.0.0"
+            },
+            {
+             "last_affected": "4.5.2"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/01/GHSA-xxjr-mmjv-4gpg/GHSA-xxjr-mmjv-4gpg.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash-es",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash-es"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "4.0.0"
+            },
+            {
+             "fixed": "4.17.23"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "last_known_affected_version_range": "<= 4.17.22",
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/01/GHSA-xxjr-mmjv-4gpg/GHSA-xxjr-mmjv-4gpg.json"
+         }
+        },
+        {
+         "package": {
+          "name": "lodash-amd",
+          "ecosystem": "npm",
+          "purl": "pkg:npm/lodash-amd"
+         },
+         "ranges": [
+          {
+           "type": "SEMVER",
+           "events": [
+            {
+             "introduced": "4.0.0"
+            },
+            {
+             "fixed": "4.17.23"
+            }
+           ]
+          }
+         ],
+         "database_specific": {
+          "last_known_affected_version_range": "<= 4.17.22",
+          "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/01/GHSA-xxjr-mmjv-4gpg/GHSA-xxjr-mmjv-4gpg.json"
+         }
+        }
+       ],
+       "schema_version": "1.9.0",
+       "severity": [
+        {
+         "type": "CVSS_V3",
+         "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:L"
+        },
+        {
+         "type": "CVSS_V4",
+         "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:L/VA:L/SC:H/SI:H/SA:H/E:P"
+        }
+       ]
+      }
+     ],
+     "groups": []
+    }
+   ]
+  }
+ ]
+}

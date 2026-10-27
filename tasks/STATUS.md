@@ -6,7 +6,7 @@ Update your row when you start (`in_progress`) and finish (`done`). Keep notes t
 |---|---|---|---|---|---|---|---|---|
 | T00 | Repo scaffold and shared foundations | Lead | Sonnet 5.5 | high | 0 | — | done | Backend+frontend scaffold, stubbed Part A routes, 50 tests pass; S4,S12,S13,E1,E2,E8,O2 done; ran on Python 3.13 (3.11 not installed locally) |
 | T01 | Data models and persistence | Dev A | Sonnet 5.5 | medium | 1 | T00 | todo | |
-| T02 | Repo cloner and OSV scanner | Dev A | Sonnet 5.5 | medium | 1 | T00 | todo | |
+| T02 | Repo cloner and OSV scanner | Dev A | Sonnet 5.5 | medium | 1 | T00 | done | cloner (async git, clean env), ecosystems.detect, scanner (osv-scanner CLI v1/v2 + OSV.dev fallback), threat_intel (KEV+EPSS, mock/live/off); S2,S3,N2,N3,N12,E7,E13,L1,L2,L4,L6,L8 tested; 102 tests pass; live smoke on demo-target: 39 vulns PyPI+npm |
 | T03 | Scan orchestrator, SSE and scan API | Dev A | Opus 5.5 | high | 2 | T01, T02 (others via stubs) | todo | |
 | T04 | Provider-agnostic LLM client | Dev B | Sonnet 5.5 | medium | 1 | T00 | todo | |
 | T05 | Vulnerable symbol extraction (AI) | Dev B | Sonnet 5.5 | medium | 2 | T04 | todo | |

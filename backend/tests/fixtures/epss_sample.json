@@ -1,0 +1,12 @@
+{
+  "status": "OK",
+  "status-code": 200,
+  "version": "1.0",
+  "total": 4,
+  "data": [
+    {"cve": "CVE-2020-14343", "epss": "0.0598", "percentile": "0.9326", "date": "2026-10-27"},
+    {"cve": "CVE-2023-32681", "epss": "0.0021", "percentile": "0.5800", "date": "2026-10-27"},
+    {"cve": "CVE-2024-22195", "epss": "0.0035", "percentile": "0.6700", "date": "2026-10-27"},
+    {"cve": "CVE-2021-44228", "epss": "0.9440", "percentile": "0.9998", "date": "2026-10-27"}
+  ]
+}
