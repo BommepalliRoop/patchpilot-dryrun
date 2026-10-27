@@ -65,4 +65,4 @@ tasks/              One file per task (T00..T18) + BOARD.md + STATUS.md
 - Tests for the task pass (`pytest -q` or `npm run build` for frontend tasks).
 - `tasks/STATUS.md` row updated to `done` with a one-line note.
 - Commit: `git commit -m "T<id>: <short summary>"` on branch `t<id>-<slug>`, then push and open a PR to `main` (or merge directly if the team agreed).
-- Final message to the human ends with the NEXT block (see `.claude/commands/run-task.md`).
+- Final message to the human ALWAYS ends with the NEXT block (see `.claude/commands/run-task.md`): next task id + title, model, effort, and the exact `/run-task <id>` prompt, for every unblocked task. Never skip it, even after a short reply, a re-check or a "no errors" follow-up.
