@@ -15,6 +15,31 @@ maps and connections, deploy, and run the test calls in section 9. A process is 
 **Today's practice run:** build everything in a Boomi folder named `DRYRUN - PatchPilot` and do not reuse
 it tomorrow (hackathon rule: everything is built during the event). Tomorrow, rebuild in a fresh folder.
 
+**Version:** v3 (Oct 27). Changes since earlier copies:
+- v2: idempotency (`Idempotency-Key` header, `finding_id` column in the compliance log), new `event` / `fix_status`
+  values, optional `owner_email`.
+- v3: exploit data in B2 — `kev`, `epss`, `epss_percentile` (section 5); Jira label `actively-exploited` and an
+  "Exploit data" description line; Teams card shows the exploit line (section 6).
+If you started from an older copy, apply these changes; nothing else changed.
+
+**Working in parallel:** you do not wait for us. The dev team builds the app at the same time with Boomi in
+mock mode. You test every process with the curl calls in section 9 (no PatchPilot needed). We connect the two
+sides at the times in section 10.
+
+**What we need from you — deliverables**
+| # | Deliverable | When (event day) | Done when |
+|---|---|---|---|
+| D1 | `BOOMI_BASE_URL` + exact paths for B2/B3/B4, `BOOMI_USER` (team chat), `BOOMI_TOKEN` (private message to the Lead) | 10:30 | We can call your B2 with curl |
+| D2 | Jira site URL + project key, Teams channel name | 10:30 | Shared in team chat |
+| D3 | **B2 live** — Jira issue + Teams card + compliance row + idempotency | 11:15 | Section 0 items 2.3–2.5 pass; screenshots shared |
+| D4 | **B1 live** — scheduled + manual "Execute" calls our `BACKEND_URL` | 11:40 | Execute returns 202 with a `scan_id` |
+| D5 | **B3 live** — Teams summary card | 11:50 | Test call shows the card |
+| D6 | **B4 live** — compliance report | 11:50 | Test call returns the rows written by B2 |
+| D7 | Screenshots + notes in the repo `boomi/` folder | 12:15 | Pull request opened |
+| D8 | One person explains B1–B4 in 30 s during the demo | 12:25 | — |
+
+For the practice run, use the same order and count the times from your start.
+
 ## 0. Checklist — zero to done
 Tick these in order. Times are for the event day (Oct 28); for the practice run, count from your start time.
 
@@ -34,7 +59,7 @@ Tick these in order. Times are for the event day (Oct 28); for the practice run,
 **B2 — Finding notification (by 11:15) — the most important**
 - [ ] 2.1 Create the compliance log table/list with the columns in section 4.
 - [ ] 2.2 Build B2 with the Companion prompt (section 12) and the steps in section 5.
-- [ ] 2.3 Deploy; run the B2 test call (section 9) → a Jira issue, a Teams card and a log row appear; response matches section 5.
+- [ ] 2.3 Deploy; run the B2 test call (section 9) → a Jira issue (with the "Exploit data" line), a Teams card and a log row appear; response matches section 5.
 - [ ] 2.4 Run the same call again with the same `Idempotency-Key` → **no** second Jira issue, same `jira_key` returned.
 - [ ] 2.5 Send a missing-field request → 400. Tell the Lead "B2 passes" + screenshots.
 
