@@ -1,0 +1,46 @@
+# Decisions and background (from planning chat, Oct 27, 2026)
+
+## Hackathon facts
+- EasyStepIn AI Hackathon 2026 — Wed Oct 28, 2026, EasyStepIn office. Arrive 8:30 AM sharp.
+- Schedule: 9:00–9:20 kickoff, 9:20–12:20 build sprint (3 h), 12:20–12:25 code freeze, 12:25–1:30 demos, 1:30–2:00 results.
+- Team min 5, locked at registration (no swaps/additions). One team per person.
+- Must build a working AI-powered solution. Boomi integration via Boomi Companion is mandatory.
+- All code written during the event. API keys provided at kickoff.
+- Competition: 7+ teams, including strong ones — the demo must clearly work live.
+
+## Our own expectations for the project
+1. Fully automated tool (no human in the loop for the normal path).
+2. Useful in day-to-day work at an IT / service company — a real tool, not just a demo.
+3. Boomi is a part of the solution (integration backbone), not the product itself.
+4. Not a simple/common AI task (email summaries, chatbots, drafting). It must solve a complex, high-impact problem
+   that existing tools do not already solve.
+Revenue generation optional. Excluded: anything on Elev8/PG, and billing/invoice automation (another team's idea).
+
+## Ideas considered and why rejected
+| Idea | Why not |
+|---|---|
+| DealPilot (lead/RFP → proposal) | Email + AI drafting is common now |
+| ScopeGuard (unbilled scope creep) | Good, but close to billing and harder to demo convincingly |
+| ModernizeIQ (legacy code → priced proposal) | Not day-to-day use |
+| AccountRadar (client churn prediction) | Weekly, not daily; needs lots of mock data |
+| IncidentZero (self-diagnosing incidents) | Strong runner-up; kept as backup idea |
+| AccessGuard, ReleaseGate, SmartDispatch | Less differentiated or lower demo impact |
+
+## Why PatchPilot
+- Every service company patches dependencies and passes client security audits — daily value.
+- Scanners only list CVEs; PatchPilot reasons about our code (reachability) and produces a tested fix — rare.
+- Boomi has a real job: scheduling, Jira, Teams, compliance logging.
+- Live demo: a real vulnerability is found, proven reachable, fixed, and ticketed in front of judges.
+- Fits the lead's cybersecurity background, so the pitch is confident.
+
+## Team model
+- Dev team builds with Claude Code using `/run-task` on the task board.
+- Boomi sub-team (3–4) builds B1–B4 in Boomi Companion from `docs/BOOMI_HANDOFF.md`; dev team gives contracts only.
+- Everything runs in parallel using mock modes until live switch in wave 3.
+
+## UI direction
+Professional, motion-rich, UX-friendly security console (React + Tailwind + Motion), with ready-made premium
+components (shadcn/ui, Magic UI / Aceternity UI, Tremor) to save time — see docs/UI_SPEC.md.
+
+## Judging story (one line)
+"300 alerts become the 3 that matter — each with a tested fix, a Jira ticket and an audit trail. Automatically, every day."

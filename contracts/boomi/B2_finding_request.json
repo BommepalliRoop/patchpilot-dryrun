@@ -1,0 +1,26 @@
+{
+  "event": "finding.fixed",
+  "scan_id": "scn_01",
+  "finding_id": "fnd_07",
+  "client_name": "Acme Retail",
+  "repo_url": "https://github.com/<org>/demo-target",
+  "cve_id": "CVE-2020-14343",
+  "package": "pyyaml",
+  "installed_version": "5.3.1",
+  "fixed_version": "5.4.1",
+  "cvss": 9.8,
+  "priority": "P1",
+  "score": 10.0,
+  "reachability": "reachable",
+  "confidence": 0.93,
+  "summary": "Arbitrary code execution via full_load / FullLoader",
+  "ai_explanation": "User-supplied YAML from POST /import reaches yaml.load without SafeLoader.",
+  "evidence": [
+    { "file": "app/routes.py", "line": 42, "in_route": true }
+  ],
+  "fix_status": "fixed",
+  "tests_passed": true,
+  "pr_url": "https://github.com/<org>/demo-target/pull/3",
+  "owner_email": "owner@easystepin.com",
+  "detected_at": "2026-10-28T05:10:05Z"
+}

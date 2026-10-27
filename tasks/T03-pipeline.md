@@ -1,0 +1,32 @@
+# T03 — Scan orchestrator, SSE and scan API
+
+| Field | Value |
+|---|---|
+| Owner lane | Dev A |
+| Model | Opus 5.5 |
+| Wave | 2 |
+| Depends on | T01, T02 (others via stubs) |
+| Unblocks | T17 |
+| Branch | `t03-pipeline` |
+
+## Goal
+Run all stages in a background task and stream progress.
+
+## Scope
+- `pipeline.run_scan(scan_id)` runs stages clone → scan → symbols → reachability → risk → fix → pr → notify in order, per docs/ARCHITECTURE.md; parallelise per-finding work with `asyncio.gather` (limit 4).
+- Emits events on the bus for every stage start/finish and per-finding progress; persists stats.
+- Stages not yet implemented by other tasks are called through their module interface; if they raise NotImplementedError use a clearly-logged stub result so the pipeline still completes.
+- `POST /api/scans` (accepts `X-API-Key` for machine callers), `GET /api/scans/{id}/events` as SSE (`sse-starlette`), `POST /api/findings/{id}/fix`.
+- Only reachable or unsure(≥0.5) findings go to fix/pr/notify when `auto_fix` is true.
+
+## Acceptance criteria
+- POST a scan → SSE stream shows every stage → ends with `done`; scan stats saved.
+- Pipeline survives a failing stage for one finding (marks that finding, continues others).
+- Test with all external modes = mock.
+
+## Rules
+- Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.
+- Use mock modes for anything another lane has not finished.
+
+## When done
+Update `tasks/STATUS.md`, commit `T03: Scan orchestrator, SSE and scan API`, push, and print the NEXT block.

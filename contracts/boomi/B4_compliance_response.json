@@ -1,0 +1,18 @@
+{
+  "client_name": "Acme Retail",
+  "from": "2026-10-01",
+  "items": [
+    {
+      "compliance_log_id": "log_55",
+      "cve_id": "CVE-2020-14343",
+      "package": "pyyaml",
+      "priority": "P1",
+      "detected_at": "2026-10-28T05:10:05Z",
+      "fixed_at": "2026-10-28T05:11:40Z",
+      "time_to_fix_minutes": 2,
+      "jira_key": "SEC-101",
+      "pr_url": "https://github.com/<org>/demo-target/pull/3",
+      "status": "fixed"
+    }
+  ]
+}
