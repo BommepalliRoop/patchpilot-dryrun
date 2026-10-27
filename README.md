@@ -110,6 +110,7 @@ effort per task in [tasks/BOARD.md](tasks/BOARD.md).
 | Whoever collects keys and URLs | [Config](docs/CONFIG.md) |
 | Safety questions | [Risks](docs/RISKS.md) |
 | Practice run | [Dry run](docs/DRY_RUN.md) |
+| Team briefing (visual walkthrough) | [walkthrough.html](docs/walkthrough.html) — download and open in a browser |
 | Presenter | [Demo script](docs/DEMO_SCRIPT.md) |
 | Using / testing the app | [User guide](docs/USER_GUIDE.md) |
 | UI developers | [UI spec](docs/UI_SPEC.md) |

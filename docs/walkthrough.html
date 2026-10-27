@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PatchPilot Walkthrough</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column; a numbered vertical rail for the 12 real steps, with small inline diagrams per step. Dark-first, like the PatchPilot console (docs/UI_SPEC.md). */
+:root{
+  --bg:#0B0F17; --surface:#111827; --surface-2:#161E2E; --line:rgba(255,255,255,0.09);
+  --fg:#E6EDF5; --muted:#93A1B5; --accent:#2DD4BF; --accent-ink:#04201C;
+  --danger:#F43F5E; --warn:#F59E0B; --ok:#22C55E; --info:#60A5FA;
+  --font-ui:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,"Cascadia Code",Consolas,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){
+  --bg:#F5F8FA; --surface:#FFFFFF; --surface-2:#EEF3F6; --line:rgba(11,15,23,0.12);
+  --fg:#0E1726; --muted:#506078; --accent:#0F9E8C; --accent-ink:#FFFFFF;
+  --danger:#D72650; --warn:#B86E00; --ok:#15803D; --info:#2563EB; color-scheme:light; } }
+:root[data-theme="light"]{
+  --bg:#F5F8FA; --surface:#FFFFFF; --surface-2:#EEF3F6; --line:rgba(11,15,23,0.12);
+  --fg:#0E1726; --muted:#506078; --accent:#0F9E8C; --accent-ink:#FFFFFF;
+  --danger:#D72650; --warn:#B86E00; --ok:#15803D; --info:#2563EB; color-scheme:light; }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-ui);font-size:16px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 80px}
+.wrap{max-width:920px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:40px;font-weight:700;letter-spacing:-0.02em}
+h2{font-size:28px;font-weight:600;letter-spacing:-0.01em}
+h3{font-size:20px;font-weight:600}
+p{margin:0;max-width:68ch}
+code,.mono{font-family:var(--font-mono);font-size:0.88em}
+code{background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;white-space:nowrap}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent)}
+.muted{color:var(--muted)}
+section{display:flex;flex-direction:column;gap:20px}
+
+/* hero */
+.hero{display:flex;flex-direction:column;gap:16px}
+.thesis{font-size:20px;color:var(--muted);max-width:60ch}
+.thesis b{color:var(--fg);font-weight:600}
+
+/* funnel */
+.funnel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.fstep{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.fnum{font-size:36px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.fstep:nth-child(1) .fnum{color:var(--muted)}
+.fstep:nth-child(2) .fnum{color:var(--warn)}
+.fstep:nth-child(3) .fnum{color:var(--danger)}
+.fstep:nth-child(4) .fnum{color:var(--ok)}
+.flabel{font-size:14px;color:var(--muted)}
+
+/* system map */
+.map{display:grid;grid-template-columns:minmax(0,1fr) 40px minmax(0,1.3fr) 40px minmax(0,1fr);align-items:stretch}
+.col{display:flex;flex-direction:column;gap:10px;min-width:0}
+.col-title{font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+.node{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.node b{font-weight:600}
+.node span{font-size:13px;color:var(--muted)}
+.node.core{border-color:var(--accent);background:var(--surface-2)}
+.node.boomi{border-color:var(--info)}
+.arrow{display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:22px}
+.pipeline{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chip{font-family:var(--font-mono);font-size:12px;padding:3px 8px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+
+/* steps rail */
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.step{display:grid;grid-template-columns:48px minmax(0,1fr);gap:20px;position:relative;padding-bottom:36px}
+.step::before{content:"";position:absolute;left:23px;top:48px;bottom:0;width:2px;background:var(--line)}
+.step:last-child::before{display:none}
+.badge{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-mono);font-weight:600;font-size:16px;
+  background:var(--surface);border:2px solid var(--accent);color:var(--accent);font-variant-numeric:tabular-nums}
+.step.boomi .badge{border-color:var(--info);color:var(--info)}
+.step.once .badge{border-style:dashed;border-color:var(--muted);color:var(--muted)}
+.body{display:flex;flex-direction:column;gap:12px;min-width:0;padding-top:8px}
+.who{font-family:var(--font-mono);font-size:12px;color:var(--muted);letter-spacing:0.04em}
+.who .tag{color:var(--accent)}
+.step.boomi .who .tag{color:var(--info)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.panel h4{margin:0;font-size:13px;font-family:var(--font-mono);letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:12px;letter-spacing:0.06em;text-transform:uppercase}
+tr:last-child td{border-bottom:none}
+
+/* mock form */
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:12px;color:var(--muted)}
+.field .val{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-family:var(--font-mono);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.field.full{grid-column:1/-1}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:13px}
+.toggle i{width:34px;height:20px;border-radius:999px;background:var(--accent);position:relative;display:inline-block}
+.toggle i::after{content:"";position:absolute;right:3px;top:3px;width:14px;height:14px;border-radius:50%;background:var(--accent-ink)}
+.btn{align-self:flex-start;background:var(--accent);color:var(--accent-ink);font-weight:600;border-radius:8px;padding:8px 14px;font-size:14px}
+
+/* flow strip */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.flow .box{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px}
+.flow .to{color:var(--accent)}
+.flow .box.bad{border-color:var(--danger);color:var(--danger)}
+.flow .box.good{border-color:var(--ok);color:var(--ok)}
+
+.code{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-family:var(--font-mono);font-size:13px;line-height:1.7;overflow-x:auto;white-space:pre}
+.code .hl{background:rgba(244,63,94,0.16);display:inline-block;width:100%}
+.code .c{color:var(--muted)}
+
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid currentColor}
+.pill.p1{color:var(--danger)} .pill.reach{color:var(--warn)} .pill.ok{color:var(--ok)} .pill.info{color:var(--info)} .pill.mut{color:var(--muted)}
+
+.formula{font-family:var(--font-mono);font-size:14px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto;white-space:nowrap}
+
+.loop{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.loop div{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.loop b{font-size:13px}
+.loop span{color:var(--muted);font-size:12px}
+
+.outs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.out{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.out b{font-size:14px}
+.out span{font-size:13px;color:var(--muted)}
+
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--accent);display:inline-block}
+.dot.b{border-color:var(--info)} .dot.o{border-color:var(--muted);border-style:dashed}
+
+.checklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.check{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;gap:10px;min-width:0}
+.check .tick{color:var(--ok);font-weight:700}
+.check div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.check span{font-size:13px;color:var(--muted)}
+
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+
+@media (max-width:720px){
+  h1{font-size:32px}
+  .funnel{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .map{grid-template-columns:minmax(0,1fr)}
+  .arrow{transform:rotate(90deg);height:28px}
+  .form,.checklist,.outs{grid-template-columns:minmax(0,1fr)}
+  .loop{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .step{grid-template-columns:40px minmax(0,1fr);gap:14px}
+  .badge{width:40px;height:40px;font-size:14px}
+  .step::before{left:19px;top:40px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .fstep{transition:transform .2s ease}
+  .fstep:hover{transform:translateY(-2px)}
+}
+</style>
+</head><body>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">Team briefing · EasyStepIn AI Hackathon 2026</div>
+    <h1>PatchPilot, step by step</h1>
+    <p class="thesis">A client gives us one thing: <b>a GitHub repository</b>. PatchPilot finds the vulnerable libraries,
+      proves which ones the code really calls, fixes them with tested upgrades, opens a pull request, and Boomi files the
+      Jira ticket, Teams alert and audit record. Automatically, every day.</p>
+  </header>
+
+  <section aria-labelledby="funnel-h">
+    <h2 id="funnel-h">What one scan of the demo repo produces</h2>
+    <div class="funnel">
+      <div class="fstep"><div class="fnum">~30</div><div class="flabel">alerts from the OSV scan</div></div>
+      <div class="fstep"><div class="fnum">2</div><div class="flabel">packages our code really calls</div></div>
+      <div class="fstep"><div class="fnum">1</div><div class="flabel">P1: PyYAML inside a web route</div></div>
+      <div class="fstep"><div class="fnum">✓</div><div class="flabel">tested fix, PR, Jira, Teams, audit row</div></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="map-h">
+    <h2 id="map-h">The big picture</h2>
+    <div class="map">
+      <div class="col">
+        <div class="col-title">Who starts it</div>
+        <div class="node"><b>React web app</b><span>Team member clicks Run scan</span></div>
+        <div class="node boomi"><b>Boomi B1</b><span>Daily schedule, 09:00 IST</span></div>
+        <div class="node"><b>GitHub repo</b><span>Client code, public or private</span></div>
+      </div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="col">
+        <div class="col-title">PatchPilot engine (FastAPI)</div>
+        <div class="node core">
+          <b>8-stage pipeline</b>
+          <span>Live progress streams back to the web app</span>
+          <div class="pipeline">
+            <span class="chip">clone</span><span class="chip">scan</span><span class="chip">symbols</span><span class="chip">reachability</span>
+            <span class="chip">risk</span><span class="chip">fix</span><span class="chip">pr</span><span class="chip">notify</span>
+          </div>
+        </div>
+        <div class="node"><b>Helpers</b><span>OSV-Scanner · CISA KEV + EPSS · LLM · pytest in a temp venv</span></div>
+      </div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="col">
+        <div class="col-title">What comes out</div>
+        <div class="node"><b>GitHub pull request</b><span>One per package, never auto-merged</span></div>
+        <div class="node boomi"><b>Boomi B2 / B3</b><span>Jira issue · Teams alert · summary card</span></div>
+        <div class="node boomi"><b>Compliance log</b><span>Neon PostgreSQL, read back by B4</span></div>
+      </div>
+    </div>
+    <div class="legend">
+      <span><i class="dot"></i>Dev team builds (Claude Code)</span>
+      <span><i class="dot b"></i>Boomi team builds (Boomi Companion)</span>
+      <span><i class="dot o"></i>One-time setup</span>
+    </div>
+  </section>
+
+  <section aria-labelledby="steps-h">
+    <h2 id="steps-h">Step by step</h2>
+    <ol class="steps">
+
+      <li class="step once">
+        <div class="badge">0</div>
+        <div class="body">
+          <div class="who"><span class="tag">ONE-TIME SETUP</span> · Lead</div>
+          <h3>Prepare access before the first scan</h3>
+          <p>Done once per client. Nothing here is typed into the scan form.</p>
+          <div class="panel tbl">
+            <table>
+              <thead><tr><th>Item</th><th>Why</th></tr></thead>
+              <tbody>
+                <tr><td>Repo on the allowed list (<code>ALLOWED_REPO_PREFIXES</code>)</td><td>We install and test the client's code, so only approved repos are scanned</td></tr>
+                <tr><td>GitHub token with access to the repo</td><td>Needed to clone private repos and to open the fix PR</td></tr>
+                <tr><td>LLM key, Boomi URL + login</td><td>From the organisers and the Boomi team; stored only in <code>.env</code></td></tr>
+                <tr><td>Client added to Boomi B1 list</td><td>So the daily 09:00 scan includes this repo</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="badge">1</div>
+        <div class="body">
+          <div class="who"><span class="tag">REACT WEB APP</span> · anyone on the team</div>
+          <h3>Open the PatchPilot dashboard</h3>
+          <p>The Overview page shows past scans and the badges for LLM, Boomi and GitHub (<code>mock</code> or <code>live</code>).
+            Click <b>Run scan</b>. On the daily schedule, Boomi B1 does this step automatically.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="badge">2</div>
+        <div class="body">
+          <div class="who"><span class="tag">REACT WEB APP</span> · Run scan form</div>
+          <h3>Give it the repository</h3>
+          <div class="panel">
+            <div class="form">
+              <div class="field"><label for="f-client">Client name</label><div class="val" id="f-client">Acme Retail</div></div>
+              <div class="field"><label for="f-branch">Branch</label><div class="val" id="f-branch">main</div></div>
+              <div class="field full"><label for="f-repo">GitHub repo URL</label><div class="val" id="f-repo">https://github.com/BommepalliRoop/demo-target</div></div>
+              <div class="field"><label for="f-owner">Owner email (optional)</label><div class="val" id="f-owner">owner@easystepin.com</div></div>
+              <div class="field"><label>Auto-fix</label><div class="toggle"><i aria-hidden="true"></i>on</div></div>
+            </div>
+            <span class="btn">Start scan</span>
+          </div>
+          <div class="panel tbl">
+            <h4>Public or private repo?</h4>
+            <table>
+              <thead><tr><th>Repo</th><th>What is needed</th></tr></thead>
+              <tbody>
+                <tr><td><b>Public</b></td><td>Nothing extra to scan. To open the PR, our GitHub token needs write access</td></tr>
+                <tr><td><b>Private</b></td><td>Fine-grained GitHub token that includes this repo: Contents read/write, Pull requests read/write, Metadata read. No other password or code</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <h4>The repo must have</h4>
+            <div class="pills">
+              <span class="pill info">Python project</span>
+              <span class="pill info">requirements.txt with pyyaml==5.3.1 style pins</span>
+              <span class="pill info">pytest tests that pass</span>
+              <span class="pill mut">Flask / FastAPI routes (optional)</span>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="badge">3</div>
+        <div class="body">
+          <div class="who"><span class="tag">BACKEND</span> · safety checks</div>
+          <h3>The backend accepts the scan</h3>
+          <div class="flow">
+            <span class="box">Repo on allowed list?</span><span class="to">→</span>
+            <span class="box">Same repo already scanning?</span><span class="to">→</span>
+            <span class="box">Hourly limit OK?</span><span class="to">→</span>
+            <span class="box good">202 · scan_id</span>
+          </div>
+          <p class="muted">The web app jumps to the live scan page and watches the stages light up as they run.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="badge">4</div>
+        <div class="body">
+          <div class="who"><span class="tag">STAGE 1 · clone</span></div>
+          <h3>Download the code into a temporary folder</h3>
+          <p>A shallow copy of the branch goes into a throwaway work folder. The GitHub token is used only for private repos and never shows up in logs.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="badge">5</div>
+        <div class="body">
+          <div class="who"><span class="tag">STAGE 2 · scan</span></div>
+          <h3>Find vulnerable libraries with OSV</h3>
+          <p>OSV-Scanner reads <code>requirements.txt</code> and checks every pinned version against Google's open vulnerability database.
+            Each CVE is then tagged with exploit data: is it on the US CISA list of actively exploited CVEs, and what is its EPSS chance of being exploited?</p>
+          <div class="code"><span class="c"># requirements.txt (demo repo)</span>
+flask==1.1.2          <span class="c">2 CVEs</span>
+werkzeug==1.0.1       <span class="c">10 CVEs</span>
+jinja2==2.11.2        <span class="c">5 CVEs</span>
+<span class="hl">pyyaml==5.3.1         CVE-2020-14343 · CVSS 9.8 · EPSS top 7%</span>
+requests==2.25.1      <span class="c">4 CVEs</span>
+urllib3==1.26.4       <span class="c">11 CVEs   → about 30 alerts in total</span></div>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="badge">6</div>
+        <div class="body">
+          <div class="who"><span class="tag">STAGE 3 · symbols</span> · AI</div>
+          <h3>AI names the dangerous function</h3>
+          <p>For each advisory, the AI reads the description and returns the exact function that is unsafe, for example
+            <code>yaml.load</code> for CVE-2020-14343. Answers are checked JSON; if the AI is unavailable, a built-in map is used.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="badge">7</div>
+        <div class="body">
+          <div class="who"><span class="tag">STAGE 4 · reachability</span> · code analysis + AI</div>
+          <h3>Prove whether our code really calls it</h3>
+          <p>Python's own parser walks every file, follows imports and aliases, and finds each call to the dangerous function, with file, line and whether it sits inside a web route.
+            The AI then checks the snippet for safe usage. No call found means not reachable, with no AI call at all.</p>
+          <div class="code"><span class="c"># app/routes.py</span>
+@app.route("/import", methods=["POST"])   <span class="c">← web route</span>
+def import_config():
+<span class="hl">    data = yaml.load(request.data)          ← line 42: user input reaches yaml.load</span>
+    return save(data)</div>
+          <div class="pills"><span class="pill reach">reachable · confidence 0.93</span><span class="pill p1">in web route</span></div>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="badge">8</div>
+        <div class="body">
+          <div class="who"><span class="tag">STAGE 5 · risk</span></div>
+          <h3>Score the real risk</h3>
+          <div class="formula">score = CVSS × reachability × exposure × exploit data   (max 10)</div>
+          <div class="panel tbl">
+            <table>
+              <thead><tr><th>Factor</th><th>Values</th></tr></thead>
+              <tbody>
+                <tr><td>Reachability</td><td>reachable 1.0 · unsure 0.6 · not reachable 0.3</td></tr>
+                <tr><td>Exposure</td><td>inside a web route 1.5 · otherwise 1.0</td></tr>
+                <tr><td>Exploit data</td><td>on CISA KEV list 1.3 · EPSS top 10% 1.1 · otherwise 1.0</td></tr>
+                <tr><td>Priority</td><td>≥ 9 P1 · ≥ 7 P2 · ≥ 4 P3 · else P4</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="muted">PyYAML: 9.8 × 1.0 × 1.5 × 1.1 → capped at 10 → <b>P1</b>.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="badge">9</div>
+        <div class="body">
+          <div class="who"><span class="tag">STAGE 6 · fix</span> · once per package</div>
+          <h3>Upgrade, test, and let AI repair what breaks</h3>
+          <div class="loop">
+            <div><b>Upgrade</b><span>pyyaml 5.3.1 → 6.0.1</span></div>
+            <div><b>Install + test</b><span>pytest in a temp venv, no secrets</span></div>
+            <div><b>Tests fail?</b><span>AI writes a small patch, max 2 tries</span></div>
+            <div><b>Result</b><span>fixed, or needs review</span></div>
+          </div>
+          <p class="muted">Several CVEs in the same package get one fix and one PR. The AI patch may only touch the files involved, never the tests.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="badge">10</div>
+        <div class="body">
+          <div class="who"><span class="tag">STAGE 7 · pr</span></div>
+          <h3>Open a pull request on GitHub</h3>
+          <p>Branch <code>patchpilot/pyyaml-6.0.1</code>, title <code>[PatchPilot][P1] Fix CVE-2020-14343 in pyyaml</code>, and a body that explains why it was reachable, what changed and that tests passed.
+            The client's developers review and merge it. PatchPilot never merges on its own.</p>
+        </div>
+      </li>
+
+      <li class="step boomi">
+        <div class="badge">11</div>
+        <div class="body">
+          <div class="who"><span class="tag">STAGE 8 · notify</span> · Boomi team</div>
+          <h3>Boomi files the ticket, alert and audit record</h3>
+          <div class="flow">
+            <span class="box">PatchPilot</span><span class="to">→ B2 →</span>
+            <span class="box">Jira issue SEC-101</span>
+            <span class="box">Teams alert</span>
+            <span class="box">Compliance row (Neon)</span>
+          </div>
+          <p class="muted">At the end of the scan, B3 posts one summary card to Teams. If Boomi is down, the scan still finishes and the failed call is shown in the app.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="badge">12</div>
+        <div class="body">
+          <div class="who"><span class="tag">REACT WEB APP</span> · results</div>
+          <h3>See everything in the dashboard</h3>
+          <div class="outs">
+            <div class="out"><b>Finding page</b><span>Highlighted line, AI explanation, score, exploit chips, fix diff, PR button</span></div>
+            <div class="out"><b>Integrations page</b><span>B1–B4 health and a live feed of every Boomi call</span></div>
+            <div class="out"><b>Compliance page</b><span>Audit rows from B4 with time-to-fix, CSV export</span></div>
+          </div>
+        </div>
+      </li>
+
+    </ol>
+  </section>
+
+  <section aria-labelledby="test-h">
+    <h2 id="test-h">How we know it works</h2>
+    <div class="checklist">
+      <div class="check"><span class="tick">✓</span><div><b>Mock mode first</b><span>All 8 stages run with no keys; ~30 alerts, PyYAML P1</span></div></div>
+      <div class="check"><span class="tick">✓</span><div><b>Live, one at a time</b><span>LLM, then GitHub (real PR), then Boomi (real Jira + Teams)</span></div></div>
+      <div class="check"><span class="tick">✓</span><div><b>Safe failures</b><span>Unknown repo rejected, wrong key 401, Boomi down still completes</span></div></div>
+      <div class="check"><span class="tick">✓</span><div><b>Under 2 minutes</b><span>From Run scan to the Teams alert on the demo repo</span></div></div>
+    </div>
+  </section>
+
+  <footer>Source of truth: the patchpilot repo — README, docs/USER_GUIDE.md, docs/ARCHITECTURE.md, docs/BOOMI_HANDOFF.md. Plan as of Oct 27, 2026.</footer>
+</div>
+
+</body></html>
