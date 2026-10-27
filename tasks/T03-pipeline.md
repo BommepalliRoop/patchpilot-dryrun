@@ -18,7 +18,8 @@ Run all stages in a background task and stream progress.
 - Emits events on the bus for every stage start/finish and per-finding progress; persists stats.
 - Stages not yet implemented by other tasks are called through their module interface; if they raise NotImplementedError use a clearly-logged stub result so the pipeline still completes.
 - `POST /api/scans` (accepts `X-API-Key` for machine callers), `GET /api/scans/{id}/events` as SSE (`sse-starlette`), `POST /api/findings/{id}/fix`.
-- Only reachable or unsure(≥0.5) findings go to fix/pr/notify when `auto_fix` is true.
+- Only reachable or unsure(≥0.5) findings go to fix/pr/notify. Fix + PR run once **per package** (ARCHITECTURE "Group by package"); notify runs per finding. `auto_fix=false` → skip fix/pr, still notify with `event: finding.open`.
+- `POST /api/scans`: validate `repo_url` against `ALLOWED_REPO_PREFIXES` (400 `repo_not_allowed`); store optional `owner_email`.
 
 ## Acceptance criteria
 - POST a scan → SSE stream shows every stage → ends with `done`; scan stats saved.

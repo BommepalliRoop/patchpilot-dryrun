@@ -16,7 +16,7 @@ Turn an advisory into the exact functions that are dangerous.
 ## Scope
 - Prompt `prompts/extract_symbols.md`: given package, CVE, summary, details and references, return `{package, import_names[], symbols[] (fully-qualified, e.g. yaml.load), safe_usage_notes, confidence}`. Rules: prefer public API names a user would call; include aliases; empty list if unknown.
 - `symbols.extract(raw_vuln) -> VulnSymbols` with an in-memory + SQLite cache by CVE id.
-- Seed a small static map for demo packages (pyyaml, jinja2, requests, urllib3, pillow) used when the LLM is unsure.
+- Seed a small static map for demo packages (pyyaml, jinja2, requests, urllib3, werkzeug, flask — the T15 pins) used when the LLM is unsure; in `LLM_MODE=mock` it is the source of truth.
 
 ## Acceptance criteria
 - For the demo CVEs, returns the expected symbols (unit tests with mock LLM).

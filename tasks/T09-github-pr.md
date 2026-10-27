@@ -14,7 +14,7 @@
 Push the fix branch and open a clear PR.
 
 ## Scope
-- `github_pr.open_pr(repo_url, branch, fix, finding) -> pr_url` with PyGithub; push using token; title `[PatchPilot][{priority}] Fix {cve_id} in {package}`.
+- `github_pr.open_pr(repo_url, branch, fix, finding) -> pr_url` with PyGithub; push using token; title `[PatchPilot][{priority}] Fix {cve_id} in {package}` (several CVEs in one package → `Fix {n} CVEs in {package}`, highest priority wins; body lists every CVE).
 - PR body from prompt `prompts/pr_description.md` (or template): risk summary, why reachable with file:line, change summary, test results, rollback note, label `security`.
 - `GITHUB_MODE=mock` returns a fake URL and writes the body to the DB.
 

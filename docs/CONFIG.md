@@ -17,6 +17,8 @@ Legend: 🔒 = secret (only in `.env` / host settings) · 📄 = safe to write h
 | `GITHUB_TOKEN` | 🔒 | `github_pat_...` | Lead | GitHub → Settings → Developer settings → Fine-grained token. Repository access: **demo-target only**. Permissions: Contents RW, Pull requests RW, Metadata R. Expiry 7 days | T09 | |
 | `GITHUB_MODE` | 📄 | `mock` → `live` | Us | Switch after T09 | T09 | `mock` |
 | `DEMO_REPO_URL` | 📄 | `https://github.com/BommepalliRoop/demo-target` | Lead / Dev E | Create empty repo tonight; T15 fills it | T02, T15, T17 | |
+| `ALLOWED_REPO_PREFIXES` | 📄 | `https://github.com/BommepalliRoop/` (comma-separated) | Us | Only these repos may be scanned (the engine runs their tests) | T03 | |
+| `WORK_DIR` | 📄 | blank = `<system temp>/patchpilot` | Us | Override only if temp space is small | T02, T08 | |
 | `PATCHPILOT_API_KEY` | 🔒 | 32+ random chars | Us | `python -c "import secrets;print(secrets.token_urlsafe(32))"` — share privately with Boomi team for B1 | T03 (B1 auth) | |
 | `BOOMI_MODE` | 📄 | `mock` → `live` | Us | Switch after B2 test call works | T10 | `mock` |
 | `BOOMI_BASE_URL` | 📄 | `https://<atom-cloud-host>/ws/rest` | Boomi team | Their deployed Web Services Server base URL | T10 | |

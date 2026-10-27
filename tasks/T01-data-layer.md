@@ -14,7 +14,7 @@
 SQLModel tables and Pydantic API schemas.
 
 ## Scope
-- Tables per docs/ARCHITECTURE.md Data model; ID helpers (`scn_`, `fnd_`, `fix_` prefixes).
+- Tables per docs/ARCHITECTURE.md Data model (including integration fields, timeline and the per-package `fixes` row); ID helpers (`scn_`, `fnd_`, `fix_` prefixes).
 - Pydantic schemas: Scan, ScanStats, FindingSummary, FindingDetail, Evidence, FixInfo, IntegrationInfo, TimelineItem, IntegrationEvent — field names identical to docs/API_CONTRACTS.md.
 - Repository functions: create_scan, update_scan_stage, add_finding, update_finding, add_fix, add_integration_event, get_* and list_* with filters.
 - Replace fixture responses in routers `GET /api/scans*`, `GET /api/findings*`, `GET /api/integrations/activity`, `POST /api/demo/reset` with real DB reads.

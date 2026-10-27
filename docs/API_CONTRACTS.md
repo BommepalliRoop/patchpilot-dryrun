@@ -8,6 +8,8 @@ Enums
 - reachability: `reachable | not_reachable | unsure`
 - priority: `P1 | P2 | P3 | P4`
 - finding.status: `open | fixing | fixed | needs_human | ignored`
+- B2 event: `finding.fixed | finding.needs_human | finding.open` (open = reachable but `auto_fix` was false)
+- B2 fix_status: `fixed | needs_human | not_attempted`
 
 ---------------------------------------------------------------
 ## Part A — PatchPilot backend REST API (frontend ↔ backend, and Boomi B1 → backend)
@@ -16,8 +18,11 @@ Base URL: `${BACKEND_URL}` (local `http://localhost:8000`). Auth for machine cal
 ### POST /api/scans  — start a scan
 Request
 ```json
-{ "client_name": "Acme Retail", "repo_url": "https://github.com/<org>/demo-target", "branch": "main", "auto_fix": true }
+{ "client_name": "Acme Retail", "repo_url": "https://github.com/<org>/demo-target", "branch": "main", "auto_fix": true,
+  "owner_email": "owner@easystepin.com" }
 ```
+`owner_email` is optional (default empty); it is passed through to B2. `repo_url` must start with one of
+`ALLOWED_REPO_PREFIXES`, else 400 `repo_not_allowed` (the engine installs and tests the repo's code).
 Response 202
 ```json
 { "scan_id": "scn_01", "status": "queued" }
@@ -77,6 +82,10 @@ Response 200: `[IntegrationEvent]`
 [{ "id": 1, "finding_id": "fnd_07", "process": "B2", "endpoint": "/patchpilot/findings",
    "status_code": 200, "ok": true, "summary": "Jira SEC-101 created, Teams sent", "created_at": "..." }]
 ```
+
+### GET /api/compliance?client_name=Acme%20Retail&from=2026-10-01
+Backend proxy of Boomi B4 (via `boomi_client.get_compliance`) for the Compliance page.
+Response 200: same shape as `contracts/boomi/B4_compliance_response.json`. Mock mode returns that file.
 
 ### GET /api/health  → `{ "status": "ok", "llm_mode": "mock", "boomi_mode": "mock", "github_mode": "mock" }`
 ### POST /api/demo/reset  → clears DB and workdirs. Response `{ "ok": true }`

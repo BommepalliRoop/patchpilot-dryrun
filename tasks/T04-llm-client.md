@@ -15,7 +15,7 @@ One place for all model calls.
 
 ## Scope
 - `llm.complete_json(prompt_name, variables, schema: type[BaseModel]) -> BaseModel`: loads `backend/app/prompts/<prompt_name>.md`, fills `{{variables}}`, calls provider, extracts JSON (strip code fences), validates, retries once with the validation error appended.
-- Providers: `anthropic` and `openai` via httpx (selected by LLM_PROVIDER), model from LLM_MODEL, optional LLM_BASE_URL override (gateway / Azure-style endpoints given at kickoff). Timeouts 60 s.
+- Providers: `anthropic` and `openai` via httpx (selected by LLM_PROVIDER), model from LLM_MODEL, optional LLM_BASE_URL override (any OpenAI-compatible gateway given at kickoff; if the keys are Azure OpenAI, add a small branch: `api-key` header + deployment URL). Timeouts 60 s.
 - `LLM_MODE=mock`: returns deterministic canned JSON per prompt_name from `backend/app/prompts/mocks/<prompt_name>.json`.
 - Log token usage and latency per call.
 

@@ -67,7 +67,7 @@ building processes before 9:20 is allowed; assume it is not.
 | detected_at | ISO-8601 UTC | B2 request |
 | fixed_at | ISO-8601 UTC, = processing time when `fix_status` = `fixed`, else empty | B2 |
 | jira_key, pr_url | string | Jira response / B2 request |
-| status | `fixed` / `needs_human` / `open` | B2 `fix_status` |
+| status | `fixed` / `needs_human` / `open` | B2 `fix_status` (`not_attempted` → `open`) |
 
 `time_to_fix_minutes` for B4 = `fixed_at − detected_at` in whole minutes (empty if not fixed).
 Options: a small cloud database (Postgres/MySQL), a SharePoint list, or a Google/Excel sheet — pick the one
@@ -104,8 +104,10 @@ PatchPilot sends one call per reachable finding (usually 1–3 per scan). We ret
   "detected_at": "2026-10-28T05:10:05Z"
 }
 ```
-Field notes: `priority` P1–P4 · `reachability` reachable / unsure · `fix_status` fixed / needs_human ·
-`pr_url` may be empty when `fix_status` = `needs_human` · `evidence` has 1+ items.
+Field notes: `event` finding.fixed / finding.needs_human / finding.open · `priority` P1–P4 ·
+`reachability` reachable / unsure · `fix_status` fixed / needs_human / not_attempted ·
+`pr_url` empty unless `fix_status` = `fixed` · `owner_email` may be empty · `evidence` has 1+ items.
+Several findings in the same package share one `pr_url` (one PR per package) — still create one Jira issue per finding.
 
 **Process steps**
 1. Listener receives JSON → validate required fields (`cve_id`, `package`, `priority`, `client_name`). Missing → 400.
@@ -156,7 +158,8 @@ P1, P2, fixed, PRs opened · button: "Open dashboard" (`dashboard_url`).
 - Trigger: process schedule daily 09:00, plus manual "Execute" during the demo.
 - Client list: static JSON in a Message shape or a Cross Reference Table. For the demo, one entry:
   ```json
-  [ { "client_name": "Acme Retail", "repo_url": "<DEMO_REPO_URL, we send it>", "branch": "main", "auto_fix": true } ]
+  [ { "client_name": "Acme Retail", "repo_url": "<DEMO_REPO_URL, we send it>", "branch": "main", "auto_fix": true,
+    "owner_email": "<repo owner email>" } ]
   ```
 - For each entry: `POST ${BACKEND_URL}/api/scans`, header `X-API-Key: <PATCHPILOT_API_KEY>`,
   `Content-Type: application/json`, body = the entry.

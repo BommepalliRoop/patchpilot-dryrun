@@ -33,7 +33,7 @@ backend/            FastAPI app (Python 3.11)
   tests/
 frontend/           React 18 + Vite + TypeScript + Tailwind + Motion (motion/react)
   src/components/ src/pages/ src/lib/api.ts src/lib/mock/
-demo-target/        Small vulnerable Flask app used as the scan target (created at the event)
+(demo-target is a SEPARATE repo: D:\hackathon\demo-target -> github.com/BommepalliRoop/demo-target, built in T15)
 contracts/          Example JSON payloads (source of truth for shapes)
 docs/               Plan, architecture, contracts, UI spec, demo script, Boomi handoff
 tasks/              One file per task (T00..T18) + BOARD.md + STATUS.md
@@ -44,7 +44,7 @@ tasks/              One file per task (T00..T18) + BOARD.md + STATUS.md
 - Backend: `cd backend && uvicorn app.main:app --reload --port 8000`
 - Backend tests: `cd backend && pytest -q`
 - Frontend: `cd frontend && npm run dev` (port 5173)
-- Both: `make dev`
+- Both: `make dev` (Windows without make: `powershell -File scripts/dev.ps1`)
 - Lint: `make lint`
 
 ## Engineering rules
@@ -54,7 +54,8 @@ tasks/              One file per task (T00..T18) + BOARD.md + STATUS.md
    `LLM_MODE=mock|live`, `BOOMI_MODE=mock|live`, `GITHUB_MODE=mock|live`. Default is `mock`.
 4. Python: type hints everywhere, Pydantic models for all I/O, `httpx` for HTTP, no global state except the event bus.
 5. LLM calls go only through `app/services/llm.py`. Prompts live in `backend/app/prompts/*.md`. All LLM outputs are JSON and validated with Pydantic; on invalid JSON retry once, then fall back safely.
-6. Never execute code from the scanned repo outside a temporary virtualenv in `/tmp/patchpilot/<scan_id>`.
+6. Never execute code from the scanned repo outside a temporary virtualenv in `WORK_DIR/<scan_id>` (default `<system temp>/patchpilot`;
+   `/tmp/patchpilot` in Docker). Use `tempfile`/`pathlib`, never hardcode `/tmp` (devs are on Windows).
 7. Frontend: only call the backend through `src/lib/api.ts`. While the backend is not ready, use `src/lib/mock/` fixtures that match the contracts (`VITE_USE_MOCK=true`).
 8. UI must look professional: follow `docs/UI_SPEC.md` (dark-first, motion, no default Tailwind look).
 9. Keep secrets out of git. `.env` is gitignored; update `.env.example` when you add a variable.

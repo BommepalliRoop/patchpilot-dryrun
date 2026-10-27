@@ -75,7 +75,9 @@ flowchart TD
     D --> E[risk<br/>risk.py]
     E --> G{reachable?<br/>or unsure ≥ 0.5}
     G -- no --> K[record finding<br/>status open, no action]
-    G -- yes, auto_fix --> F[fix<br/>fixer.py · upgrade, pytest, AI patch]
+    G -- yes, auto_fix=false --> O[notify only<br/>event finding.open]
+    O --> S
+    G -- yes, auto_fix --> F[fix per package<br/>fixer.py · upgrade, pytest, AI patch]
     F --> H{tests pass?}
     H -- yes --> P[pr<br/>github_pr.py]
     H -- no after 2 retries --> N[needs_human]
@@ -150,13 +152,15 @@ sequenceDiagram
         Pipe->>Bus: {stage: reachability / risk}
     end
 
-    loop each reachable finding (auto_fix)
-        Pipe->>Svc: fixer.fix(finding)
+    loop each package with reachable findings (auto_fix)
+        Pipe->>Svc: fixer.fix(package, findings)
         Svc-->>Pipe: FixResult {new_version, patch_diff, tests_passed, attempts}
         opt tests_passed
-            Pipe->>GH: github_pr.open(branch patchpilot/cve-id)
+            Pipe->>GH: github_pr.open(branch patchpilot/package-version)
             GH-->>Pipe: pr_url
         end
+    end
+    loop each routed finding
         Pipe->>Boomi: POST /patchpilot/findings (B2)
         Boomi-->>Pipe: {jira_key, jira_url, teams_sent, compliance_log_id}
         Pipe->>DB: insert integration_event, update finding
@@ -241,9 +245,11 @@ Priority ≥9 P1, ≥7 P2, ≥4 P3, else P4.
 ## 7. LLD — fix engine state machine
 ```mermaid
 stateDiagram-v2
-    [*] --> Prepare: copy repo, branch patchpilot/cve-id
+    [*] --> Prepare: copy repo, branch patchpilot/package-version
     Prepare --> Bump: requirements.txt → smallest fixed version
-    Bump --> Test: venv + pip install + pytest -q (120 s)
+    Bump --> Install: venv + pip install (180 s)
+    Install --> Bump: install fails, try next release (max 3)
+    Install --> Test: pytest -q (120 s)
     Test --> Fixed: pass
     Test --> AIPatch: fail and attempts < 2
     AIPatch --> Test: apply unified diff (git apply --3way)
@@ -256,7 +262,8 @@ stateDiagram-v2
 ```mermaid
 erDiagram
     SCANS ||--o{ FINDINGS : has
-    FINDINGS ||--o| FIXES : has
+    SCANS ||--o{ FIXES : has
+    FIXES ||--o{ FINDINGS : "fixes (one per package)"
     FINDINGS ||--o{ INTEGRATION_EVENTS : logs
 
     SCANS {
@@ -264,7 +271,10 @@ erDiagram
         string client_name
         string repo_url
         string branch
+        bool auto_fix
+        string owner_email
         string status
+        string current_stage
         datetime started_at
         datetime finished_at
         int total_alerts
@@ -274,22 +284,32 @@ erDiagram
     FINDINGS {
         string id PK
         string scan_id FK
+        string fix_id FK
         string cve_id
+        json aliases_json
         string package
         string installed_version
         string fixed_version
         string summary
         float cvss
+        json vulnerable_symbols_json
         string reachability
         float confidence
         json evidence_json
+        text ai_explanation
         float score
         string priority
         string status
+        string jira_key
+        string jira_url
+        bool teams_sent
+        string compliance_log_id
+        json timeline_json
     }
     FIXES {
         string id PK
-        string finding_id FK
+        string scan_id FK
+        string package
         string new_version
         text patch_diff
         bool tests_passed
@@ -299,12 +319,15 @@ erDiagram
     }
     INTEGRATION_EVENTS {
         int id PK
-        string finding_id FK
+        string finding_id FK "nullable for B3/B4"
+        string process "B1-B4"
         string direction
         string endpoint
         json request_json
         json response_json
         int status_code
+        bool ok
+        string summary
         datetime created_at
     }
 ```
