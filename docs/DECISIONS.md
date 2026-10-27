@@ -44,3 +44,11 @@ components (shadcn/ui, Magic UI / Aceternity UI, Tremor) to save time — see do
 
 ## Judging story (one line)
 "300 alerts become the 3 that matter — each with a tested fix, a Jira ticket and an audit trail. Automatically, every day."
+
+## Scope lock (Oct 27)
+- Vulnerability source: **OSV only** (OSV-Scanner, fallback OSV.dev API). No extra scanners for the event —
+  the 3-hour sprint has no slack, and our edge is reachability + tested fix, not the number of scanners.
+- Roadmap (pitch slide only, not built at the event):
+  1. CISA KEV + EPSS enrichment ("actively exploited in the wild" boost in the risk score).
+  2. AI-written security proof test in each PR (fails before the fix, passes after).
+  3. Secret scanning (gitleaks), code scanning (Bandit/Semgrep), container scanning, more languages, license checks.
