@@ -110,6 +110,7 @@ effort per task in [tasks/BOARD.md](tasks/BOARD.md).
 | Safety questions | [Risks](docs/RISKS.md) |
 | Practice run | [Dry run](docs/DRY_RUN.md) |
 | Presenter | [Demo script](docs/DEMO_SCRIPT.md) |
+| Using / testing the app | [User guide](docs/USER_GUIDE.md) |
 | UI developers | [UI spec](docs/UI_SPEC.md) |
 
 ## How we work on the day
