@@ -15,7 +15,7 @@ maps and connections, deploy, and run the test calls in section 9. A process is 
 **Today's practice run:** build everything in a Boomi folder named `DRYRUN - PatchPilot` and do not reuse
 it tomorrow (hackathon rule: everything is built during the event). Tomorrow, rebuild in a fresh folder.
 
-**Version:** v3.3 (Oct 27). Changes since earlier copies:
+**Version:** v3.4 (Oct 27). Changes since earlier copies:
 - v2: idempotency (`Idempotency-Key` header, `finding_id` column in the compliance log), new `event` / `fix_status`
   values, optional `owner_email`.
 - v3: exploit data in B2 — `kev`, `epss`, `epss_percentile` (section 5); Jira label `actively-exploited` and an
@@ -26,6 +26,8 @@ it tomorrow (hackathon rule: everything is built during the event). Tomorrow, re
   and sends the connection details privately (section 4b). Google Sheet only as fallback.
 - v3.3: PatchPilot works for all languages — B2 has a new `ecosystem` field (PyPI, npm, Maven, Go, …) and a new
   `fix_status` value `fixed_untested` (upgrade PR opened, tests not run). Show the language in Jira and Teams.
+- v3.4: section 2a "API reference" — every endpoint, payload, success and error response in one place;
+  example `compliance_log_id` is now `log_fnd_07` (= `'log_' + finding_id`, as in section 4a).
 If you started from an older copy, apply these changes; nothing else changed.
 
 **Working in parallel:** you do not wait for us. The dev team builds the app at the same time with Boomi in
@@ -120,6 +122,85 @@ If time is short, finish B0 → B2 → B1. Until your endpoints are live the dev
 with a webhook, and a place for the compliance log (section 4). Check with the organisers whether
 building processes before 9:20 is allowed; assume it is not.
 
+## 2a. API reference — all endpoints in one place
+Full field lists are in sections 5, 7 and 8; this section is the quick lookup.
+
+| # | Direction | Method + URL | Auth | Request body | Success | Errors |
+|---|---|---|---|---|---|---|
+| B1 | Boomi → PatchPilot | `POST ${BACKEND_URL}/api/scans` | header `X-API-Key` | client entry (below) | `202` `{scan_id, status}` | `400` `401` `429` |
+| B2 | PatchPilot → Boomi | `POST ${BOOMI_BASE_URL}/patchpilot/findings` | Basic + `Idempotency-Key: <finding_id>` | finding (section 5) | `200` `{ok, jira_key, jira_url, teams_sent, compliance_log_id, processed_at}` | `400` `401` `502` `500` |
+| B3 | PatchPilot → Boomi | `POST ${BOOMI_BASE_URL}/patchpilot/scan-summary` | Basic + `Idempotency-Key: <scan_id>` | scan summary (section 8) | `200` `{ok, teams_sent}` | `400` `401` `500` |
+| B4 | PatchPilot → Boomi | `GET ${BOOMI_BASE_URL}/patchpilot/compliance?client_name=…&from=YYYY-MM-DD` | Basic | none (query parameters) | `200` `{client_name, from, items[]}` | `400` `401` `500` |
+
+All requests and responses use `Content-Type: application/json`, UTF-8, snake_case fields, timestamps in ISO-8601 UTC (`2026-10-28T05:11:40Z`).
+
+**B1 — request** (Boomi sends to us)
+```http
+POST /api/scans HTTP/1.1
+Host: <BACKEND_URL host>
+X-API-Key: <PATCHPILOT_API_KEY>
+Content-Type: application/json
+
+{ "client_name": "Acme Retail", "repo_url": "https://github.com/BommepalliRoop/demo-target", "branch": "main",
+  "auto_fix": true, "owner_email": "owner@easystepin.com" }
+```
+**B1 — responses** (we send back)
+```json
+202 { "scan_id": "scn_01", "status": "queued" }
+400 { "error": { "code": "repo_not_allowed", "message": "repo_url is not on the allowed list" } }
+400 { "error": { "code": "invalid_request", "message": "branch: invalid characters" } }
+401 { "error": { "code": "unauthorized", "message": "missing or wrong X-API-Key" } }
+429 { "error": { "code": "rate_limited", "message": "too many scans this hour" } }
+```
+
+**B2 — request** (we send to Boomi; full body in section 5)
+```http
+POST /ws/rest/patchpilot/findings HTTP/1.1
+Host: <BOOMI_BASE_URL host>
+Authorization: Basic <base64(BOOMI_USER:BOOMI_TOKEN)>
+Idempotency-Key: fnd_07
+Content-Type: application/json
+
+{ "event": "finding.fixed", "scan_id": "scn_01", "finding_id": "fnd_07", "client_name": "Acme Retail", "cve_id": "CVE-2020-14343",
+  "package": "pyyaml", "ecosystem": "PyPI", "priority": "P1", "fix_status": "fixed", "pr_url": "https://github.com/...", "...": "see section 5" }
+```
+**B2 — responses** (Boomi sends back)
+```json
+200 { "ok": true, "jira_key": "SEC-101", "jira_url": "https://<site>.atlassian.net/browse/SEC-101",
+      "teams_sent": true, "compliance_log_id": "log_fnd_07", "processed_at": "2026-10-28T05:11:40Z" }
+200 { "ok": true, "jira_key": "SEC-101", "jira_url": "...", "teams_sent": false, "compliance_log_id": "log_fnd_07", "processed_at": "..." }   ← Teams failed, Jira worked
+400 { "ok": false, "error": "invalid_request", "message": "missing cve_id" }
+401 { "ok": false, "error": "unauthorized", "message": "bad credentials" }
+502 { "ok": false, "error": "jira_create_failed", "message": "Jira returned 400: project SEC not found" }
+500 { "ok": false, "error": "log_write_failed", "message": "compliance log insert failed" }
+```
+A repeated `Idempotency-Key` returns the **same 200 body** as the first call (no new Jira issue).
+
+**B3 — request / responses** (full body in section 8)
+```json
+POST /ws/rest/patchpilot/scan-summary   (Basic auth, Idempotency-Key: scn_01)
+{ "event": "scan.completed", "scan_id": "scn_01", "client_name": "Acme Retail", "repo_url": "https://github.com/...",
+  "finished_at": "2026-10-28T05:11:42Z",
+  "stats": { "total_alerts": 35, "reachable": 3, "unsure": 1, "not_reachable": 31, "p1": 1, "p2": 1, "fixed": 2, "prs_opened": 2 },
+  "dashboard_url": "https://patchpilot.vercel.app/scans/scn_01" }
+
+200 { "ok": true, "teams_sent": true }
+500 { "ok": false, "error": "internal_error", "message": "Teams webhook returned 400" }
+```
+
+**B4 — request / responses**
+```json
+GET /ws/rest/patchpilot/compliance?client_name=Acme%20Retail&from=2026-10-01   (Basic auth, no body)
+
+200 { "client_name": "Acme Retail", "from": "2026-10-01",
+      "items": [ { "compliance_log_id": "log_fnd_07", "cve_id": "CVE-2020-14343", "package": "pyyaml", "priority": "P1",
+                   "detected_at": "2026-10-28T05:10:05Z", "fixed_at": "2026-10-28T05:11:40Z", "time_to_fix_minutes": 2,
+                   "jira_key": "SEC-101", "pr_url": "https://github.com/.../pull/3", "status": "fixed" } ] }
+200 { "client_name": "Acme Retail", "from": "2026-10-01", "items": [] }   ← nothing found
+400 { "ok": false, "error": "invalid_request", "message": "from must be YYYY-MM-DD" }
+```
+The `/ws/rest` prefix is Boomi's usual REST path; use whatever your Atom shows and tell the Lead the exact URLs.
+
 ## 3. B0 — Setup
 1. **Runtime with a public URL.** Use a Boomi **Atom Cloud** (or a cloud-hosted Atom) so PatchPilot
    on Render/Railway can reach your listeners over HTTPS. A local Atom on a laptop is not reachable from outside.
@@ -141,7 +222,7 @@ building processes before 9:20 is allowed; assume it is not.
 ## 4. Compliance log — one row per finding
 | Column | Type | From |
 |---|---|---|
-| compliance_log_id | string, you generate (e.g. `log_55`) | B2 |
+| compliance_log_id | string, you generate (e.g. `log_fnd_07`) | B2 |
 | finding_id | string, unique — used for idempotency | B2 request / `Idempotency-Key` header |
 | client_name, repo_url, cve_id, package, priority | string | B2 request |
 | detected_at | ISO-8601 UTC | B2 request |
@@ -298,7 +379,7 @@ call `/rest/api/2/issue`, which accepts a plain-text description.
 **Response 200:**
 ```json
 { "ok": true, "jira_key": "SEC-101", "jira_url": "https://<site>.atlassian.net/browse/SEC-101",
-  "teams_sent": true, "compliance_log_id": "log_55", "processed_at": "2026-10-28T05:11:40Z" }
+  "teams_sent": true, "compliance_log_id": "log_fnd_07", "processed_at": "2026-10-28T05:11:40Z" }
 ```
 If Teams fails but Jira worked, still return 200 with `"teams_sent": false`.
 If Jira fails: 502 with `{ "ok": false, "error": "jira_create_failed", "message": "..." }`.
@@ -364,7 +445,7 @@ is harmless; do it only if it is easy.
 Steps: read query parameters → query the compliance log for that client with `detected_at >= from` → respond:
 ```json
 { "client_name": "Acme Retail", "from": "2026-10-01",
-  "items": [ { "compliance_log_id": "log_55", "cve_id": "CVE-2020-14343", "package": "pyyaml", "priority": "P1",
+  "items": [ { "compliance_log_id": "log_fnd_07", "cve_id": "CVE-2020-14343", "package": "pyyaml", "priority": "P1",
                "detected_at": "2026-10-28T05:10:05Z", "fixed_at": "2026-10-28T05:11:40Z", "time_to_fix_minutes": 2,
                "jira_key": "SEC-101", "pr_url": "https://github.com/<org>/demo-target/pull/3", "status": "fixed" } ] }
 ```

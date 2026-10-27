@@ -83,7 +83,7 @@ Response 200 — FindingDetail = FindingSummary +
   "ai_explanation": "User-supplied YAML from POST /import reaches yaml.load without SafeLoader.",
   "fix": { "new_version": "5.4.1", "attempts": 1, "tests_passed": true,
            "patch_diff": "--- a/requirements.txt ...", "pr_url": "https://github.com/.../pull/3", "status": "fixed" },
-  "integration": { "jira_key": "SEC-101", "jira_url": "https://...", "teams_sent": true, "compliance_log_id": "log_55" },
+  "integration": { "jira_key": "SEC-101", "jira_url": "https://...", "teams_sent": true, "compliance_log_id": "log_fnd_07" },
   "timeline": [{ "stage": "scan", "at": "2026-10-28T05:10:05Z", "message": "Detected via OSV" }]
 }
 ```
@@ -130,7 +130,7 @@ Boomi does: Decision on priority (P1/P2 urgent path) → Jira create issue → T
 Response 200: `contracts/boomi/B2_finding_response.json`
 ```json
 { "ok": true, "jira_key": "SEC-101", "jira_url": "https://<site>.atlassian.net/browse/SEC-101",
-  "teams_sent": true, "compliance_log_id": "log_55", "processed_at": "2026-10-28T05:11:40Z" }
+  "teams_sent": true, "compliance_log_id": "log_fnd_07", "processed_at": "2026-10-28T05:11:40Z" }
 ```
 Error response (4xx/5xx): `{ "ok": false, "error": "jira_create_failed", "message": "..." }`
 

@@ -3,7 +3,7 @@
   "from": "2026-10-01",
   "items": [
     {
-      "compliance_log_id": "log_55",
+      "compliance_log_id": "log_fnd_07",
       "cve_id": "CVE-2020-14343",
       "package": "pyyaml",
       "priority": "P1",
