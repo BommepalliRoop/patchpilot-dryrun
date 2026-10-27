@@ -4,6 +4,7 @@
 |---|---|
 | Owner lane | Dev C |
 | Model | Sonnet 5.5 |
+| Effort | medium |
 | Wave | 3 |
 | Depends on | T03, T11 |
 | Unblocks | T17 |

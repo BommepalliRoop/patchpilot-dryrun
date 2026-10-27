@@ -4,6 +4,7 @@
 |---|---|
 | Owner lane | Everyone |
 | Model | Sonnet 5.5 |
+| Effort | medium |
 | Wave | 4 |
 | Depends on | T17 |
 | Unblocks | — |

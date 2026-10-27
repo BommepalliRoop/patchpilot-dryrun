@@ -4,6 +4,7 @@
 |---|---|
 | Owner lane | Dev D |
 | Model | Haiku 5.5 |
+| Effort | low |
 | Wave | 3 |
 | Depends on | T11 |
 | Unblocks | T17 |

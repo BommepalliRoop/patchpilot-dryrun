@@ -4,6 +4,7 @@
 |---|---|
 | Owner lane | Dev E / Presenter |
 | Model | Haiku 5.5 |
+| Effort | low |
 | Wave | 1 |
 | Depends on | — |
 | Unblocks | T02, T06, T08, T17 |

@@ -4,6 +4,7 @@
 |---|---|
 | Owner lane | Dev A |
 | Model | Opus 5.5 |
+| Effort | high |
 | Wave | 2 |
 | Depends on | T01, T02 (others via stubs) |
 | Unblocks | T17 |

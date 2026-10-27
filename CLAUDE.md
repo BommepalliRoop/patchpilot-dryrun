@@ -11,7 +11,9 @@ function is actually reachable from our code → scores real risk → upgrades t
 lets AI patch broken code (max 2 retries) → opens a GitHub pull request → notifies Boomi, which
 creates the Jira ticket, posts the Teams alert, and writes the compliance log.
 
-Background and decisions: `docs/DECISIONS.md`. Full plan: `docs/PLAN.md`. Architecture: `docs/ARCHITECTURE.md`. API contracts: `docs/API_CONTRACTS.md`.
+Background and decisions: `docs/DECISIONS.md`. Full plan: `docs/PLAN.md`. Architecture: `docs/ARCHITECTURE.md`
+(diagrams: `docs/DIAGRAMS.md`, stack: `docs/TECH_STACK.md`). API contracts: `docs/API_CONTRACTS.md`.
+Model, effort and the "what next" queue for every task: `tasks/BOARD.md`. Start each task in a fresh session.
 
 ## Hackathon rules that affect you
 - All code is written during the event (Oct 28, 2026, build sprint 9:20 AM – 12:20 PM). Code freeze 12:20 PM.

@@ -4,6 +4,7 @@
 |---|---|
 | Owner lane | Dev C |
 | Model | Sonnet 5.5 |
+| Effort | medium |
 | Wave | 1 |
 | Depends on | T00 (T01 for event logging) |
 | Unblocks | T03, T17 |

@@ -4,6 +4,7 @@
 |---|---|
 | Owner lane | Dev B |
 | Model | Haiku 5.5 |
+| Effort | low |
 | Wave | 2 |
 | Depends on | T00 |
 | Unblocks | T03 |

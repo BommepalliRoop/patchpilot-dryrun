@@ -4,6 +4,7 @@
 |---|---|
 | Owner lane | Lead |
 | Model | Sonnet 5.5 |
+| Effort | high |
 | Wave | 0 |
 | Depends on | — |
 | Unblocks | T01–T16 |
