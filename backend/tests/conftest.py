@@ -4,7 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.core.config import reset_settings_cache
-from app.core.db import reset_engine
+from app.core.db import init_db, reset_engine
 from app.core.events import bus
 
 # Pinned so a developer's real .env can never change test behaviour.
@@ -46,5 +46,6 @@ def app():
 
 @pytest.fixture
 def client(app):
+    init_db()  # TestClient used without `with` skips the lifespan
     # raise_server_exceptions=False: we test the 500 envelope that real clients see.
     return TestClient(app, raise_server_exceptions=False)

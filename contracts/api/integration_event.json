@@ -1,0 +1,2 @@
+{ "id": 1, "finding_id": "fnd_07", "process": "B2", "endpoint": "/patchpilot/findings",
+  "status_code": 200, "ok": true, "summary": "Jira SEC-101 created, Slack sent", "created_at": "2026-10-28T05:11:40Z" }

@@ -1,4 +1,4 @@
-"""Scan routes (stub: fixtures until T01 reads the DB and T03 runs the pipeline)."""
+"""Scan routes (reads come from the DB; T03 replaces the POST stub and the SSE fixture playback)."""
 from __future__ import annotations
 
 import asyncio
@@ -10,6 +10,7 @@ from sse_starlette.sse import EventSourceResponse
 from app.api import fixtures
 from app.core.errors import ApiError
 from app.core.events import bus
+from app.models import repository as repo
 from app.models.schemas import Scan, ScanCreate, ScanCreated
 
 router = APIRouter(prefix="/api/scans", tags=["scans"])
@@ -22,14 +23,14 @@ async def create_scan(body: ScanCreate) -> ScanCreated:
 
 @router.get("", response_model=list[Scan])
 async def list_scans() -> list[Scan]:
-    return fixtures.SCANS
+    return repo.list_scans()
 
 
 @router.get("/{scan_id}", response_model=Scan)
 async def get_scan(scan_id: str) -> Scan:
-    for scan in fixtures.SCANS:
-        if scan.scan_id == scan_id:
-            return scan
+    scan = repo.get_scan(scan_id)
+    if scan is not None:
+        return scan
     raise ApiError(404, "not_found", f"Scan {scan_id} not found")
 
 

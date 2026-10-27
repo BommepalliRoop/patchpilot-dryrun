@@ -1,0 +1,8 @@
+{
+  "scan_id": "scn_01", "client_name": "Acme Retail", "repo_url": "https://github.com/BommepalliRoop/demo-target", "branch": "main",
+  "status": "completed", "current_stage": "done",
+  "started_at": "2026-10-28T05:10:00Z", "finished_at": "2026-10-28T05:11:42Z",
+  "languages": [ { "ecosystem": "PyPI", "manifests": ["requirements.txt"], "analysis": "deep" },
+                 { "ecosystem": "npm", "manifests": ["tools/package-lock.json"], "analysis": "generic" } ],
+  "stats": { "total_alerts": 12, "reachable": 2, "unsure": 1, "not_reachable": 9, "p1": 1, "p2": 1, "fixed": 2, "prs_opened": 2 }
+}

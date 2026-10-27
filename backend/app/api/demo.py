@@ -7,6 +7,7 @@ from app.core.config import get_settings
 from app.core.errors import ApiError
 from app.core.events import bus
 from app.core.security import require_api_key
+from app.models import repository as repo
 from app.models.schemas import Health, Ok
 
 router = APIRouter(prefix="/api", tags=["demo"])
@@ -27,5 +28,6 @@ def _demo_only(x_api_key: str | None = Header(default=None)) -> None:
 
 @router.post("/demo/reset", response_model=Ok, dependencies=[Depends(_demo_only)])
 async def demo_reset() -> Ok:
-    bus.clear()  # T01 also clears the DB tables, T02/T08 the WORK_DIR
+    repo.clear_all()
+    bus.clear()  # T02/T08 also clear the WORK_DIR
     return Ok()
