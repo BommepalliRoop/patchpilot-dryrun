@@ -1,0 +1,1 @@
+{"diff": "--- a/app.py\n+++ b/app.py\n@@ -1,2 +1,2 @@\n-data = yaml.load(text)\n+data = yaml.load(text, Loader=yaml.SafeLoader)\n", "explanation": "Pass an explicit Loader, which the upgraded library now requires."}

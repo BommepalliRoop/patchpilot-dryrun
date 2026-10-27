@@ -1,0 +1,1 @@
+{"reachability": "reachable", "confidence": 0.9, "explanation": "The vulnerable symbol is called on untrusted input without a safe loader."}
