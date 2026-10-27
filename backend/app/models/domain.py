@@ -77,7 +77,7 @@ class B2Response(BaseModel):
     ok: bool
     jira_key: str | None = None
     jira_url: str | None = None
-    teams_sent: bool = False
+    slack_sent: bool = False
     compliance_log_id: str | None = None
     processed_at: str | None = None
     error: str | None = None
@@ -86,4 +86,4 @@ class B2Response(BaseModel):
 
 class B3Response(BaseModel):
     ok: bool
-    teams_sent: bool = False
+    slack_sent: bool = False

@@ -68,7 +68,7 @@ export const mockFindingDetail: FindingDetail = {
     pr_url: 'https://github.com/BommepalliRoop/demo-target/pull/3', status: 'fixed',
   },
   integration: {
-    jira_key: 'SEC-101', jira_url: 'https://example.atlassian.net/browse/SEC-101', teams_sent: true,
+    jira_key: 'SEC-101', jira_url: 'https://example.atlassian.net/browse/SEC-101', slack_sent: true,
     compliance_log_id: 'log_fnd_07',
   },
   timeline: [{ stage: 'scan', at: '2026-10-28T05:10:05Z', message: 'Detected via OSV' }],
@@ -77,7 +77,7 @@ export const mockFindingDetail: FindingDetail = {
 export const mockIntegrationEvents: IntegrationEvent[] = [
   {
     id: 1, finding_id: 'fnd_07', process: 'B2', endpoint: '/patchpilot/findings', status_code: 200, ok: true,
-    summary: 'Jira SEC-101 created, Teams sent', created_at: '2026-10-28T05:11:40Z',
+    summary: 'Jira SEC-101 created, Slack sent', created_at: '2026-10-28T05:11:40Z',
   },
 ]
 

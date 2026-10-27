@@ -115,7 +115,7 @@ class FixInfo(BaseModel):
 class IntegrationInfo(BaseModel):
     jira_key: str | None = None
     jira_url: str | None = None
-    teams_sent: bool = False
+    slack_sent: bool = False
     compliance_log_id: str | None = None
 
 

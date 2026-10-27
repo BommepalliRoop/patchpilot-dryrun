@@ -41,7 +41,7 @@ def test_finding_summary_and_detail_shape(client):
     }
     assert set(detail["evidence"][0]) == {"file", "line", "in_route", "code_snippet", "start_line"}
     assert set(detail["fix"]) == {"new_version", "attempts", "tests_passed", "patch_diff", "pr_url", "status"}
-    assert set(detail["integration"]) == {"jira_key", "jira_url", "teams_sent", "compliance_log_id"}
+    assert set(detail["integration"]) == {"jira_key", "jira_url", "slack_sent", "compliance_log_id"}
 
 
 def test_finding_filters(client):

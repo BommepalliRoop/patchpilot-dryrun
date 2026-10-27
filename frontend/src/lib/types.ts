@@ -104,7 +104,7 @@ export interface FixInfo {
 export interface IntegrationInfo {
   jira_key?: string | null
   jira_url?: string | null
-  teams_sent: boolean
+  slack_sent: boolean
   compliance_log_id?: string | null
 }
 

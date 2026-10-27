@@ -73,13 +73,13 @@ FINDING_DETAIL = FindingDetail(
                 patch_diff="--- a/requirements.txt\n+++ b/requirements.txt\n@@ -1 +1 @@\n-PyYAML==5.3.1\n+PyYAML==5.4.1\n",
                 pr_url="https://github.com/BommepalliRoop/demo-target/pull/3", status="fixed"),
     integration=IntegrationInfo(jira_key="SEC-101", jira_url="https://example.atlassian.net/browse/SEC-101",
-                                teams_sent=True, compliance_log_id="log_fnd_07"),
+                                slack_sent=True, compliance_log_id="log_fnd_07"),
     timeline=[TimelineItem(stage="scan", at="2026-10-28T05:10:05Z", message="Detected via OSV")],
 )
 
 INTEGRATION_EVENTS: list[IntegrationEvent] = [
     IntegrationEvent(id=1, finding_id="fnd_07", process="B2", endpoint="/patchpilot/findings", status_code=200,
-                     ok=True, summary="Jira SEC-101 created, Teams sent", created_at="2026-10-28T05:11:40Z"),
+                     ok=True, summary="Jira SEC-101 created, Slack sent", created_at="2026-10-28T05:11:40Z"),
 ]
 
 COMPLIANCE = ComplianceReport(
