@@ -263,6 +263,7 @@ CREATE TABLE compliance_log (
   created_at        TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX compliance_log_client_date ON compliance_log (client_name, detected_at);
+ALTER TABLE compliance_log ENABLE ROW LEVEL SECURITY;  -- blocks Supabase's public web API; Boomi (postgres user) is unaffected
 ```
 
 The three queries your processes need (`?` = parameters):
@@ -294,19 +295,21 @@ Where to find them: Supabase dashboard → project `patchpilot` → **Connect** 
 
 | Setting | Value |
 |---|---|
-| Host (Session pooler) | `aws-0-<region>.pooler.supabase.com` (filled in by the Lead) |
+| Host (Session pooler) | `aws-0-ap-northeast-1.pooler.supabase.com` |
 | Port | `5432` (session mode) |
 | Database | `postgres` |
-| User | `postgres.<project-ref>` (filled in by the Lead) |
+| User | `postgres.eyaujwqdizcselugymkn` |
 | Password | the database password — private message from the Lead only |
 | SSL | required (`sslmode=require`) |
-| JDBC URL | `jdbc:postgresql://aws-0-<region>.pooler.supabase.com:5432/postgres?sslmode=require` |
+| JDBC URL | `jdbc:postgresql://aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres?sslmode=require` |
 
 Why the Session pooler: Supabase's direct host `db.<project-ref>.supabase.co` is IPv6-only on the free plan, and many
 Boomi runtimes only speak IPv4. The Session pooler (port **5432**) works over IPv4 and supports JDBC prepared statements.
 Do **not** use the Transaction pooler (port 6543) — it breaks prepared statements.
 
-Status: table to be created by the Lead in Supabase → SQL Editor with the SQL above (same table and queries as before).
+Status (Oct 27): table `public.compliance_log` + index created in Supabase project `patchpilot` (region ap-northeast-1),
+row level security on. The idempotency lookup, insert-with-`ON CONFLICT` and B4 report queries were tested with a test
+row (duplicate ignored, `time_to_fix_minutes` = 2 as expected); the test row was removed — the table is empty.
 
 The Lead also sends, privately: Jira site URL, Jira user email, Jira API token, Jira project key, and the Teams
 webhook URL — unless your team already has its own Jira/Teams set up, in which case tell the Lead which ones you use.
