@@ -23,6 +23,9 @@ Decide if our code really calls the vulnerable function. This is the core differ
 - Tests on fixture code covering: direct call, aliased import, from-import alias, safe usage, no usage, call inside route.
 - Runs in < 3 s on the demo repo excluding LLM time.
 
+## Hardening (docs/RISKS.md)
+Implement and test these rows: S5, S7, E10, L3, L9.
+
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.
 - Use mock modes for anything another lane has not finished.

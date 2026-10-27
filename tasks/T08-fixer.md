@@ -24,6 +24,9 @@ Produce a tested fix on a branch.
 - On the demo repo: upgrade that breaks one call gets fixed by the AI patch in mock mode (canned diff) and tests pass.
 - Never leaves the original clone modified.
 
+## Hardening (docs/RISKS.md)
+Implement and test these rows: S2, S6, S7, S14, N4, E7, E10, E11, E12, E13, L1, L2, L5, L7.
+
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.
 - Use mock modes for anything another lane has not finished.

@@ -26,6 +26,9 @@ Run all stages in a background task and stream progress.
 - Pipeline survives a failing stage for one finding (marks that finding, continues others).
 - Test with all external modes = mock.
 
+## Hardening (docs/RISKS.md)
+Implement and test these rows: S1, S3, S9, S10, N6, N7, N8, N9, E3, E4, E5, E6, E7, L7.
+
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.
 - Use mock modes for anything another lane has not finished.

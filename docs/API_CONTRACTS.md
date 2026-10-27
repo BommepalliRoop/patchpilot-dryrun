@@ -14,6 +14,7 @@ Enums
 ---------------------------------------------------------------
 ## Part A — PatchPilot backend REST API (frontend ↔ backend, and Boomi B1 → backend)
 Base URL: `${BACKEND_URL}` (local `http://localhost:8000`). Auth for machine callers: header `X-API-Key: ${PATCHPILOT_API_KEY}`.
+Hardening rules for every endpoint: `docs/RISKS.md`.
 
 ### POST /api/scans  — start a scan
 Request
@@ -27,6 +28,8 @@ Response 202
 ```json
 { "scan_id": "scn_01", "status": "queued" }
 ```
+If a scan for the same `repo_url` + `branch` is already `queued`/`running`, the response is 202 with that scan's id and
+status (no second scan). More than `MAX_SCANS_PER_HOUR` → 429 `rate_limited`. Invalid `branch` / non-https `repo_url` → 400 `invalid_request`.
 
 ### GET /api/scans  — list scans (newest first)
 Response 200: `[Scan]`
@@ -89,14 +92,19 @@ Response 200: same shape as `contracts/boomi/B4_compliance_response.json`. Mock 
 
 ### GET /api/health  → `{ "status": "ok", "llm_mode": "mock", "boomi_mode": "mock", "github_mode": "mock" }`
 ### POST /api/demo/reset  → clears DB and workdirs. Response `{ "ok": true }`
+Requires `X-API-Key`; returns 404 unless `DEMO_MODE=true`.
 
-Errors: `{ "error": { "code": "not_found", "message": "..." } }` with 400/401/404/409/500.
+Errors: `{ "error": { "code": "not_found", "message": "..." } }` with 400/401/404/409/429/500.
+Codes: `invalid_request` (400), `repo_not_allowed` (400), `unauthorized` (401), `not_found` (404), `conflict` (409),
+`rate_limited` (429), `internal_error` (500). Messages never contain stack traces or secrets.
 
 ---------------------------------------------------------------
 ## Part B — Boomi processes (built by the Boomi team with Boomi Companion)
 Base URL for Boomi-hosted endpoints: `${BOOMI_BASE_URL}` (the Boomi team shares it).
 Auth to Boomi: HTTP Basic (`BOOMI_USER` / `BOOMI_TOKEN`) unless the Boomi team agrees otherwise.
-Timeout on our side: 15 s. Our client retries once on 5xx.
+Timeout on our side: 15 s. Our client retries once on 5xx or timeout.
+Every B2/B3 call carries header `Idempotency-Key: <finding_id>` (B3: `<scan_id>`). Boomi must treat a repeated key as the
+same request: return the earlier result (same `jira_key`) instead of creating a second Jira issue / Teams post.
 
 ### B1 — Scheduled scan trigger (Boomi → PatchPilot)
 Boomi schedule (daily 9:00 AM; on demo day also a manual "Run now"). For each client repo in its config list

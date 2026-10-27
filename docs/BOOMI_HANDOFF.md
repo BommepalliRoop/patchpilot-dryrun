@@ -63,6 +63,7 @@ building processes before 9:20 is allowed; assume it is not.
 | Column | Type | From |
 |---|---|---|
 | compliance_log_id | string, you generate (e.g. `log_55`) | B2 |
+| finding_id | string, unique — used for idempotency | B2 request / `Idempotency-Key` header |
 | client_name, repo_url, cve_id, package, priority | string | B2 request |
 | detected_at | ISO-8601 UTC | B2 request |
 | fixed_at | ISO-8601 UTC, = processing time when `fix_status` = `fixed`, else empty | B2 |
@@ -111,6 +112,9 @@ Several findings in the same package share one `pr_url` (one PR per package) —
 
 **Process steps**
 1. Listener receives JSON → validate required fields (`cve_id`, `package`, `priority`, `client_name`). Missing → 400.
+   **Idempotency:** read header `Idempotency-Key` (= `finding_id`). If the compliance log already has a row for that
+   `finding_id`, skip steps 2–5 and return the stored `jira_key`/`jira_url`/`compliance_log_id` (we retry after timeouts,
+   so without this you get duplicate Jira tickets). Store `finding_id` in the log row.
 2. Decision on `priority`: P1/P2 = urgent branch (Jira Highest/High, Teams card marked urgent); P3/P4 = normal.
 3. Create Jira issue (mapping below) → keep `key` and build `jira_url` = `<site>/browse/<key>`.
 4. Post Teams message (section 6) with links to `pr_url` and `jira_url`.

@@ -20,6 +20,9 @@ Make Boomi visible.
 ## Acceptance criteria
 - Works in mock mode; shows the live Jira keys once Boomi is live.
 
+## Hardening (docs/RISKS.md)
+Implement and test these rows: E14.
+
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.
 - Use mock modes for anything another lane has not finished.

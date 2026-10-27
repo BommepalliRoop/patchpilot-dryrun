@@ -23,6 +23,9 @@ Clone a repo and turn osv-scanner output into RawVuln objects.
 - Running against the demo target (or a tiny fixture repo) returns ≥3 RawVuln with CVE ids and fixed versions.
 - Tests use the saved fixture, no network.
 
+## Hardening (docs/RISKS.md)
+Implement and test these rows: S2, S3, N2, N3, E7, E13, L1, L2, L4, L6, L8.
+
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.
 - Use mock modes for anything another lane has not finished.

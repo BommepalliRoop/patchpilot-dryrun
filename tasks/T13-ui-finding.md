@@ -22,6 +22,9 @@ Show the proof and the fix.
 ## Acceptance criteria
 - Renders the contract example perfectly; handles needs_human and not_reachable states.
 
+## Hardening (docs/RISKS.md)
+Implement and test these rows: S11, E14.
+
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.
 - Use mock modes for anything another lane has not finished.

@@ -21,6 +21,9 @@ Push the fix branch and open a clear PR.
 ## Acceptance criteria
 - Live: one real PR opened on the demo repo. Mock: deterministic URL.
 
+## Hardening (docs/RISKS.md)
+Implement and test these rows: S4, N11, L7.
+
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.
 - Use mock modes for anything another lane has not finished.

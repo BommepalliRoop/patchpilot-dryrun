@@ -22,6 +22,9 @@ The pages judges will stare at.
 - Full scan flow is watchable end-to-end in mock mode in ~25 s with smooth animation.
 - Switching `VITE_USE_MOCK=false` works against the real backend.
 
+## Hardening (docs/RISKS.md)
+Implement and test these rows: S8 (Shift+R asks for the key), N7, N8, E14.
+
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.
 - Use mock modes for anything another lane has not finished.

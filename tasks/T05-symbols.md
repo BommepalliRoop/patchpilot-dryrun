@@ -22,6 +22,9 @@ Turn an advisory into the exact functions that are dangerous.
 - For the demo CVEs, returns the expected symbols (unit tests with mock LLM).
 - Cache hit avoids a second LLM call.
 
+## Hardening (docs/RISKS.md)
+Implement and test these rows: S7, E10, L2, L3.
+
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.
 - Use mock modes for anything another lane has not finished.

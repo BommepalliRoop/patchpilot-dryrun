@@ -19,6 +19,9 @@ Pure function scoring.
 ## Acceptance criteria
 - Table-driven tests for every priority boundary.
 
+## Hardening (docs/RISKS.md)
+Implement and test these rows: — (pure function; still reject cvss outside 0–10 with ValueError).
+
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.
 - Use mock modes for anything another lane has not finished.

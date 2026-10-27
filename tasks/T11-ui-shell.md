@@ -23,6 +23,9 @@ Make it look like a premium security product from the first screen.
 - A `/styleguide` route shows every component in all states.
 - Lighthouse accessibility ≥ 90 on the styleguide page.
 
+## Hardening (docs/RISKS.md)
+Implement and test these rows: S11, E14, E15.
+
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.
 - Use mock modes for anything another lane has not finished.

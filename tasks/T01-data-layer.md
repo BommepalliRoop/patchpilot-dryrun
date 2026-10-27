@@ -23,6 +23,9 @@ SQLModel tables and Pydantic API schemas.
 - Unit tests for create/read/filter.
 - API responses validate against the example JSON in contracts/ (write a test that loads them).
 
+## Hardening (docs/RISKS.md)
+Implement and test these rows: S8 (reset needs `X-API-Key` + `DEMO_MODE=true`), E8, L10.
+
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.
 - Use mock modes for anything another lane has not finished.

@@ -23,6 +23,9 @@ One place for all model calls.
 - Mock mode returns valid objects for prompts: extract_symbols, reachability_verdict, patch_code, pr_description.
 - Live mode tested once with the kickoff key (manual).
 
+## Hardening (docs/RISKS.md)
+Implement and test these rows: N1, E9, O2.
+
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.
 - Use mock modes for anything another lane has not finished.

@@ -75,6 +75,7 @@ Priority: ≥9 P1, ≥7 P2, ≥4 P3, else P4.
   status_code, ok, summary, created_at
 
 ## Security of the engine
+Full threat and failure list: `docs/RISKS.md`.
 Scanned code runs only inside a temp virtualenv under `WORK_DIR` (default `<system temp>/patchpilot/<scan_id>`, i.e.
 `/tmp/patchpilot/...` in Docker); no secrets are passed to it (clean env for pip/pytest); workdirs are deleted after
 the scan. `POST /api/scans` only accepts repos under `ALLOWED_REPO_PREFIXES`, so the public URL cannot be used to

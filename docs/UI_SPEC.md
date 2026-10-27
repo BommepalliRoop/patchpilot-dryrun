@@ -46,5 +46,5 @@ content max-width 1280px. Responsive down to 1024px; mobile is not a priority.
 
 ## Demo-friendly details
 - Big readable numbers (judges watch from a distance) — hero stats at 40px.
-- "Demo mode" badge and a hidden reset button (Shift+R calls `/api/demo/reset`).
+- "Demo mode" badge and a hidden reset button (Shift+R asks for the admin key, then calls `/api/demo/reset`; the key is never stored in the bundle).
 - Empty states with illustration-style icons, never blank.

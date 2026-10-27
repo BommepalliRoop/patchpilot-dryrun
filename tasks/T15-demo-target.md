@@ -25,6 +25,9 @@ A small, realistic client app to scan (separate GitHub repo). Build it in a sibl
 ## Acceptance criteria
 - osv-scanner on it reports the expected alerts (record the real number in STATUS.md note; demo script and funnel use it); pytest passes on the old versions under Python 3.11.
 
+## Hardening (docs/RISKS.md)
+Implement and test these rows: — (keep the app small; no real secrets in it).
+
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.
 - Use mock modes for anything another lane has not finished.

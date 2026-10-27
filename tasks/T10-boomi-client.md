@@ -23,6 +23,9 @@ Call Boomi processes B2/B3/B4 exactly per contract.
 - Pydantic validation test: generated payload == contract keys.
 - Mock and live paths both covered (live behind an env flag).
 
+## Hardening (docs/RISKS.md)
+Implement and test these rows: N5 (`Idempotency-Key` header), N6, S4.
+
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.
 - Use mock modes for anything another lane has not finished.

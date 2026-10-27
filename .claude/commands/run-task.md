@@ -4,7 +4,7 @@ argument-hint: <task-id e.g. T06>
 ---
 You are implementing PatchPilot task **$ARGUMENTS**.
 
-1. Read `CLAUDE.md`, `docs/ARCHITECTURE.md`, `docs/API_CONTRACTS.md`, `tasks/BOARD.md` and the task file `tasks/$ARGUMENTS-*.md`. For UI tasks also read `docs/UI_SPEC.md`.
+1. Read `CLAUDE.md`, `docs/ARCHITECTURE.md`, `docs/API_CONTRACTS.md`, `tasks/BOARD.md` and the task file `tasks/$ARGUMENTS-*.md`. For UI tasks also read `docs/UI_SPEC.md`. Read the rows of `docs/RISKS.md` listed in the task's "Hardening" section — they are part of the scope and need tests too.
 2. Check `tasks/STATUS.md`. If a dependency is not `done`, continue only if you can use its mock mode or interface stub; say so clearly.
 3. `git pull origin main`, create branch from the task file, set the task to `in_progress` in STATUS.md.
 4. Make a short plan (max 8 bullets), then implement exactly the Scope. Do not edit files owned by other tasks except to wire your module in where the task says.

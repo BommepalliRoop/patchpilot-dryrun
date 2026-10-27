@@ -23,6 +23,9 @@ Public URLs so Boomi can call us and judges can open the app.
 ## Acceptance criteria
 - Public `GET /api/health` reachable; frontend on Vercel talks to it; Boomi B1 can start a scan.
 
+## Hardening (docs/RISKS.md)
+Implement and test these rows: S2 (no `.env` in the image), S12, N10.
+
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.
 - Use mock modes for anything another lane has not finished.
