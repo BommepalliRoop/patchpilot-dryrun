@@ -23,7 +23,7 @@ One page for "what do we use, where, and why". Exact library versions are pinned
 | Styling | Tailwind CSS + shadcn/ui components themed with our tokens | Professional look without building primitives |
 | Motion | Motion (`motion/react`) + Magic UI / Aceternity pieces (NumberTicker, AnimatedBeam, BorderBeam) | Motion-rich UI required by the brief |
 | Charts / code | Recharts (or Tremor) · Shiki (`github-dark`) · lucide-react icons | Stat cards, trends, highlighted evidence lines |
-| Integration | Boomi Integration, built with Boomi Companion (processes B1–B4) | Mandatory; Boomi owns Jira, Teams and the compliance log |
+| Integration | Boomi Integration, built with Boomi Companion (processes B1–B4) | Mandatory; Boomi owns Jira, Slack and the compliance log |
 | Deploy | Backend: Docker on Render or Railway · Frontend: Vercel · Fallback: laptop + Cloudflare Tunnel | Public URLs so Boomi can call us; tunnel if a host fails |
 
 ## Backend
@@ -53,8 +53,8 @@ Rules: JSON only, validated; on invalid JSON retry once with the validation erro
 | ID | Direction | Endpoint |
 |---|---|---|
 | B1 | Boomi → PatchPilot | `POST ${BACKEND_URL}/api/scans` with `X-API-Key` |
-| B2 | PatchPilot → Boomi | `POST ${BOOMI_BASE_URL}/patchpilot/findings` → Jira + Teams + compliance log, returns `jira_key` |
-| B3 | PatchPilot → Boomi | `POST ${BOOMI_BASE_URL}/patchpilot/scan-summary` → Teams summary card |
+| B2 | PatchPilot → Boomi | `POST ${BOOMI_BASE_URL}/patchpilot/findings` → Jira + Slack + compliance log, returns `jira_key` |
+| B3 | PatchPilot → Boomi | `POST ${BOOMI_BASE_URL}/patchpilot/scan-summary` → Slack summary message |
 | B4 | PatchPilot → Boomi | `GET ${BOOMI_BASE_URL}/patchpilot/compliance` → audit rows |
 
 ## Modes and environment

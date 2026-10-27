@@ -2,7 +2,7 @@
   "ok": true,
   "jira_key": "SEC-101",
   "jira_url": "https://<site>.atlassian.net/browse/SEC-101",
-  "teams_sent": true,
+  "slack_sent": true,
   "compliance_log_id": "log_fnd_07",
   "processed_at": "2026-10-28T05:11:40Z"
 }

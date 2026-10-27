@@ -17,7 +17,7 @@ Show the proof and the fix.
 - Header with CVE, package, score ring (animated), priority badge, threat chips: red "Actively exploited (CISA KEV)" when `kev`,
   and "EPSS 6% · top 7%" from `epss` / `epss_percentile` (hide when null).
 - Evidence CodeViewer with highlighted line and in-route tag; AI explanation card.
-- Fix card: DiffViewer, tests passed, attempts, Open PR button; Integration card: Jira link, Teams sent, compliance id; vertical Timeline.
+- Fix card: DiffViewer, tests passed, attempts, Open PR button; Integration card: Jira link, Slack sent, compliance id; vertical Timeline.
 - Re-run fix button (POST /api/findings/{id}/fix).
 
 - Analysis chip: "Deep analysis (code parser)" for `deep`, "Text + AI analysis" for `generic`. Fix card state for `fixed_untested`: amber, "Upgrade PR ready — tests not run".

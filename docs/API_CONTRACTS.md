@@ -83,7 +83,7 @@ Response 200 — FindingDetail = FindingSummary +
   "ai_explanation": "User-supplied YAML from POST /import reaches yaml.load without SafeLoader.",
   "fix": { "new_version": "5.4.1", "attempts": 1, "tests_passed": true,
            "patch_diff": "--- a/requirements.txt ...", "pr_url": "https://github.com/.../pull/3", "status": "fixed" },
-  "integration": { "jira_key": "SEC-101", "jira_url": "https://...", "teams_sent": true, "compliance_log_id": "log_fnd_07" },
+  "integration": { "jira_key": "SEC-101", "jira_url": "https://...", "slack_sent": true, "compliance_log_id": "log_fnd_07" },
   "timeline": [{ "stage": "scan", "at": "2026-10-28T05:10:05Z", "message": "Detected via OSV" }]
 }
 ```
@@ -95,7 +95,7 @@ Response 202 `{ "finding_id": "fnd_07", "status": "fixing" }`
 Response 200: `[IntegrationEvent]`
 ```json
 [{ "id": 1, "finding_id": "fnd_07", "process": "B2", "endpoint": "/patchpilot/findings",
-   "status_code": 200, "ok": true, "summary": "Jira SEC-101 created, Teams sent", "created_at": "..." }]
+   "status_code": 200, "ok": true, "summary": "Jira SEC-101 created, Slack sent", "created_at": "..." }]
 ```
 
 ### GET /api/compliance?client_name=Acme%20Retail&from=2026-10-01
@@ -116,7 +116,7 @@ Base URL for Boomi-hosted endpoints: `${BOOMI_BASE_URL}` (the Boomi team shares 
 Auth to Boomi: HTTP Basic (`BOOMI_USER` / `BOOMI_TOKEN`) unless the Boomi team agrees otherwise.
 Timeout on our side: 15 s. Our client retries once on 5xx or timeout.
 Every B2/B3 call carries header `Idempotency-Key: <finding_id>` (B3: `<scan_id>`). Boomi must treat a repeated key as the
-same request: return the earlier result (same `jira_key`) instead of creating a second Jira issue / Teams post.
+same request: return the earlier result (same `jira_key`) instead of creating a second Jira issue / Slack post.
 The same key with a **different** `fix_status` (e.g. after `POST /api/findings/{id}/fix`) is a status update: Boomi updates
 the compliance row and comments on the existing Jira issue. Step-by-step Boomi flow: `docs/BOOMI_FLOW.md`.
 
@@ -128,18 +128,18 @@ Expected response 202 `{ "scan_id": "...", "status": "queued" }`. Boomi logs the
 ### B2 — Finding notification (PatchPilot → Boomi) — the main one
 `POST ${BOOMI_BASE_URL}/patchpilot/findings`
 Request: `contracts/boomi/B2_finding_request.json`
-Boomi does: Decision on priority (P1/P2 urgent path) → Jira create issue → Teams message → compliance log write.
+Boomi does: Decision on priority (P1/P2 urgent path) → Jira create issue → Slack message → compliance log write.
 Response 200: `contracts/boomi/B2_finding_response.json`
 ```json
 { "ok": true, "jira_key": "SEC-101", "jira_url": "https://<site>.atlassian.net/browse/SEC-101",
-  "teams_sent": true, "compliance_log_id": "log_fnd_07", "processed_at": "2026-10-28T05:11:40Z" }
+  "slack_sent": true, "compliance_log_id": "log_fnd_07", "processed_at": "2026-10-28T05:11:40Z" }
 ```
 Error response (4xx/5xx): `{ "ok": false, "error": "jira_create_failed", "message": "..." }`
 
 ### B3 — Scan summary (PatchPilot → Boomi)
 `POST ${BOOMI_BASE_URL}/patchpilot/scan-summary`
-Request: `contracts/boomi/B3_scan_summary_request.json`. Boomi posts one Teams summary card to the security channel.
-Response 200: `{ "ok": true, "teams_sent": true }`
+Request: `contracts/boomi/B3_scan_summary_request.json`. Boomi posts one Slack summary message to the security channel.
+Response 200: `{ "ok": true, "slack_sent": true }`
 
 ### B4 — Compliance report (PatchPilot → Boomi)
 `GET ${BOOMI_BASE_URL}/patchpilot/compliance?client_name=Acme%20Retail&from=2026-10-01`

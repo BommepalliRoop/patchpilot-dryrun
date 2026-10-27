@@ -44,7 +44,7 @@ flowchart LR
         B3[B3 Scan summary]
         B4[B4 Compliance report]
         JIRA[Jira]
-        TEAMS[Microsoft Teams]
+        SLACK[Slack]
         LOG[(Compliance log)]
     end
 
@@ -61,9 +61,9 @@ flowchart LR
     PIPE -- "POST /patchpilot/scan-summary" --> B3
     API -- "GET /patchpilot/compliance" --> B4
     B2 --> JIRA
-    B2 --> TEAMS
+    B2 --> SLACK
     B2 --> LOG
-    B3 --> TEAMS
+    B3 --> SLACK
     B4 --> LOG
 ```
 
@@ -165,7 +165,7 @@ sequenceDiagram
     end
     loop each routed finding
         Pipe->>Boomi: POST /patchpilot/findings (B2)
-        Boomi-->>Pipe: {jira_key, jira_url, teams_sent, compliance_log_id}
+        Boomi-->>Pipe: {jira_key, jira_url, slack_sent, compliance_log_id}
         Pipe->>DB: insert integration_event, update finding
     end
 
@@ -317,7 +317,7 @@ erDiagram
         string status
         string jira_key
         string jira_url
-        bool teams_sent
+        bool slack_sent
         string compliance_log_id
         json timeline_json
     }

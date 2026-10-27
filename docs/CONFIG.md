@@ -69,13 +69,13 @@ These values never go into our `.env` or git. They go into Boomi connections. Se
 
 | # | Resource | How to create | Values to send to the Boomi team | Status |
 |---|---|---|---|---|
-| R1 | Compliance PostgreSQL (Supabase) | supabase.com → New project `patchpilot` (pick a region, set and save a strong database password) → SQL Editor → run the `CREATE TABLE` + `CREATE INDEX` from BOOMI_HANDOFF section 4a → Connect → **Session pooler** | host `aws-0-<region>.pooler.supabase.com`, port 5432, database `postgres`, user `postgres.<project-ref>`, password, `sslmode=require`, JDBC URL | ✅ done Oct 27 — Supabase `patchpilot` (ap-northeast-1), host `aws-0-ap-northeast-1.pooler.supabase.com`, user `postgres.eyaujwqdizcselugymkn`; table created, RLS on, M1 columns added, Q1–Q6 tested |
+| R1 | Compliance PostgreSQL (Supabase) | supabase.com → New project `patchpilot` (pick a region, set and save a strong database password) → SQL Editor → run the `CREATE TABLE` + `CREATE INDEX` from BOOMI_HANDOFF section 4a → Connect → **Session pooler** | host `aws-0-<region>.pooler.supabase.com`, port 5432, database `postgres`, user `postgres.<project-ref>`, password, `sslmode=require`, JDBC URL | ✅ done Oct 27 — Supabase `patchpilot` (ap-northeast-1), host `aws-0-ap-northeast-1.pooler.supabase.com`, user `postgres.eyaujwqdizcselugymkn`; table created, RLS on, M1 columns added, Q1–Q6 tested, `teams_sent` renamed to `slack_sent` |
 | R2 | Jira | Jira Cloud site → project `SEC` (Scrum/Kanban, any) → id.atlassian.com → Security → API tokens → create token | site URL, project key, user email, API token | |
-| R3 | Teams webhook | Teams channel → ⋯ → Workflows → "Post to a channel when a webhook request is received" (or Incoming Webhook if allowed) → copy URL | webhook URL, channel name | |
+| R3 | Slack incoming webhook | api.slack.com/apps → Create New App → From scratch → Incoming Webhooks → On → Add New Webhook → pick `#security-alerts` → copy URL | webhook URL (secret), channel name | |
 | R4 | B1 client list | — | `[{"client_name":"Acme Retail","repo_url":"<DEMO_REPO_URL>","branch":"main","auto_fix":true,"owner_email":"<email>"}]` | |
 | R5 | PatchPilot access for B1 | after T16 deploy | `BACKEND_URL`, `PATCHPILOT_API_KEY` | |
 
-If the Boomi team already has its own Jira / Teams / database they prefer, they may use those — they just tell you which.
+If the Boomi team already has its own Jira / Slack / database they prefer, they may use those — they just tell you which.
 Test R1 before sending: in the Supabase SQL Editor run `SELECT count(*) FROM compliance_log;` → `0`.
 
 ## 6. Exchange sheet — what moves between teams
@@ -83,11 +83,11 @@ Test R1 before sending: in the Supabase SQL Editor run `SELECT count(*) FROM com
 |---|---|---|
 | Boomi → Dev | `BOOMI_BASE_URL`, `BOOMI_USER`, `BOOMI_TOKEN` (token sent privately) | by 10:30 |
 | Boomi → Dev | Final paths for B2/B3/B4 if they differ from the contract | by 10:30 |
-| Boomi → Dev | Jira site URL + project key, Teams channel name (for the demo script) | by 10:30 |
+| Boomi → Dev | Jira site URL + project key, Slack channel name (for the demo script) | by 10:30 |
 | Dev → Boomi | `BACKEND_URL`, `PATCHPILOT_API_KEY` (sent privately) | after T16, ~11:40 |
-| Dev → Boomi | `FRONTEND_URL` (dashboard links in Teams cards) | after T16 |
+| Dev → Boomi | `FRONTEND_URL` (dashboard links in Slack messages) | after T16 |
 | Dev → Boomi | Client list for B1: `client_name`, `repo_url` (= `DEMO_REPO_URL`), `branch`, `auto_fix`, `owner_email` | before they start |
-| Lead → Boomi | R1 compliance PostgreSQL, R2 Jira, R3 Teams webhook (section 5, private) | before they start |
+| Lead → Boomi | R1 compliance PostgreSQL, R2 Jira, R3 Slack webhook (section 5, private) | before they start |
 
 ## 7. Switching from mock to live (on the day)
 1. All `*_MODE=mock` (and `THREAT_INTEL=mock` if offline) → everything works end to end with fixtures.

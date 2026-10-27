@@ -9,7 +9,7 @@ PatchPilot is a fully automated vulnerability-to-fix autopilot for IT service co
 For each client repo (any language OSV supports; Python analysed deepest) it: scans dependencies (OSV) and checks exploit data (CISA KEV, EPSS) → uses AI to decide whether the vulnerable
 function is actually reachable from our code → scores real risk → upgrades the library, runs tests,
 lets AI patch broken code (max 2 retries) → opens a GitHub pull request → notifies Boomi, which
-creates the Jira ticket, posts the Teams alert, and writes the compliance log.
+creates the Jira ticket, posts the Slack alert, and writes the compliance log.
 
 Background and decisions: `docs/DECISIONS.md`. Full plan: `docs/PLAN.md`. Architecture: `docs/ARCHITECTURE.md`
 (diagrams: `docs/DIAGRAMS.md`, stack: `docs/TECH_STACK.md`). API contracts: `docs/API_CONTRACTS.md`.

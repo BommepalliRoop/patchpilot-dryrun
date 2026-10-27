@@ -19,7 +19,7 @@ Update your row when you start (`in_progress`) and finish (`done`). Keep notes t
 | T12 | Overview and live scan pages | Dev D | Sonnet 5.5 | medium | 2 | T11 | todo | |
 | T13 | Finding detail page | Dev D | Sonnet 5.5 | medium | 2 | T11 | todo | |
 | T14 | Integrations and compliance pages | Dev D | Haiku 5.5 | low | 3 | T11 | todo | |
-| T15 | Demo target vulnerable repo | Dev E / Presenter | Haiku 5.5 | low | 1 | — | todo | |
+| T15 | Demo target vulnerable repo | Dev E / Presenter | Haiku 5.5 | low | 1 | — | done | Pushed to github.com/BommepalliRoop/demo-target (public, main). pytest 6/6 on Python 3.11.9. osv-scanner 2.7.0 lockfile mode: 110 entries (PyPI 104, npm 6); PyYAML 1 advisory, lodash 6, both ecosystems reported; entries duplicated GHSA/PYSEC, certifi/idna transitive extras (API estimate was 39) |
 | T16 | Deployment | Dev C | Sonnet 5.5 | medium | 3 | T03, T11 | todo | |
 | T17 | End-to-end integration and demo seed | Lead | Opus 5.5 | high | 4 | T03, T06, T08, T09, T10, T12, T13 | todo | |
 | T18 | Polish and rehearsal | Everyone | Sonnet 5.5 | medium | 4 | T17 | todo | |

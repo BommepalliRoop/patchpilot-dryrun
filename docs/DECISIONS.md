@@ -29,7 +29,7 @@ Revenue generation optional. Excluded: anything on Elev8/PG, and billing/invoice
 ## Why PatchPilot
 - Every service company patches dependencies and passes client security audits — daily value.
 - Scanners only list CVEs; PatchPilot reasons about our code (reachability) and produces a tested fix — rare.
-- Boomi has a real job: scheduling, Jira, Teams, compliance logging.
+- Boomi has a real job: scheduling, Jira, Slack, compliance logging.
 - Live demo: a real vulnerability is found, proven reachable, fixed, and ticketed in front of judges.
 - Fits the lead's cybersecurity background, so the pitch is confident.
 
@@ -49,7 +49,9 @@ components (shadcn/ui, Magic UI / Aceternity UI, Tremor) to save time — see do
 - Vulnerability source: **OSV only** (OSV-Scanner, fallback OSV.dev API). No extra scanners for the event —
   the 3-hour sprint has no slack, and our edge is reachability + tested fix, not the number of scanners.
 - **Added (Oct 27): CISA KEV + EPSS enrichment** — two free public feeds, ~25 min of build spread over T02/T07/T12/T13,
-  no new scanner. Adds "actively exploited" to the risk score and the UI/Jira/Teams.
+  no new scanner. Adds "actively exploited" to the risk score and the UI/Jira/Slack.
+- **Alerts channel (Oct 27): Slack** instead of Microsoft Teams — Slack incoming webhook from Boomi B2/B3; field
+  `slack_sent` replaces `teams_sent` in contracts and the compliance table.
 - **Compliance database (Oct 27): Supabase PostgreSQL** (moved from Neon). Boomi connects through the Supabase
   Session pooler (IPv4, port 5432). Our app database stays SQLite.
 - **Languages (Oct 27): the app is not Python-only.** Every ecosystem OSV understands is scanned and scored

@@ -43,7 +43,7 @@ audits (ISO 27001 / SOC 2). Fixing is manual.
 1. Clone repo (any language: Python deep, others text + AI) → 2. OSV-Scanner finds vulnerable dependencies → 3. AI extracts vulnerable functions from the
 advisory → 4. Python AST + AI decide if our code actually calls them (file:line evidence, in-route detection) →
 5. Risk score = CVSS × reachability × exposure × exploit data (CISA KEV, EPSS) → P1–P4 → 6. Upgrade to nearest safe version, run pytest, AI patches
-breaking code (max 2 retries) → 7. Open GitHub PR with explanation → 8. Boomi: Jira ticket, Teams alert,
+breaking code (max 2 retries) → 7. Open GitHub PR with explanation → 8. Boomi: Jira ticket, Slack alert,
 compliance log.
 
 **Pitch line:** "300 alerts become the 3 that matter — each with a tested fix, a Jira ticket and an audit trail.
@@ -67,8 +67,8 @@ fits the lead's security background.
 | ID | Process | Direction |
 |---|---|---|
 | B1 | Daily schedule → `POST /api/scans` (X-API-Key) | Boomi → PatchPilot |
-| B2 | `POST /patchpilot/findings` → Jira + Teams + compliance log → returns jira_key | PatchPilot → Boomi (most important) |
-| B3 | `POST /patchpilot/scan-summary` → Teams summary card | PatchPilot → Boomi |
+| B2 | `POST /patchpilot/findings` → Jira + Slack + compliance log → returns jira_key | PatchPilot → Boomi (most important) |
+| B3 | `POST /patchpilot/scan-summary` → Slack summary message | PatchPilot → Boomi |
 | B4 | `GET /patchpilot/compliance` → audit rows | PatchPilot → Boomi |
 Payloads: `contracts/boomi/*.json`. Details: docs/BOOMI_HANDOFF.md. Dev team uses `BOOMI_MODE=mock` until live.
 
@@ -84,12 +84,12 @@ Payloads: `contracts/boomi/*.json`. Details: docs/BOOMI_HANDOFF.md. Dev team use
 ## 9. Demo plan
 Demo target: separate small Flask repo with old pinned libraries (e.g. PyYAML 5.3.1 used unsafely in a POST route,
 Flask/Werkzeug/Jinja2/requests/urllib3 present but not reachable). Expected: ~30 alerts (pins checked on OSV.dev Oct 27, see T15) → 2 reachable → 1 P1 → fixed PR →
-Jira + Teams + compliance row. Script: docs/DEMO_SCRIPT.md. Backup: mock-mode run + screen recording.
+Jira + Slack + compliance row. Script: docs/DEMO_SCRIPT.md. Backup: mock-mode run + screen recording.
 
 ## 10. Open items / to confirm
 - Ask organisers: may the demo target repo be prepared before the event? If not, build it in T15.
 - Boomi team to share BOOMI_BASE_URL + auth by 10:30; we share BACKEND_URL after T16.
-- Confirm demo library CVEs on osv.dev; Jira project key; Teams webhook URL.
+- Confirm demo library CVEs on osv.dev; Jira project key; Slack webhook URL.
 - Fill names in tasks/BOARD.md.
 
 ## 11. Where to read next
