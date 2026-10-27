@@ -50,6 +50,9 @@ async def run(cmd: Sequence[str], *, cwd: Path | str | None = None, env: Mapping
         proc.kill()
         await proc.wait()
         raise CommandTimeout(cmd, timeout) from None
+    except asyncio.CancelledError:  # scan timeout (RISKS E6) cancels us: do not leave the child running
+        proc.kill()
+        raise
     return CommandResult(proc.returncode if proc.returncode is not None else -1,
                          out.decode("utf-8", "replace"), err.decode("utf-8", "replace"))
 

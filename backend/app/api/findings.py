@@ -1,8 +1,9 @@
-"""Finding routes (reads come from the DB; T03 triggers the real fix)."""
+"""Finding routes (reads come from the DB; POST .../fix runs the fix in the background)."""
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, BackgroundTasks
 
+from app import pipeline
 from app.core.errors import ApiError
 from app.models import repository as repo
 from app.models.schemas import FindingDetail, FindingSummary, FixStarted, Priority, Reachability
@@ -28,7 +29,13 @@ async def get_finding(finding_id: str) -> FindingDetail:
 
 
 @router.post("/{finding_id}/fix", status_code=202, response_model=FixStarted)
-async def run_fix(finding_id: str) -> FixStarted:
-    if repo.get_finding(finding_id) is None:
+async def run_fix(finding_id: str, background: BackgroundTasks) -> FixStarted:
+    finding = repo.get_finding(finding_id)
+    if finding is None:
         raise ApiError(404, "not_found", f"Finding {finding_id} not found")
+    if finding.status == "fixing":
+        raise ApiError(409, "conflict", f"Finding {finding_id} is already being fixed")
+    repo.update_finding(finding_id, status="fixing")
+    repo.append_timeline(finding_id, "fix", "Manual fix requested")
+    background.add_task(pipeline.run_fix, finding_id)
     return FixStarted(finding_id=finding_id, status="fixing")
