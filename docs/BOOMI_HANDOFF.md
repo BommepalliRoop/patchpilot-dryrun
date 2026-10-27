@@ -1,10 +1,58 @@
-# Boomi team handoff
+# PatchPilot — Boomi team handoff (everything in one file)
 
-Share this file with the Boomi team. It is everything you need to build the PatchPilot integration in
-Boomi with **Boomi Companion**. You own all Boomi work; the dev team never edits your processes.
-The only coupling between our teams is HTTP: the endpoints, JSON shapes and auth below.
-Source of truth: `docs/API_CONTRACTS.md` Part B and the JSON files in `contracts/boomi/`.
-If you think a contract needs to change, tell the Lead (Roop) **before** building it.
+This single file is all the Boomi team needs, from zero to done. Every JSON payload, mapping, test call and
+Boomi Companion prompt is inside it — you do not need the GitHub repo to build. (The same payloads also live in
+the repo under `contracts/boomi/` for the dev team.)
+
+You own all Boomi work; the dev team never edits your processes. The only coupling between our teams is HTTP:
+the endpoints, JSON shapes and auth below. If you think anything here needs to change, tell the Lead (Roop)
+**before** building it.
+
+**About Boomi Companion:** use it to generate each process from the prompts in section 12 — it saves most of
+the clicking. It will not get everything right on the first try: your Boomi expert must check the generated
+maps and connections, deploy, and run the test calls in section 9. A process is only "done" when its test call passes.
+
+**Today's practice run:** build everything in a Boomi folder named `DRYRUN - PatchPilot` and do not reuse
+it tomorrow (hackathon rule: everything is built during the event). Tomorrow, rebuild in a fresh folder.
+
+## 0. Checklist — zero to done
+Tick these in order. Times are for the event day (Oct 28); for the practice run, count from your start time.
+
+**Before the sprint (accounts only, no process building)**
+- [ ] 0.1 Every Boomi team member can log in to Boomi and open Boomi Companion.
+- [ ] 0.2 A Boomi **Atom Cloud** (or cloud Atom) is available with a public HTTPS URL (section 3).
+- [ ] 0.3 Jira Cloud site + a project (e.g. key `SEC`) + a Jira user email and API token.
+- [ ] 0.4 A Teams channel for alerts + its webhook URL (section 6).
+- [ ] 0.5 A store for the compliance log you can read and write from Boomi (section 4).
+- [ ] 0.6 You received from the Lead: the demo repo URL and the B1 client list (section 10).
+
+**B0 — Setup (by 10:00)**
+- [ ] 1.1 Shared Web Server: REST listener on, Basic auth, one user for PatchPilot (section 3).
+- [ ] 1.2 Connections: Jira, Teams HTTP, compliance log, PatchPilot HTTP (section 3).
+- [ ] 1.3 Send the Lead `BOOMI_BASE_URL`, `BOOMI_USER` (team chat) and `BOOMI_TOKEN` (private message only).
+
+**B2 — Finding notification (by 11:15) — the most important**
+- [ ] 2.1 Create the compliance log table/list with the columns in section 4.
+- [ ] 2.2 Build B2 with the Companion prompt (section 12) and the steps in section 5.
+- [ ] 2.3 Deploy; run the B2 test call (section 9) → a Jira issue, a Teams card and a log row appear; response matches section 5.
+- [ ] 2.4 Run the same call again with the same `Idempotency-Key` → **no** second Jira issue, same `jira_key` returned.
+- [ ] 2.5 Send a missing-field request → 400. Tell the Lead "B2 passes" + screenshots.
+
+**B1 — Daily scan trigger (by 11:40)**
+- [ ] 3.1 Build B1 (section 7). Point it at webhook.site first and check body + headers.
+- [ ] 3.2 When the Lead sends `BACKEND_URL` + `PATCHPILOT_API_KEY`, switch to them; "Execute" → 202 with a `scan_id`.
+- [ ] 3.3 Schedule it daily 09:00. Tell the Lead "B1 live".
+
+**B3 — Scan summary (by 11:50)**
+- [ ] 4.1 Build B3 (section 8); test call → Teams summary card; response `{ "ok": true, "teams_sent": true }`.
+
+**B4 — Compliance report (by 11:50)**
+- [ ] 5.1 Build B4 (section 8); test call → JSON with the rows written by B2; empty result → `"items": []`.
+
+**Demo and wrap-up (11:50–12:20)**
+- [ ] 6.1 During the full demo run, watch Jira, Teams and the log; confirm each item appears within ~1 minute.
+- [ ] 6.2 Screenshot each process canvas; add them to the repo `boomi/` folder (section 11).
+- [ ] 6.3 One person is ready to explain B1–B4 in 30 seconds during the demo.
 
 ## 1. What PatchPilot is (30 seconds)
 PatchPilot scans a client's code for vulnerable libraries, uses AI to find the few that our code actually
@@ -78,7 +126,7 @@ your Boomi account already has a connector for.
 `POST ${BOOMI_BASE_URL}/patchpilot/findings` · Basic auth · `Content-Type: application/json` · reply within 15 s.
 PatchPilot sends one call per reachable finding (usually 1–3 per scan). We retry once on 5xx.
 
-**Request** (`contracts/boomi/B2_finding_request.json`):
+**Request** (save as `b2.json` for the test call):
 ```json
 {
   "event": "finding.fixed",
@@ -134,7 +182,7 @@ Several findings in the same package share one `pr_url` (one PR per package) —
 Tip: Jira Cloud REST **v3** needs the description in Atlassian Document Format. If you use the HTTP Client,
 call `/rest/api/2/issue`, which accepts a plain-text description.
 
-**Response 200** (`contracts/boomi/B2_finding_response.json`):
+**Response 200:**
 ```json
 { "ok": true, "jira_key": "SEC-101", "jira_url": "https://<site>.atlassian.net/browse/SEC-101",
   "teams_sent": true, "compliance_log_id": "log_55", "processed_at": "2026-10-28T05:11:40Z" }
@@ -168,12 +216,16 @@ P1, P2, fixed, PRs opened · button: "Open dashboard" (`dashboard_url`).
 - For each entry: `POST ${BACKEND_URL}/api/scans`, header `X-API-Key: <PATCHPILOT_API_KEY>`,
   `Content-Type: application/json`, body = the entry.
 - Expected: `202 { "scan_id": "scn_01", "status": "queued" }` → log the scan_id (process log is enough).
+- Other answers from us: `400 repo_not_allowed` / `400 invalid_request` (check the client list), `401 unauthorized`
+  (wrong `X-API-Key`), `429 rate_limited` (wait and retry later). Errors look like
+  `{ "error": { "code": "unauthorized", "message": "..." } }`.
+- If the same repo is already being scanned we return that scan's id — no duplicate scans.
 - Until we share `BACKEND_URL` (~11:40), point the HTTP Client at a request-catcher such as webhook.site
   to check the body and headers, then swap the URL.
 
 ## 8. B3 and B4
 **B3 — Scan summary** · `POST ${BOOMI_BASE_URL}/patchpilot/scan-summary` · one call at the end of each scan.
-Request (`contracts/boomi/B3_scan_summary_request.json`):
+Request (save as `b3.json` for the test call):
 ```json
 { "event": "scan.completed", "scan_id": "scn_01", "client_name": "Acme Retail",
   "repo_url": "https://github.com/<org>/demo-target", "finished_at": "2026-10-28T05:11:42Z",
@@ -194,19 +246,27 @@ No rows → `200` with `"items": []`. If a GET listener with query parameters is
 tell the Lead by 10:30 so we agree on an alternative before anyone builds it.
 
 ## 9. Test calls
-Run from the `patchpilot` repo root (Git Bash). Values come from section 10.
+Save the B2 request from section 5 as `b2.json` and the B3 request from section 8 as `b3.json`, then run in
+Git Bash / a terminal (or build the same calls in Postman). Set the variables first with your real values.
 ```bash
-# B2
+# B2 — first call creates Jira + Teams + log row
+curl -u "$BOOMI_USER:$BOOMI_TOKEN" -H "Content-Type: application/json" -H "Idempotency-Key: fnd_07" \
+  -d @b2.json "$BOOMI_BASE_URL/patchpilot/findings"
+# B2 again, same Idempotency-Key — must return the same jira_key, no new issue
+curl -u "$BOOMI_USER:$BOOMI_TOKEN" -H "Content-Type: application/json" -H "Idempotency-Key: fnd_07" \
+  -d @b2.json "$BOOMI_BASE_URL/patchpilot/findings"
+# B2 bad request — must return 400
 curl -u "$BOOMI_USER:$BOOMI_TOKEN" -H "Content-Type: application/json" \
-  -d @contracts/boomi/B2_finding_request.json "$BOOMI_BASE_URL/patchpilot/findings"
+  -d '{"event":"finding.fixed"}' "$BOOMI_BASE_URL/patchpilot/findings"
 # B3
-curl -u "$BOOMI_USER:$BOOMI_TOKEN" -H "Content-Type: application/json" \
-  -d @contracts/boomi/B3_scan_summary_request.json "$BOOMI_BASE_URL/patchpilot/scan-summary"
+curl -u "$BOOMI_USER:$BOOMI_TOKEN" -H "Content-Type: application/json" -H "Idempotency-Key: scn_01" \
+  -d @b3.json "$BOOMI_BASE_URL/patchpilot/scan-summary"
 # B4
 curl -u "$BOOMI_USER:$BOOMI_TOKEN" "$BOOMI_BASE_URL/patchpilot/compliance?client_name=Acme%20Retail&from=2026-10-01"
-# B1 target (after T16): what Boomi sends to us
+# B1 target (after the Lead sends BACKEND_URL): what your B1 process sends to us
 curl -H "X-API-Key: $PATCHPILOT_API_KEY" -H "Content-Type: application/json" \
-  -d @contracts/api/scan_create_request.json "$BACKEND_URL/api/scans"
+  -d '{"client_name":"Acme Retail","repo_url":"<DEMO_REPO_URL>","branch":"main","auto_fix":true,"owner_email":""}' \
+  "$BACKEND_URL/api/scans"
 ```
 After T10 the dev team can also run `python -m app.services.boomi_client ping` to send the sample B2 call.
 
@@ -229,7 +289,8 @@ After T10 the dev team can also run `python -m app.services.boomi_client ping` t
 ## 11. GitHub — how your work lands in our repo
 Boomi processes live in the Boomi platform, not in git, so there is no code to merge. To keep the repo
 the single place judges and teammates look:
-1. The Lead adds each Boomi team member as a collaborator on `BommepalliRoop/patchpilot`.
+1. The Lead adds each Boomi team member as a collaborator on `BommepalliRoop/patchpilot`
+   (for the practice run: `BommepalliRoop/patchpilot-dryrun`).
 2. Work on a branch `boomi-<id>` (e.g. `boomi-b2`) and add files only under `boomi/`:
    - `boomi/B2/README.md` — what the process does, shapes used, connections (no secrets)
    - `boomi/B2/screenshot.png` — the process canvas
@@ -239,21 +300,24 @@ the single place judges and teammates look:
 3. Open a pull request to `main`; the Lead merges. Never commit tokens, passwords or webhook URLs.
 
 ## 12. Boomi Companion prompts
-Paste these into Boomi Companion and adjust names. Paste the JSON files from `contracts/boomi/` where marked.
+Paste these into Boomi Companion and adjust names. Where a prompt says [paste ...], paste the JSON or table
+from the section named. Then review what Companion generated, deploy, and run the test call.
 
 **B0**
 "Set up a Web Services Server REST listener with Basic authentication on my Atom Cloud. Create connections for:
 Jira Cloud (site URL, email, API token), an HTTP Client for a Microsoft Teams Workflows webhook, an HTTP Client
 for an external REST API that needs an X-API-Key header, and a [database / SharePoint list / Google Sheet] for a
-compliance log with columns: [paste section 4 table]."
+compliance log with columns: [paste section 4 table]. Show me where to find the Shared Web Server user name and token."
 
 **B2**
 "Create a process with a Web Services Server listener for POST /patchpilot/findings that accepts this JSON
-[paste B2_finding_request.json]. Validate cve_id, package, priority and client_name; return 400 if missing.
+[paste the B2 request from section 5]. Validate cve_id, package, priority and client_name; return 400 if missing.
+Read the Idempotency-Key header: if the compliance log already has a row with that finding_id, return the stored
+jira_key, jira_url and compliance_log_id without creating anything.
 Add a Decision on priority: P1 or P2 go to an urgent branch. Create a Jira issue using this mapping
 [paste Jira mapping table]. Post an Adaptive Card to the Teams webhook with the CVE, package, explanation and
 links to pr_url and the new Jira issue. Insert a row into the compliance log. Return this JSON
-[paste B2_finding_response.json]. If Teams fails, still return 200 with teams_sent false. If Jira fails,
+[paste the B2 response from section 5]. If Teams fails, still return 200 with teams_sent false. If Jira fails,
 return 502 with {ok:false, error:'jira_create_failed', message}."
 
 **B1**
@@ -263,10 +327,10 @@ from the 202 response."
 
 **B3**
 "Create a process with a Web Services Server listener for POST /patchpilot/scan-summary that accepts this JSON
-[paste B3_scan_summary_request.json], posts an Adaptive Card summary to the Teams webhook with the stats and a
+[paste the B3 request from section 8], posts an Adaptive Card summary to the Teams webhook with the stats and a
 link to dashboard_url, and returns {ok:true, teams_sent:true}."
 
 **B4**
 "Create a process with a Web Services Server listener for GET /patchpilot/compliance with query parameters
 client_name and from. Query the compliance log for that client where detected_at >= from, compute
-time_to_fix_minutes, and return this JSON [paste B4_compliance_response.json]. Return items: [] when nothing matches."
+time_to_fix_minutes, and return this JSON [paste the B4 response from section 8]. Return items: [] when nothing matches."
