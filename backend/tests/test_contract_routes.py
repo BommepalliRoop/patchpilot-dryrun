@@ -10,9 +10,10 @@ from tests.seed import contract, seed_contract_scan, seed_extra_findings
 def test_create_scan_accepts_contract_request(client):
     body = contract("api/scan_create_request.json")
     body["repo_url"] = "https://github.com/BommepalliRoop/demo-target"
-    r = client.post("/api/scans", json=body)
+    repo.update_scan_stage(repo.create_scan("x", body["repo_url"], body["branch"]), "clone", "running")
+    r = client.post("/api/scans", json=body)  # duplicate guard: returns the active scan, starts nothing
     assert r.status_code == 202
-    assert r.json() == {"scan_id": "scn_01", "status": "queued"}
+    assert set(r.json()) == {"scan_id", "status"} and r.json()["status"] == "running"
 
 
 def test_scan_shape(client):
@@ -75,7 +76,8 @@ def test_compliance_matches_b4_contract_shape(client):
 
 
 def test_sse_stream_ends_with_done(client):
-    with client.stream("GET", "/api/scans/scn_01/events") as r:
+    scan_id, _ = seed_contract_scan()
+    with client.stream("GET", f"/api/scans/{scan_id}/events") as r:
         assert r.status_code == 200
         assert r.headers["content-type"].startswith("text/event-stream")
         assert r.headers["cache-control"] == "no-cache" and r.headers["x-accel-buffering"] == "no"

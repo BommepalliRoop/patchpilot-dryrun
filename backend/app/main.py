@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app import pipeline
 from app.api import demo, findings, integrations, scans
 from app.core.config import get_settings
 from app.core.db import init_db
@@ -21,6 +22,7 @@ logger = logging.getLogger("patchpilot")
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     setup_logging()
     init_db()
+    pipeline.mark_interrupted_scans()  # RISKS E5
     s = get_settings()
     logger.info("PatchPilot started llm=%s boomi=%s github=%s", s.llm_mode, s.boomi_mode, s.github_mode)
     yield
