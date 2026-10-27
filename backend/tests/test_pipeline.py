@@ -257,10 +257,11 @@ def test_pipeline_completes_with_every_other_stage_stubbed(client, monkeypatch, 
     assert events[-1]["stage"] == "done" and events[-1]["status"] == "completed"
     assert [s for s in STAGES if s in {e["stage"] for e in events}] == STAGES
     stub_lines = [r.getMessage() for r in caplog.records if "STUB" in r.getMessage()]
-    assert any("reachability" in m for m in stub_lines)  # symbols (T05) is real now
-    assert len([m for m in stub_lines if "stage reachability" in m]) == 1  # once per run, not per finding
+    assert not any("stage reachability" in m for m in stub_lines)  # symbols (T05) and reachability (T06) are real now
+    assert len([m for m in stub_lines if "stage risk" in m]) == 1  # once per run, not per finding
     scan = repo.get_scan(scan_id)
-    assert scan.status == "completed" and scan.stats.total_alerts == 4 and scan.stats.unsure == 4
+    # the fake clone has no source code, so the real analyzer finds nothing imported
+    assert scan.status == "completed" and scan.stats.total_alerts == 4 and scan.stats.not_reachable == 4
     assert all(x.score > 0 for x in repo.list_findings(scan_id=scan_id))  # stub risk formula ran
     assert f.fix_calls == []
 
