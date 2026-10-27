@@ -14,7 +14,7 @@ Update your row when you start (`in_progress`) and finish (`done`). Keep notes t
 | T07 | Risk scorer | Dev B | Haiku 5.5 | low | 2 | T00 | done | risk.score per ARCHITECTURE formula (round 1 dp, cvss 0-10 ValueError); table tests for boundaries, KEV, EPSS, not_reachable+KEV; stub tests updated; 287 pass (3.13) |
 | T08 | Fix engine (upgrade, test, AI patch loop) | Dev C | Opus 5.5 | high | 2 | T04 | todo | |
 | T09 | GitHub pull request creator | Dev C | Sonnet 5.5 | medium | 3 | T08 | todo | |
-| T10 | Boomi client (mock + live) | Dev C | Sonnet 5.5 | medium | 1 | T00 (T01 for event logging) | todo | |
+| T10 | Boomi client (mock + live) | Dev C | Sonnet 5.5 | medium | 1 | T00 (T01 for event logging) | done | notify_finding/send_scan_summary/get_compliance + strict B2/B3 models, mock (stable SEC-1xx), live Basic auth, 15 s, 1 retry on 5xx/timeout w/ same Idempotency-Key, every call logged; /api/compliance wired to B4 (502 on failure), CLI ping; N5,N6,S4 tested; 312 pass (3.13) |
 | T11 | Design system and app shell | Dev D | Sonnet 5.5 | medium | 1 | T00 | todo | |
 | T12 | Overview and live scan pages | Dev D | Sonnet 5.5 | medium | 2 | T11 | todo | |
 | T13 | Finding detail page | Dev D | Sonnet 5.5 | medium | 2 | T11 | todo | |

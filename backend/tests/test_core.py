@@ -95,7 +95,7 @@ SIGNATURES = {
 # Modules whose task has landed: signatures stay frozen, but they no longer raise NotImplementedError.
 IMPLEMENTED = {"app.services.cloner", "app.services.ecosystems", "app.services.scanner", "app.services.threat_intel",
                "app.services.llm", "app.services.symbols", "app.services.reachability",
-               "app.services.risk", "app.pipeline"}
+               "app.services.risk", "app.services.boomi_client", "app.pipeline"}
 
 
 @pytest.mark.parametrize("module_name", SIGNATURES)
