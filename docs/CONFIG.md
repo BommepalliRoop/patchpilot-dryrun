@@ -15,6 +15,7 @@ Legend: 🔒 = secret (only in `.env` / host settings) · 📄 = safe to write h
 | `LLM_BASE_URL` | 📄 | blank, or a gateway / Azure URL | Organisers | Only if keys come via a proxy or Azure | T04 | |
 | `LLM_MODE` | 📄 | `mock` → `live` | Us | Switch to `live` once T04 passes with the real key | all AI tasks | `mock` |
 | `GITHUB_TOKEN` | 🔒 | `github_pat_...` | Lead | GitHub → Settings → Developer settings → Fine-grained token. Repository access: **demo-target only**. Permissions: Contents RW, Pull requests RW, Metadata R. Expiry 7 days | T09 | |
+| `GITLAB_TOKEN` | 🔒 | `glpat-...` | Lead | GitLab → Preferences → Access tokens, scope `api`, only if a client repo is on GitLab (stretch) | T09 | |
 | `GITHUB_MODE` | 📄 | `mock` → `live` | Us | Switch after T09 | T09 | `mock` |
 | `DEMO_REPO_URL` | 📄 | `https://github.com/BommepalliRoop/demo-target` | Lead / Dev E | Create empty repo tonight; T15 fills it | T02, T15, T17 | |
 | `ALLOWED_REPO_PREFIXES` | 📄 | `https://github.com/BommepalliRoop/` (comma-separated) | Us | Only these repos may be scanned (the engine runs their tests) | T03 | |

@@ -18,6 +18,8 @@ Turn an advisory into the exact functions that are dangerous.
 - `symbols.extract(raw_vuln) -> VulnSymbols` with an in-memory + SQLite cache by CVE id.
 - Seed a small static map for demo packages (pyyaml, jinja2, requests, urllib3, werkzeug, flask — the T15 pins) used when the LLM is unsure; in `LLM_MODE=mock` it is the source of truth.
 
+- Works for every ecosystem: the prompt gets `ecosystem` and returns names as a developer of that language writes them (e.g. npm lodash → `_.template`, `lodash.template`, `template`). Seed map also covers npm `lodash` (CVE-2021-23337 / CVE-2026-4800 → `template`; CVE-2020-8203 → `zipObjectDeep`, `set`).
+
 ## Acceptance criteria
 - For the demo CVEs, returns the expected symbols (unit tests with mock LLM).
 - Cache hit avoids a second LLM call.

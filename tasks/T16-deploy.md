@@ -20,6 +20,8 @@ Public URLs so Boomi can call us and judges can open the app.
 - Fallback: run locally + `cloudflared tunnel --url http://localhost:8000`; document both in `docs/DEPLOY.md`.
 - Share BACKEND_URL with the Boomi team for B1.
 
+- Docker image includes **Node.js 20 + npm** (for the npm fix adapter) besides Python 3.11, git and osv-scanner.
+
 ## Acceptance criteria
 - Public `GET /api/health` reachable; frontend on Vercel talks to it; Boomi B1 can start a scan.
 

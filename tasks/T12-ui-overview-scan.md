@@ -19,6 +19,8 @@ The pages judges will stare at.
 - Scan live view: subscribe to SSE (`EventSource`), animate PipelineStepper, terminal-style log stream, findings table with filters and staggered rows.
 - Mock mode replays a scripted SSE sequence from fixtures so it works without the backend.
 
+- Scan page shows a "Languages detected" strip from `languages` (e.g. `Python · deep`, `JavaScript · scan + AI`); findings table has an ecosystem column and filter.
+
 ## Acceptance criteria
 - Full scan flow is watchable end-to-end in mock mode in ~25 s with smooth animation.
 - Switching `VITE_USE_MOCK=false` works against the real backend.

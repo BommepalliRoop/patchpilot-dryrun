@@ -6,7 +6,7 @@ Read this file first in every session. It is the single source of truth for how 
 
 ## What we are building
 PatchPilot is a fully automated vulnerability-to-fix autopilot for IT service companies.
-For each client repo it: scans dependencies (OSV) and checks exploit data (CISA KEV, EPSS) → uses AI to decide whether the vulnerable
+For each client repo (any language OSV supports; Python analysed deepest) it: scans dependencies (OSV) and checks exploit data (CISA KEV, EPSS) → uses AI to decide whether the vulnerable
 function is actually reachable from our code → scores real risk → upgrades the library, runs tests,
 lets AI patch broken code (max 2 retries) → opens a GitHub pull request → notifies Boomi, which
 creates the Jira ticket, posts the Teams alert, and writes the compliance log.
@@ -28,7 +28,7 @@ backend/            FastAPI app (Python 3.11)
   app/api/          REST routers (scans, findings, integrations, demo)
   app/core/         config, db, logging, events (SSE bus)
   app/models/       SQLModel tables + Pydantic schemas
-  app/services/     cloner, scanner, threat_intel, symbols, reachability, risk, fixer, github_pr, boomi_client, llm
+  app/services/     cloner, ecosystems, scanner, threat_intel, symbols, reachability, risk, fixer, github_pr, boomi_client, llm
   app/pipeline.py   orchestrator: runs the stages and emits progress events
   tests/
 frontend/           React 18 + Vite + TypeScript + Tailwind + Motion (motion/react)

@@ -15,7 +15,7 @@ maps and connections, deploy, and run the test calls in section 9. A process is 
 **Today's practice run:** build everything in a Boomi folder named `DRYRUN - PatchPilot` and do not reuse
 it tomorrow (hackathon rule: everything is built during the event). Tomorrow, rebuild in a fresh folder.
 
-**Version:** v3.2 (Oct 27). Changes since earlier copies:
+**Version:** v3.3 (Oct 27). Changes since earlier copies:
 - v2: idempotency (`Idempotency-Key` header, `finding_id` column in the compliance log), new `event` / `fix_status`
   values, optional `owner_email`.
 - v3: exploit data in B2 — `kev`, `epss`, `epss_percentile` (section 5); Jira label `actively-exploited` and an
@@ -24,6 +24,8 @@ it tomorrow (hackathon rule: everything is built during the event). Tomorrow, re
   rules for all endpoints (section 5a); Teams title for `finding.open`; B3 duplicate handling; schedule time zone.
 - v3.2: compliance log store decided — **PostgreSQL** (table SQL + the 3 queries in section 4); the Lead creates it
   and sends the connection details privately (section 4b). Google Sheet only as fallback.
+- v3.3: PatchPilot works for all languages — B2 has a new `ecosystem` field (PyPI, npm, Maven, Go, …) and a new
+  `fix_status` value `fixed_untested` (upgrade PR opened, tests not run). Show the language in Jira and Teams.
 If you started from an older copy, apply these changes; nothing else changed.
 
 **Working in parallel:** you do not wait for us. The dev team builds the app at the same time with Boomi in
@@ -147,7 +149,7 @@ building processes before 9:20 is allowed; assume it is not.
 | jira_key, jira_url | string | Jira response (returned again on an idempotent replay) |
 | teams_sent | boolean | Result of the Teams post |
 | pr_url | string, may be empty | B2 request |
-| status | `fixed` / `needs_human` / `open` | B2 `fix_status` (`not_attempted` → `open`) |
+| status | `fixed` / `needs_human` / `open` | B2 `fix_status` (`not_attempted` → `open`, `fixed_untested` → `needs_human`) |
 
 `time_to_fix_minutes` for B4 = `fixed_at − detected_at` in whole minutes (`null` if not fixed).
 
@@ -202,7 +204,7 @@ WHERE client_name = ? AND detected_at >= ?::date
 ORDER BY detected_at DESC;
 ```
 `fixed_at` = processing time when `fix_status` = `fixed`, else NULL. `status`: `fixed` / `needs_human` / `open`
-(`not_attempted` → `open`).
+(`not_attempted` → `open`, `fixed_untested` → `needs_human`).
 
 ### 4b. Connection details (the Lead sends these privately)
 | Setting | Example |
@@ -237,6 +239,7 @@ PatchPilot sends one call per reachable finding (usually 1–3 per scan). We ret
   "repo_url": "https://github.com/<org>/demo-target",
   "cve_id": "CVE-2020-14343",
   "package": "pyyaml",
+  "ecosystem": "PyPI",
   "installed_version": "5.3.1",
   "fixed_version": "5.4.1",
   "cvss": 9.8,
@@ -258,10 +261,12 @@ PatchPilot sends one call per reachable finding (usually 1–3 per scan). We ret
 }
 ```
 Field notes: `event` finding.fixed / finding.needs_human / finding.open · `priority` P1–P4 ·
-`reachability` reachable / unsure · `fix_status` fixed / needs_human / not_attempted ·
-`pr_url` empty unless `fix_status` = `fixed` · `owner_email` may be empty · `evidence` has 1+ items ·
+`reachability` reachable / unsure · `fix_status` fixed / fixed_untested / needs_human / not_attempted ·
+`pr_url` empty unless `fix_status` = `fixed` or `fixed_untested` · `owner_email` may be empty · `evidence` has 1+ items ·
 `kev` true = CVE is on the CISA "actively exploited" list · `epss` = chance of exploitation in 30 days (0–1),
-`epss_percentile` (0–1); both may be `null`.
+`epss_percentile` (0–1); both may be `null` · `ecosystem` = language/package system: `PyPI` (Python), `npm` (JavaScript),
+`Maven` (Java), `Go`, `crates.io` (Rust), `Packagist` (PHP), `NuGet` (.NET), `RubyGems` (Ruby) ·
+`fix_status` `fixed_untested` = upgrade PR opened but PatchPilot could not run the tests.
 Several findings in the same package share one `pr_url` (one PR per package) — still create one Jira issue per finding.
 
 **Process steps**
@@ -281,7 +286,7 @@ Several findings in the same package share one `pr_url` (one PR per package) —
 |---|---|
 | Project | your project key (e.g. `SEC`) |
 | Issue type | Bug (or Task) |
-| Summary | `[{priority}] {cve_id} in {package} — {client_name}` |
+| Summary | `[{priority}] {cve_id} in {package} ({ecosystem}) — {client_name}` |
 | Priority | P1→Highest, P2→High, P3→Medium, P4→Low |
 | Description | summary, ai_explanation, evidence `file:line` (+ "in web route" if `in_route`), `installed_version → fixed_version`, fix_status, tests_passed, pr_url |
 | Labels | `patchpilot`, `security`, client name slug (e.g. `acme-retail`), plus `actively-exploited` when `kev` is true |
@@ -316,7 +321,8 @@ that accepts an Adaptive Card wrapped like this:
                      "content": { "type": "AdaptiveCard", "version": "1.4", "body": [ ... ], "actions": [ ... ] } } ] }
 ```
 **B2 card:** title by `event` — `finding.fixed`: `{priority} vulnerability fixed automatically`;
-`finding.needs_human`: `{priority} vulnerability needs review`; `finding.open`: `{priority} vulnerability found (auto-fix off)`.
+`finding.needs_human`: `{priority} vulnerability needs review`; `fix_status` = `fixed_untested`:
+`{priority} upgrade PR ready — please run tests`; `finding.open`: `{priority} vulnerability found (auto-fix off)`.
 Hide the "Open pull request" button when `pr_url` is empty · facts: client, repo, CVE, package `installed → fixed`, why it is reachable
 (`ai_explanation`), evidence `file:line`, exploit data ("🔥 Actively exploited (CISA KEV)" when `kev`;
 "EPSS 6% · top 7%" from `epss`/`epss_percentile`, hidden when null) · buttons: "Open pull request" (`pr_url`), "Open Jira" (`jira_url`).

@@ -9,16 +9,23 @@ The only input is a **GitHub repository**. Public and private both work:
 | Private | Our `GITHUB_TOKEN` (fine-grained) must include that repo with **Contents: read/write**, **Pull requests: read/write**, **Metadata: read** |
 | Both | The repo URL must start with one of `ALLOWED_REPO_PREFIXES` (safety rule: we install and test the code) |
 
-**What the repo must contain (v1 scope)**
+**Any language — what the repo must contain**
+PatchPilot detects the languages from the dependency files it finds. One repo can have several (e.g. Python backend + JS tools).
+
+| Language | Dependency file we read | Reachability | Auto-fix |
+|---|---|---|---|
+| Python | `requirements.txt` (pinned `==`), `poetry.lock`, `Pipfile.lock` | Deep (code parser) | ✅ tested with `pytest` |
+| JavaScript / TypeScript | `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml` | Text + AI | ✅ tested with `npm test` |
+| Java / Kotlin | `pom.xml`, `gradle.lockfile` | Text + AI | Upgrade PR; tested if Maven/Gradle is installed |
+| Go | `go.mod` | Text + AI | Upgrade PR; tested if Go is installed |
+| Rust, PHP, .NET, Ruby | `Cargo.lock`, `composer.lock`, `packages.lock.json`, `Gemfile.lock` | Text + AI | Upgrade PR; tested if the toolchain is installed |
+
 | Requirement | Why | If missing |
 |---|---|---|
-| Python project | Reachability uses Python's `ast` | Not supported |
-| `requirements.txt` with pinned versions (`package==1.2.3`) | Scanner needs exact versions; fixer bumps this file | Unpinned lines are skipped; no file → scan still lists nothing to fix |
-| `pytest` tests that pass today | Proves the upgrade did not break anything | Fix ends as `needs_human` (reason `no_tests`) |
-| Hosted on GitHub | PRs are opened with the GitHub API | Not supported (GitLab/Bitbucket = future) |
-| Flask or FastAPI routes (optional) | Detects "called inside a web route" → higher risk | Still works; exposure just isn't boosted |
-
-Not supported in v1: `pyproject.toml`/Poetry/Pipenv-only projects, other languages, monorepos with many manifests.
+| Exact versions (a lockfile, or `==` pins for Python) | Vulnerabilities belong to specific versions | Unpinned entries are skipped |
+| Tests that pass today | Prove the upgrade did not break anything | Python/npm: `needs_human`; others: PR marked "tests not run" |
+| GitHub host | PRs are opened with the GitHub API | GitLab: merge request if `GITLAB_TOKEN` is set (stretch), else `needs_human` with the diff |
+| Web routes (optional) | "Called inside a web route" → higher risk | Still works; exposure just isn't boosted |
 
 **What the client's team gets:** one PR per vulnerable package (never auto-merged — they review and merge),
 a Jira issue per real finding, a Teams alert, and a compliance log row for audits.
@@ -48,7 +55,7 @@ a Jira issue per real finding, a Teams alert, and a compliance log row for audit
 | # | Stage | What you see |
 |---|---|---|
 | 1 | clone | Repo downloaded to a temp folder |
-| 2 | scan | Total alerts found by OSV (e.g. ~30 on the demo repo), each tagged with CISA KEV + EPSS exploit data |
+| 2 | scan | Languages detected (e.g. Python · deep, JavaScript · text + AI), then total alerts found by OSV (e.g. ~30 on the demo repo), each tagged with CISA KEV + EPSS exploit data |
 | 3 | symbols | AI names the dangerous function for each alert (e.g. `yaml.load`) |
 | 4 | reachability | Each alert marked reachable / unsure / not reachable, with file:line evidence |
 | 5 | risk | Score 0–10 and priority P1–P4 |
@@ -62,7 +69,9 @@ Use the T15 demo repo. Run each check and tick it.
 **A. Mock mode first** (`LLM_MODE=mock`, `BOOMI_MODE=mock`, `GITHUB_MODE=mock`) — proves the app without any keys.
 - [ ] Overview page loads, stats count up, sidebar badges say `mock`.
 - [ ] Run scan → all 8 stages light up in order; log stream moves; ends with `done`.
-- [ ] Findings table: ~30 alerts; filter "reachable" leaves only pyyaml (+ requests) findings.
+- [ ] "Languages detected" shows Python (deep) and JavaScript (text + AI).
+- [ ] Findings table: ~35 alerts (PyPI + npm); filter "reachable" leaves pyyaml (+ requests) and lodash findings.
+- [ ] lodash finding: `tools/report.js` line with `_.template`, analysis chip "Text + AI", fix 4.17.15 → 4.18.0, `npm test` passed.
 - [ ] PyYAML finding: P1, evidence `app/routes.py:<line>` highlighted, "in route" tag, AI explanation.
 - [ ] Threat chips: "EPSS … top 7%" on PyYAML; no KEV chip (not on the KEV list); `THREAT_INTEL=off` hides chips, scan still works.
 - [ ] Fix card: version `5.3.1 → 6.0.x`, attempts shown, tests passed, fake PR link.

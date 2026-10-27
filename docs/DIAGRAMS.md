@@ -71,7 +71,7 @@ flowchart LR
 Only `reachable` findings, and `unsure` with confidence ≥ 0.5, go on to fix / PR / notify automatically.
 ```mermaid
 flowchart TD
-    A[clone<br/>cloner.py] --> B[scan + threat intel<br/>scanner.py · OSV<br/>threat_intel.py · KEV, EPSS]
+    A[clone<br/>cloner.py] --> B[detect languages + scan + threat intel<br/>ecosystems.py · scanner.py · OSV<br/>threat_intel.py · KEV, EPSS]
     B --> C[symbols<br/>symbols.py · LLM]
     C --> D[reachability<br/>reachability.py · AST + LLM]
     D --> E[risk<br/>risk.py]
@@ -198,6 +198,7 @@ flowchart TB
     pipeline[app/pipeline.py<br/>orchestrator]
     subgraph services[app/services]
         cloner
+        ecosystems
         scanner
         threat_intel
         symbols
@@ -228,7 +229,12 @@ flowchart TB
 ## 6. LLD — reachability algorithm
 ```mermaid
 flowchart TD
-    S[Start: repo path + VulnSymbols] --> W[Walk *.py<br/>skip venv, tests, migrations]
+    S[Start: repo path + VulnSymbols]
+    W[Walk *.py<br/>skip venv, tests, migrations]
+    S --> LANG{Python?}
+    LANG -- no --> GEN[Generic: import regex + symbol text search<br/>→ LLM verdict, confidence ≤ 0.8]
+    GEN --> O
+    LANG -- yes --> W
     W --> P[ast.parse each file]
     P --> M[Build import alias map<br/>import yaml as y → y = yaml<br/>from yaml import load → load = yaml.load]
     M --> C[Collect every ast.Call<br/>resolve dotted name via alias map]

@@ -22,9 +22,13 @@ Clone a repo and turn osv-scanner output into RawVuln objects.
   FIRST EPSS batch lookup; sets `kev`, `kev_date_added`, `epss`, `epss_percentile`. `THREAT_INTEL=live|mock|off`
   (mock = fixtures `kev_sample.json` / `epss_sample.json`, saved by this task). Called by the pipeline right after `scanner.scan`.
 
+- **All languages:** `ecosystems.detect(path)` per docs/ARCHITECTURE.md "Language support" (manifest table, skip vendored dirs) → scan `languages`. Scan with `osv-scanner scan source -r` so every manifest is included; each RawVuln carries `ecosystem` (OSV name). The requirements.txt-only fallback becomes: OSV.dev querybatch for every detected lockfile we can parse (PyPI + npm at minimum).
+
 ## Acceptance criteria
 - Running against the demo target (or a tiny fixture repo) returns ≥3 RawVuln with CVE ids and fixed versions.
 - Tests use the saved fixtures, no network. Threat intel: KEV hit, KEV miss, EPSS present, feed down → `kev=false`, `epss=null`, no exception.
+
+- Fixture repo with `requirements.txt` + `package-lock.json` → findings for both PyPI and npm; `languages` lists both with the right `analysis`.
 
 ## Hardening (docs/RISKS.md)
 Implement and test these rows: S2, S3, N2, N3, N12, E7, E13, L1, L2, L4, L6, L8.

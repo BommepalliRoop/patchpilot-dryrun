@@ -2,7 +2,7 @@
 
 1. (30 s) Problem: "Service companies get hundreds of vulnerability alerts. Most are noise; the real ones wait for weeks."
 2. (20 s) Show Integrations page: Boomi B1 schedules daily scans for every client repo.
-3. (60 s) Click Run scan on Acme Retail demo repo → live pipeline animates → Noise funnel: ~30 alerts → 2 reachable → 1 P1.
+3. (60 s) Click Run scan; point at "Languages detected: Python · JavaScript" — it is not a Python-only tool; on Acme Retail demo repo → live pipeline animates → Noise funnel: ~30 alerts → 2 reachable → 1 P1.
 4. (60 s) Open the P1 finding: CVE, the exact line calling yaml.load inside a web route, AI explanation, risk score,
    and the threat chip "EPSS top 7% most likely to be exploited" (CISA KEV is checked too — say: "if it were on the
    government's actively-exploited list, it would jump the queue").

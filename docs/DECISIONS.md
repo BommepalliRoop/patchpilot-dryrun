@@ -50,6 +50,11 @@ components (shadcn/ui, Magic UI / Aceternity UI, Tremor) to save time — see do
   the 3-hour sprint has no slack, and our edge is reachability + tested fix, not the number of scanners.
 - **Added (Oct 27): CISA KEV + EPSS enrichment** — two free public feeds, ~25 min of build spread over T02/T07/T12/T13,
   no new scanner. Adds "actively exploited" to the risk score and the UI/Jira/Teams.
+- **Languages (Oct 27): the app is not Python-only.** Every ecosystem OSV understands is scanned and scored
+  (Python, JavaScript/TypeScript, Java, Go, Rust, PHP, .NET, Ruby). Reachability: Python deep (AST), all others
+  generic (text search + AI). Auto-fix with tests: Python + npm at the event; others get an upgrade PR marked
+  "tests not run" when their toolchain is missing. Demo repo gets a small Node part (lodash) to show two languages.
 - Roadmap (pitch slide only, not built at the event):
   1. AI-written security proof test in each PR (fails before the fix, passes after).
-  2. Secret scanning (gitleaks), code scanning (Bandit/Semgrep), container scanning, more languages, license checks.
+  2. Secret scanning (gitleaks), code scanning (Bandit/Semgrep), container scanning, license checks.
+  3. Deep (parser-based) reachability for JavaScript, Java and Go (tree-sitter); full toolchains in the image; GitLab/Bitbucket merge requests.

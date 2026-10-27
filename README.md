@@ -34,9 +34,12 @@ flowchart LR
 ## Requirements
 **Functional**
 - Fully automated: daily via Boomi (B1) or on demand from the dashboard; no human in the normal path.
+- Works for any language OSV understands (Python, JavaScript/TypeScript, Java, Go, Rust, PHP, .NET, Ruby);
+  Python gets deep code-parser reachability, other languages text + AI reachability.
 - Reachability with evidence (file, line, code snippet, in-route flag) for every finding.
 - Risk score and priority P1–P4 per finding.
-- Tested fix: upgrade + test run + AI patch (max 2 tries) → `fixed` or `needs_human`.
+- Tested fix: upgrade + test run + AI patch (max 2 tries) → `fixed` or `needs_human` (Python + npm at the event;
+  other ecosystems get an upgrade PR marked "tests not run" when their toolchain is missing).
 - One GitHub PR per vulnerable package, never auto-merged.
 - Boomi: Jira issue + Teams alert + compliance log per finding; Teams summary per scan; compliance report per client.
 - Live dashboard: overview stats, live pipeline view, finding detail, integrations, compliance.
@@ -66,7 +69,7 @@ Full details with reasons: [docs/TECH_STACK.md](docs/TECH_STACK.md).
 | Exploit data | CISA KEV feed + FIRST EPSS API |
 | CVSS score | `cvss` |
 | Versions / names | `packaging` |
-| Code analysis | Python `ast` |
+| Code analysis | Python `ast` (deep) · regex import/symbol search + LLM for other languages |
 | Tests | pytest |
 
 **AI**

@@ -20,12 +20,16 @@ Produce a tested fix on a branch.
 - Prompt `prompts/patch_code.md`: input {package, old→new version, failing test output, relevant file contents}; output `{diff (unified), explanation}`; apply with `git apply --3way`, reject edits outside the repo.
 - Max 2 AI attempts; final status fixed | needs_human; store patch_diff (full diff vs base).
 
+- **Ecosystem adapters** (`bump`, `install`, `test`) per the ARCHITECTURE table. Build and test **PyPI and npm** fully (npm: `npm install <pkg>@<v> --ignore-scripts`, then `npm test`). Other ecosystems: implement `bump` from the table; run install/test only if the toolchain is on PATH, else `fix_status: fixed_untested` (PR opened, clearly labelled tests not run). Never run package lifecycle scripts.
+
 ## Acceptance criteria
 - On the demo repo: upgrade that breaks one call gets fixed by the AI patch in mock mode (canned diff) and tests pass.
 - Never leaves the original clone modified.
 
+- npm fixture: lodash 4.17.15 → 4.18.0 bump updates `package.json` + `package-lock.json`, `npm test` passes. Missing toolchain → `fixed_untested`, not an error.
+
 ## Hardening (docs/RISKS.md)
-Implement and test these rows: S2, S6, S7, S14, N4, E7, E10, E11, E12, E13, L1, L2, L5, L7.
+Implement and test these rows: S2, S6, S15, S7, S14, N4, E7, E10, E11, E12, E13, L1, L2, L5, L7.
 
 ## Rules
 - Follow CLAUDE.md and docs/API_CONTRACTS.md exactly. Stay inside this task's scope.

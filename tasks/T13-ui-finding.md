@@ -20,6 +20,8 @@ Show the proof and the fix.
 - Fix card: DiffViewer, tests passed, attempts, Open PR button; Integration card: Jira link, Teams sent, compliance id; vertical Timeline.
 - Re-run fix button (POST /api/findings/{id}/fix).
 
+- Analysis chip: "Deep analysis (code parser)" for `deep`, "Text + AI analysis" for `generic`. Fix card state for `fixed_untested`: amber, "Upgrade PR ready — tests not run".
+
 ## Acceptance criteria
 - Renders the contract example perfectly; handles needs_human and not_reachable states.
 

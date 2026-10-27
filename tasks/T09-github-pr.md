@@ -18,6 +18,9 @@ Push the fix branch and open a clear PR.
 - PR body from prompt `prompts/pr_description.md` (or template): risk summary, why reachable with file:line, change summary, test results, rollback note, label `security`.
 - `GITHUB_MODE=mock` returns a fake URL and writes the body to the DB.
 
+- `fixed_untested` PRs get label `tests-not-run` and a bold line at the top of the body: "PatchPilot could not run this project's tests — please run them before merging."
+- **Stretch (only if wave 3 has time):** GitLab merge requests via `python-gitlab` when the repo host is GitLab and `GITLAB_TOKEN` is set; otherwise GitLab repos end as `needs_human` with the diff stored.
+
 ## Acceptance criteria
 - Live: one real PR opened on the demo repo. Mock: deterministic URL.
 

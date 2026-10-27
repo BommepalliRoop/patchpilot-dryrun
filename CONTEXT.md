@@ -40,7 +40,7 @@ never called. Teams can't separate real risk from noise; dangerous ones stay ope
 audits (ISO 27001 / SOC 2). Fixing is manual.
 
 **Solution (fully automated, daily via Boomi or on demand):**
-1. Clone repo → 2. OSV-Scanner finds vulnerable dependencies → 3. AI extracts vulnerable functions from the
+1. Clone repo (any language: Python deep, others text + AI) → 2. OSV-Scanner finds vulnerable dependencies → 3. AI extracts vulnerable functions from the
 advisory → 4. Python AST + AI decide if our code actually calls them (file:line evidence, in-route detection) →
 5. Risk score = CVSS × reachability × exposure × exploit data (CISA KEV, EPSS) → P1–P4 → 6. Upgrade to nearest safe version, run pytest, AI patches
 breaking code (max 2 retries) → 7. Open GitHub PR with explanation → 8. Boomi: Jira ticket, Teams alert,

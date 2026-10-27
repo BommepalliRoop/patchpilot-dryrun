@@ -19,6 +19,8 @@ Call Boomi processes B2/B3/B4 exactly per contract.
 - `BOOMI_MODE=mock`: returns contract example responses with generated jira keys (`SEC-1xx`).
 - Tiny CLI: `python -m app.services.boomi_client ping` sends the sample B2 request to the live URL (for the Boomi team to test).
 
+- B2 payload also carries `ecosystem`; `fix_status` may be `fixed_untested`.
+
 ## Acceptance criteria
 - Pydantic validation test: generated payload == contract keys.
 - Mock and live paths both covered (live behind an env flag).

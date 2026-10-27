@@ -32,7 +32,7 @@
 ## Pages
 1. **Overview** `/` — hero stats (alerts scanned, real risks, fixed, mean time to fix), Noise funnel, recent scans table,
    "Run scan" button (opens a modal: client, repo URL, branch, auto-fix toggle, optional owner email).
-2. **Scan live view** `/scans/:id` — live pipeline stepper, log stream (terminal style), findings table with filters
+2. **Scan live view** `/scans/:id` — "Languages detected" strip (Python · deep, JavaScript · text + AI), live pipeline stepper, log stream (terminal style), findings table with filters
    (priority, reachability). Rows: CVE, package `installed → fixed`, priority badge, reachability chip, KEV flame icon, status.
 3. **Finding detail** `/findings/:id` — header with CVE + score ring + threat chips ("Actively exploited (CISA KEV)", "EPSS top 7%"); left: AI explanation + evidence code viewer with the
    vulnerable line highlighted and "in route" tag; right: fix card (diff viewer, tests passed, attempts, PR button),

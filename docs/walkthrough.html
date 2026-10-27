@@ -163,7 +163,7 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
   <header class="hero">
     <div class="eyebrow">Team briefing · EasyStepIn AI Hackathon 2026</div>
     <h1>PatchPilot, step by step</h1>
-    <p class="thesis">A client gives us one thing: <b>a GitHub repository</b>. PatchPilot finds the vulnerable libraries,
+    <p class="thesis">A client gives us one thing: <b>a GitHub repository, in any language</b>. PatchPilot finds the vulnerable libraries,
       proves which ones the code really calls, fixes them with tested upgrades, opens a pull request, and Boomi files the
       Jira ticket, Teams alert and audit record. Automatically, every day.</p>
   </header>
@@ -171,8 +171,8 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
   <section aria-labelledby="funnel-h">
     <h2 id="funnel-h">What one scan of the demo repo produces</h2>
     <div class="funnel">
-      <div class="fstep"><div class="fnum">~30</div><div class="flabel">alerts from the OSV scan</div></div>
-      <div class="fstep"><div class="fnum">2</div><div class="flabel">packages our code really calls</div></div>
+      <div class="fstep"><div class="fnum">~35</div><div class="flabel">alerts from the OSV scan (Python + JavaScript)</div></div>
+      <div class="fstep"><div class="fnum">3</div><div class="flabel">packages our code really calls</div></div>
       <div class="fstep"><div class="fnum">1</div><div class="flabel">P1: PyYAML inside a web route</div></div>
       <div class="fstep"><div class="fnum">✓</div><div class="flabel">tested fix, PR, Jira, Teams, audit row</div></div>
     </div>
@@ -198,7 +198,7 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
             <span class="chip">risk</span><span class="chip">fix</span><span class="chip">pr</span><span class="chip">notify</span>
           </div>
         </div>
-        <div class="node"><b>Helpers</b><span>OSV-Scanner · CISA KEV + EPSS · LLM · pytest in a temp venv</span></div>
+        <div class="node"><b>Helpers</b><span>Language detection · OSV-Scanner · CISA KEV + EPSS · LLM · pytest / npm test in a temp folder</span></div>
       </div>
       <div class="arrow" aria-hidden="true">→</div>
       <div class="col">
@@ -275,12 +275,21 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
             </table>
           </div>
           <div class="panel">
-            <h4>The repo must have</h4>
+            <h4>Any language works — PatchPilot detects it from the dependency files</h4>
+            <div class="tbl">
+              <table>
+                <thead><tr><th>Language</th><th>File we read</th><th>Reachability</th><th>Auto-fix</th></tr></thead>
+                <tbody>
+                  <tr><td>Python</td><td><code>requirements.txt</code>, <code>poetry.lock</code></td><td>Deep (code parser)</td><td>Tested with pytest</td></tr>
+                  <tr><td>JavaScript / TypeScript</td><td><code>package-lock.json</code>, <code>yarn.lock</code></td><td>Text + AI</td><td>Tested with npm test</td></tr>
+                  <tr><td>Java, Go, Rust, PHP, .NET, Ruby</td><td><code>pom.xml</code>, <code>go.mod</code>, <code>Cargo.lock</code>, …</td><td>Text + AI</td><td>Upgrade PR; tested if the toolchain is installed</td></tr>
+                </tbody>
+              </table>
+            </div>
             <div class="pills">
-              <span class="pill info">Python project</span>
-              <span class="pill info">requirements.txt with pyyaml==5.3.1 style pins</span>
-              <span class="pill info">pytest tests that pass</span>
-              <span class="pill mut">Flask / FastAPI routes (optional)</span>
+              <span class="pill info">Exact versions (lockfile or == pins)</span>
+              <span class="pill info">Tests that pass today</span>
+              <span class="pill mut">Web routes (optional)</span>
             </div>
           </div>
         </div>
@@ -314,8 +323,8 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
         <div class="badge">5</div>
         <div class="body">
           <div class="who"><span class="tag">STAGE 2 · scan</span></div>
-          <h3>Find vulnerable libraries with OSV</h3>
-          <p>OSV-Scanner reads <code>requirements.txt</code> and checks every pinned version against Google's open vulnerability database.
+          <h3>Detect languages, then find vulnerable libraries with OSV</h3>
+          <p>PatchPilot finds every dependency file (here: Python and JavaScript). OSV-Scanner checks every pinned version against Google's open vulnerability database.
             Each CVE is then tagged with exploit data: is it on the US CISA list of actively exploited CVEs, and what is its EPSS chance of being exploited?</p>
           <div class="code"><span class="c"># requirements.txt (demo repo)</span>
 flask==1.1.2          <span class="c">2 CVEs</span>
@@ -323,7 +332,10 @@ werkzeug==1.0.1       <span class="c">10 CVEs</span>
 jinja2==2.11.2        <span class="c">5 CVEs</span>
 <span class="hl">pyyaml==5.3.1         CVE-2020-14343 · CVSS 9.8 · EPSS top 7%</span>
 requests==2.25.1      <span class="c">4 CVEs</span>
-urllib3==1.26.4       <span class="c">11 CVEs   → about 30 alerts in total</span></div>
+urllib3==1.26.4       <span class="c">11 CVEs</span>
+
+<span class="c"># tools/package-lock.json (JavaScript)</span>
+lodash 4.17.15        <span class="c">6 CVEs, incl. CVE-2021-23337 command injection   → about 35 alerts in total</span></div>
         </div>
       </li>
 
@@ -349,7 +361,13 @@ urllib3==1.26.4       <span class="c">11 CVEs   → about 30 alerts in total</sp
 def import_config():
 <span class="hl">    data = yaml.load(request.data)          ← line 42: user input reaches yaml.load</span>
     return save(data)</div>
-          <div class="pills"><span class="pill reach">reachable · confidence 0.93</span><span class="pill p1">in web route</span></div>
+          <div class="pills"><span class="pill reach">reachable · confidence 0.93</span><span class="pill p1">in web route</span><span class="pill info">deep analysis</span></div>
+          <p><b>Other languages</b> (JavaScript, Java, Go, …): PatchPilot searches the source for imports of the package and for the dangerous
+            function name, then the AI judges the snippets. If the package is never imported, it is a hidden dependency and marked not reachable.</p>
+          <div class="code"><span class="c">// tools/report.js</span>
+const _ = require('lodash');
+<span class="hl">const html = _.template(userTemplate)(data);   ← lodash _.template with user input</span></div>
+          <div class="pills"><span class="pill reach">reachable · confidence 0.8</span><span class="pill info">text + AI analysis</span></div>
         </div>
       </li>
 
@@ -380,12 +398,12 @@ def import_config():
           <div class="who"><span class="tag">STAGE 6 · fix</span> · once per package</div>
           <h3>Upgrade, test, and let AI repair what breaks</h3>
           <div class="loop">
-            <div><b>Upgrade</b><span>pyyaml 5.3.1 → 6.0.1</span></div>
-            <div><b>Install + test</b><span>pytest in a temp venv, no secrets</span></div>
+            <div><b>Upgrade</b><span>pyyaml 5.3.1 → 6.0.1 · lodash 4.17.15 → 4.18.0</span></div>
+            <div><b>Install + test</b><span>pytest or npm test in a temp folder, no secrets, no install scripts</span></div>
             <div><b>Tests fail?</b><span>AI writes a small patch, max 2 tries</span></div>
             <div><b>Result</b><span>fixed, or needs review</span></div>
           </div>
-          <p class="muted">Several CVEs in the same package get one fix and one PR. The AI patch may only touch the files involved, never the tests.</p>
+          <p class="muted">Several CVEs in the same package get one fix and one PR. The AI patch may only touch the files involved, never the tests. For languages whose tools are not installed, PatchPilot still opens the upgrade PR, clearly marked "tests not run".</p>
         </div>
       </li>
 
@@ -433,7 +451,7 @@ def import_config():
   <section aria-labelledby="test-h">
     <h2 id="test-h">How we know it works</h2>
     <div class="checklist">
-      <div class="check"><span class="tick">✓</span><div><b>Mock mode first</b><span>All 8 stages run with no keys; ~30 alerts, PyYAML P1</span></div></div>
+      <div class="check"><span class="tick">✓</span><div><b>Mock mode first</b><span>All 8 stages run with no keys; Python + JavaScript detected, PyYAML P1</span></div></div>
       <div class="check"><span class="tick">✓</span><div><b>Live, one at a time</b><span>LLM, then GitHub (real PR), then Boomi (real Jira + Teams)</span></div></div>
       <div class="check"><span class="tick">✓</span><div><b>Safe failures</b><span>Unknown repo rejected, wrong key 401, Boomi down still completes</span></div></div>
       <div class="check"><span class="tick">✓</span><div><b>Under 2 minutes</b><span>From Run scan to the Teams alert on the demo repo</span></div></div>

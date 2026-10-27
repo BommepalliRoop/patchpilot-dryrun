@@ -24,7 +24,7 @@ Each stage emits an SSE event `{scan_id, stage, status, message, progress, data}
 | # | Stage | Module | Input → Output |
 |---|---|---|---|
 | 1 | clone | services/cloner.py | repo_url, branch → local path `/tmp/patchpilot/<scan_id>/repo` |
-| 2 | scan | services/scanner.py + services/threat_intel.py | path → list[RawVuln] (osv-scanner `--format json`), each enriched with `kev`, `kev_date_added`, `epss`, `epss_percentile` |
+| 2 | scan | services/ecosystems.py + services/scanner.py + services/threat_intel.py | path → list[RawVuln] (osv-scanner `--format json`), each enriched with `kev`, `kev_date_added`, `epss`, `epss_percentile` |
 | 3 | symbols | services/symbols.py | RawVuln advisory text → VulnSymbols {package, symbols[]} (LLM) |
 | 4 | reachability | services/reachability.py | repo path + symbols → Verdict {reachable, confidence, evidence[]} |
 | 5 | risk | services/risk.py | cvss, verdict, exposure → score 0–10, priority P1–P4 |
@@ -38,6 +38,42 @@ but still notifies Boomi (`event: finding.open`, `fix_status: not_attempted`).
 **Group by package for fix + PR.** Several CVEs often hit the same package (e.g. 3 requests CVEs). Stages 6–7 run
 once per package: bump to the smallest version that fixes *all* its routed CVEs, one branch, one PR listing every
 CVE. Stage 8 still sends one B2 call per finding; findings of the same package share the `pr_url`.
+
+## Language support (services/ecosystems.py)
+PatchPilot works on any repo whose dependencies OSV understands. Depth differs per language:
+
+| Ecosystem (OSV name) | Manifest / lockfile detected | Scan + exploit data | Reachability | Auto-fix + tests | Test command |
+|---|---|---|---|---|---|
+| PyPI (Python) | `requirements.txt`, `poetry.lock`, `Pipfile.lock` | ✅ | **deep** — Python `ast` | ✅ (`requirements.txt` pins) | `pytest -q` |
+| npm (JavaScript/TypeScript) | `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml` | ✅ | generic (text + AI) | ✅ `npm install <pkg>@<v> --ignore-scripts` | `npm test` |
+| Maven (Java/Kotlin) | `pom.xml`, `gradle.lockfile` | ✅ | generic | bump version in manifest | `mvn -q test` / `gradle test` |
+| Go | `go.mod` | ✅ | generic | `go get <mod>@<v>` | `go test ./...` |
+| crates.io (Rust) | `Cargo.lock` | ✅ | generic | `cargo update -p <crate> --precise <v>` | `cargo test` |
+| Packagist (PHP) | `composer.lock` | ✅ | generic | `composer require <pkg>:<v> --no-scripts` | `vendor/bin/phpunit` |
+| NuGet (.NET) | `packages.lock.json`, `*.csproj` | ✅ | generic | bump `PackageReference` | `dotnet test` |
+| RubyGems (Ruby) | `Gemfile.lock` | ✅ | generic | `bundle update <gem> --conservative` | `bundle exec rspec` |
+
+**Detection.** `ecosystems.detect(repo_path)` lists the manifests found (skipping `node_modules`, `vendor`, `.venv`, `target`)
+→ `languages: [{ecosystem, manifests[], analysis: deep|generic}]` on the scan. OSV-Scanner scans them all in one run (`-r`).
+
+**Generic reachability (all non-Python languages).**
+1. Import search per language (regex table): `import`/`require(` (JS/TS), `import` (Java/Kotlin/Go), `use` (Rust/PHP),
+   `using` (C#), `require` (Ruby) — finds files that use the vulnerable package at all.
+2. Symbol search: the vulnerable function names from the symbols stage (e.g. `_.template`, `template(`) in those files.
+3. Snippets ±15 lines → same LLM verdict prompt (`reachability_verdict`) with the language named.
+4. Package never imported in source → `not_reachable` (it is only a transitive dependency), no LLM call.
+5. Generic verdicts are capped at confidence 0.8 and say "text + AI analysis" in the explanation (honest about depth).
+`in_route` for generic languages: AI judges from the snippet (Express `app.get(`, Spring `@GetMapping`, etc.).
+
+**Fix adapters.** One adapter per ecosystem with `bump(repo, package, version)`, `install()`, `test()`.
+The Docker image ships **Python and Node.js**; for other ecosystems the adapter runs only if the toolchain is on the
+PATH. If it is not, PatchPilot still bumps the manifest and opens the PR, with `fix_status: fixed_untested` and a
+clear "tests not run by PatchPilot" label — never presented as tested. Installs never run package scripts
+(`--ignore-scripts`, `--no-scripts`) — see RISKS S15.
+
+**Git hosts.** Clone works for any HTTPS git URL on the allow-list (GitHub, GitLab, Bitbucket). Fix PRs:
+GitHub (required) via PyGithub; GitLab merge requests via `python-gitlab` when `GITLAB_TOKEN` is set (stretch, T09).
+Other hosts → `needs_human` with the patch diff attached in the finding.
 
 ## Threat intelligence (services/threat_intel.py)
 - CISA KEV: one JSON file `https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json` (~1.8 MB, ~1,800 CVEs).
@@ -75,9 +111,9 @@ Priority: ≥9 P1, ≥7 P2, ≥4 P3, else P4.
 5. Still failing → status `needs_human`.
 
 ## Data model (SQLite via SQLModel)
-- scans: id, client_name, repo_url, branch, auto_fix, owner_email, status, current_stage, started_at, finished_at,
+- scans: id, client_name, repo_url, branch, auto_fix, owner_email, languages_json, status, current_stage, started_at, finished_at,
   total_alerts, reachable_count, p1_count (the other `stats` fields are computed from findings)
-- findings: id, scan_id, cve_id, aliases_json, package, installed_version, fixed_version, summary, cvss, kev, kev_date_added,
+- findings: id, scan_id, cve_id, aliases_json, ecosystem, analysis, package, installed_version, fixed_version, summary, cvss, kev, kev_date_added,
   epss, epss_percentile, vulnerable_symbols_json,
   reachability, confidence, evidence_json, ai_explanation, score, priority, status, fix_id, jira_key, jira_url, teams_sent,
   compliance_log_id, timeline_json

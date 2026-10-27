@@ -27,6 +27,7 @@ of that code to an LLM. Most risks come from that.
 | S11 | XSS from AI text, code, CVE summaries in the UI | Render as text (React escapes). No `dangerouslySetInnerHTML` except Shiki output; no markdown-to-HTML of AI text | T11, T13 |
 | S12 | CORS too open | Allow only `FRONTEND_URL` and `http://localhost:5173` | T00, T16 |
 | S13 | Secrets committed to git | `.gitignore` has `.env*` (except `.env.example`); never echo keys in chat; Boomi team never commits webhook URLs/tokens | T00, all |
+| S15 | `npm install` / `composer` / `bundle` run package **lifecycle scripts** (postinstall) = code execution during install | Always `--ignore-scripts` (npm/yarn/pnpm), `--no-scripts` (composer); clean env (S2); same temp workdir | T08 |
 | S14 | Dependency confusion / malicious package version chosen by the fixer | Only versions listed as `fixed` by OSV (or newer releases of the **same** package from PyPI); never add new packages | T08 |
 
 ## 2. Network and external services
@@ -79,6 +80,7 @@ of that code to an LLM. Most risks come from that.
 | L7 | Several CVEs in one package | One fix + one PR per package (ARCHITECTURE "Group by package") | T03, T08, T09 |
 | L8 | Missing CVSS | Severity mapping in T02; if nothing at all, use 5.0 and mark `cvss_estimated` in the timeline | T02 |
 | L9 | Vulnerable code used only through a framework (Werkzeug via Flask) | Our AST cannot see it → `not_reachable`; the explanation says "not called directly by application code". Known limitation, mention it honestly if judges ask | T06 |
+| L11 | Generic (text + AI) reachability for non-Python languages can miss dynamic calls or match a same-named function | Confidence capped at 0.8, explanation says "text + AI analysis", UI shows the analysis chip; Python stays AST-precise | T06, T13 |
 | L10 | Timestamps | Always timezone-aware UTC, ISO-8601 with `Z` | T01 |
 
 ## 5. Demo and operations

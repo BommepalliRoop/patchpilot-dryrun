@@ -22,8 +22,12 @@ A small, realistic client app to scan (separate GitHub repo). Build it in a sibl
 - Tests with pytest that pass on old versions; include one call that breaks after the PyYAML upgrade (e.g. `yaml.load(x)` without Loader) so the AI patch step has real work.
 - Push to its own repo; put URL in `.env` as DEMO_REPO_URL.
 
+- **Second language:** add `tools/` with a tiny Node script (`tools/report.js`) that does `const _ = require('lodash'); _.template(userTemplate)`, `package.json` pinning `"lodash": "4.17.15"`, the generated `package-lock.json`, and one `node --test` test (`npm test`). Checked on OSV Oct 27: lodash 4.17.15 has 6 advisories (incl. CVE-2021-23337 command injection via `_.template`), all fixed in 4.18.0.
+
 ## Acceptance criteria
 - osv-scanner on it reports the expected alerts (record the real number in STATUS.md note; demo script and funnel use it); pytest passes on the old versions under Python 3.11.
+
+- osv-scanner reports both PyPI and npm alerts; the demo shows "Python · deep" and "JavaScript · scan + AI".
 
 ## Hardening (docs/RISKS.md)
 Implement and test these rows: — (keep the app small; no real secrets in it).

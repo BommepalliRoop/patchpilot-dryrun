@@ -9,7 +9,9 @@ Enums
 - priority: `P1 | P2 | P3 | P4`
 - finding.status: `open | fixing | fixed | needs_human | ignored`
 - B2 event: `finding.fixed | finding.needs_human | finding.open` (open = reachable but `auto_fix` was false)
-- B2 fix_status: `fixed | needs_human | not_attempted`
+- B2 fix_status: `fixed | fixed_untested | needs_human | not_attempted` (`fixed_untested` = upgrade PR opened, tests not run because the toolchain is missing)
+- ecosystem (OSV names): `PyPI | npm | Maven | Go | crates.io | Packagist | NuGet | RubyGems` (others passed through as OSV names them)
+- analysis: `deep` (Python AST + AI) | `generic` (text search + AI, all other languages)
 
 ---------------------------------------------------------------
 ## Part A — PatchPilot backend REST API (frontend ↔ backend, and Boomi B1 → backend)
@@ -41,6 +43,8 @@ Response 200 — Scan
   "scan_id": "scn_01", "client_name": "Acme Retail", "repo_url": "...", "branch": "main",
   "status": "completed", "current_stage": "done",
   "started_at": "2026-10-28T05:10:00Z", "finished_at": "2026-10-28T05:11:42Z",
+  "languages": [ { "ecosystem": "PyPI", "manifests": ["requirements.txt"], "analysis": "deep" },
+                 { "ecosystem": "npm", "manifests": ["tools/package-lock.json"], "analysis": "generic" } ],
   "stats": { "total_alerts": 12, "reachable": 2, "unsure": 1, "not_reachable": 9, "p1": 1, "p2": 1, "fixed": 2, "prs_opened": 2 }
 }
 ```
@@ -58,12 +62,14 @@ Response 200: `[FindingSummary]`
 [{ "finding_id": "fnd_07", "cve_id": "CVE-2020-14343", "package": "pyyaml", "installed_version": "5.3.1",
    "fixed_version": "5.4", "cvss": 9.8, "reachability": "reachable", "confidence": 0.93,
    "score": 10.0, "priority": "P1", "status": "fixed",
-   "kev": false, "epss": 0.0598, "epss_percentile": 0.9326 }]
+   "kev": false, "epss": 0.0598, "epss_percentile": 0.9326, "ecosystem": "PyPI", "analysis": "deep" }]
 ```
 
 Threat fields: `kev` = CVE is on the CISA Known Exploited Vulnerabilities list (actively exploited);
 `epss` = FIRST EPSS probability of exploitation in the next 30 days (0–1); `epss_percentile` (0–1).
 `epss`/`epss_percentile` are `null` and `kev` is `false` when the feeds are unavailable or have no data.
+
+`ecosystem` and `analysis` tell the UI which language a finding belongs to and how deep the reachability proof is.
 
 ### GET /api/findings/{finding_id}
 Response 200 — FindingDetail = FindingSummary +
