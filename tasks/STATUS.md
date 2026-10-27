@@ -4,7 +4,7 @@ Update your row when you start (`in_progress`) and finish (`done`). Keep notes t
 
 | Task | Title | Lane | Model | Effort | Wave | Depends on | Status | Note |
 |---|---|---|---|---|---|---|---|---|
-| T00 | Repo scaffold and shared foundations | Lead | Sonnet 5.5 | high | 0 | — | todo | |
+| T00 | Repo scaffold and shared foundations | Lead | Sonnet 5.5 | high | 0 | — | done | Backend+frontend scaffold, stubbed Part A routes, 50 tests pass; S4,S12,S13,E1,E2,E8,O2 done; ran on Python 3.13 (3.11 not installed locally) |
 | T01 | Data models and persistence | Dev A | Sonnet 5.5 | medium | 1 | T00 | todo | |
 | T02 | Repo cloner and OSV scanner | Dev A | Sonnet 5.5 | medium | 1 | T00 | todo | |
 | T03 | Scan orchestrator, SSE and scan API | Dev A | Opus 5.5 | high | 2 | T01, T02 (others via stubs) | todo | |

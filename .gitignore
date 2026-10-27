@@ -1,0 +1,32 @@
+# Secrets (RISKS S13) — only the *.example templates are committed
+.env*
+!.env.example
+!frontend/.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+
+# Local data
+backend/patchpilot.db
+backend/patchpilot.db-*
+*.db-wal
+*.db-shm
+
+# Node
+node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+# Scan work dirs, logs, OS/editor noise
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
