@@ -15,13 +15,15 @@ maps and connections, deploy, and run the test calls in section 9. A process is 
 **Today's practice run:** build everything in a Boomi folder named `DRYRUN - PatchPilot` and do not reuse
 it tomorrow (hackathon rule: everything is built during the event). Tomorrow, rebuild in a fresh folder.
 
-**Version:** v3.1 (Oct 27). Changes since earlier copies:
+**Version:** v3.2 (Oct 27). Changes since earlier copies:
 - v2: idempotency (`Idempotency-Key` header, `finding_id` column in the compliance log), new `event` / `fix_status`
   values, optional `owner_email`.
 - v3: exploit data in B2 — `kev`, `epss`, `epss_percentile` (section 5); Jira label `actively-exploited` and an
   "Exploit data" description line; Teams card shows the exploit line (section 6).
 - v3.1: compliance log also stores `jira_url` and `teams_sent` (needed for the idempotent replay); common response
   rules for all endpoints (section 5a); Teams title for `finding.open`; B3 duplicate handling; schedule time zone.
+- v3.2: compliance log store decided — **PostgreSQL** (table SQL + the 3 queries in section 4); the Lead creates it
+  and sends the connection details privately (section 4b). Google Sheet only as fallback.
 If you started from an older copy, apply these changes; nothing else changed.
 
 **Working in parallel:** you do not wait for us. The dev team builds the app at the same time with Boomi in
@@ -50,7 +52,7 @@ Tick these in order. Times are for the event day (Oct 28); for the practice run,
 - [ ] 0.2 A Boomi **Atom Cloud** (or cloud Atom) is available with a public HTTPS URL (section 3).
 - [ ] 0.3 Jira Cloud site + a project (e.g. key `SEC`) + a Jira user email and API token.
 - [ ] 0.4 A Teams channel for alerts + its webhook URL (section 6).
-- [ ] 0.5 A store for the compliance log you can read and write from Boomi (section 4).
+- [ ] 0.5 Compliance log database: PostgreSQL connection details received from the Lead (section 4b); table exists.
 - [ ] 0.6 You received from the Lead: the demo repo URL and the B1 client list (section 10).
 
 **B0 — Setup (by 10:00)**
@@ -59,7 +61,7 @@ Tick these in order. Times are for the event day (Oct 28); for the practice run,
 - [ ] 1.3 Send the Lead `BOOMI_BASE_URL`, `BOOMI_USER` (team chat) and `BOOMI_TOKEN` (private message only).
 
 **B2 — Finding notification (by 11:15) — the most important**
-- [ ] 2.1 Create the compliance log table/list with the columns in section 4.
+- [ ] 2.1 Database connection in Boomi works: run the B4 query → returns 0 rows without error (section 4a).
 - [ ] 2.2 Build B2 with the Companion prompt (section 12) and the steps in section 5.
 - [ ] 2.3 Deploy; run the B2 test call (section 9) → a Jira issue (with the "Exploit data" line), a Teams card and a log row appear; response matches section 5.
 - [ ] 2.4 Run the same call again with the same `Idempotency-Key` → **no** second Jira issue, same `jira_key` returned.
@@ -130,7 +132,7 @@ building processes before 9:20 is allowed; assume it is not.
    |---|---|---|
    | Jira | Jira connector, or HTTP Client | Jira Cloud site URL, user email + Jira API token (id.atlassian.com → Security → API tokens) |
    | Teams | HTTP Client | Teams webhook URL (section 6) |
-   | Compliance log | Database / SharePoint / Google Sheets connector | Whatever you can read **and** write quickly (B4 reads it) |
+   | Compliance log | Database connector (PostgreSQL) | Details from the Lead (section 4b); fallback Google Sheets connector |
    | PatchPilot | HTTP Client | `BACKEND_URL`, header `X-API-Key` (we send it privately) |
 5. Deploy each process to the environment attached to the runtime, then test with the curl calls in section 9.
 
@@ -148,8 +150,73 @@ building processes before 9:20 is allowed; assume it is not.
 | status | `fixed` / `needs_human` / `open` | B2 `fix_status` (`not_attempted` → `open`) |
 
 `time_to_fix_minutes` for B4 = `fixed_at − detected_at` in whole minutes (`null` if not fixed).
-Options: a small cloud database (Postgres/MySQL), a SharePoint list, or a Google/Excel sheet — pick the one
-your Boomi account already has a connector for.
+
+### 4a. Store: PostgreSQL (decided)
+A free cloud PostgreSQL database (e.g. Neon or Supabase), created by the Lead. Use Boomi's **Database connector**
+(PostgreSQL JDBC). First thing in B0: confirm your Atom Cloud can use the PostgreSQL driver — if it cannot, tell the
+Lead immediately and use the fallback (a Google Sheet with the same columns via the Google Sheets connector).
+
+Table (the Lead runs this once; shown so you know the columns):
+```sql
+CREATE TABLE compliance_log (
+  compliance_log_id TEXT PRIMARY KEY,              -- 'log_' || finding_id
+  finding_id        TEXT NOT NULL UNIQUE,          -- idempotency key
+  scan_id           TEXT,
+  client_name       TEXT NOT NULL,
+  repo_url          TEXT NOT NULL,
+  cve_id            TEXT NOT NULL,
+  package           TEXT NOT NULL,
+  priority          TEXT NOT NULL CHECK (priority IN ('P1','P2','P3','P4')),
+  kev               BOOLEAN NOT NULL DEFAULT FALSE,
+  detected_at       TIMESTAMPTZ NOT NULL,
+  fixed_at          TIMESTAMPTZ,
+  jira_key          TEXT,
+  jira_url          TEXT,
+  teams_sent        BOOLEAN NOT NULL DEFAULT FALSE,
+  pr_url            TEXT,
+  status            TEXT NOT NULL CHECK (status IN ('fixed','needs_human','open')),
+  created_at        TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX compliance_log_client_date ON compliance_log (client_name, detected_at);
+```
+
+The three queries your processes need (`?` = parameters):
+```sql
+-- B2 step 1: idempotency check (by finding_id)
+SELECT compliance_log_id, jira_key, jira_url, teams_sent
+FROM compliance_log WHERE finding_id = ?;
+
+-- B2 step 5: insert the row (compliance_log_id = 'log_' + finding_id)
+INSERT INTO compliance_log (compliance_log_id, finding_id, scan_id, client_name, repo_url, cve_id, package,
+  priority, kev, detected_at, fixed_at, jira_key, jira_url, teams_sent, pr_url, status)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?::timestamptz, ?::timestamptz, ?, ?, ?, ?, ?)
+ON CONFLICT (finding_id) DO NOTHING;
+
+-- B4: compliance report
+SELECT compliance_log_id, cve_id, package, priority, detected_at, fixed_at,
+       CASE WHEN fixed_at IS NULL THEN NULL
+            ELSE FLOOR(EXTRACT(EPOCH FROM (fixed_at - detected_at)) / 60)::int END AS time_to_fix_minutes,
+       jira_key, pr_url, status
+FROM compliance_log
+WHERE client_name = ? AND detected_at >= ?::date
+ORDER BY detected_at DESC;
+```
+`fixed_at` = processing time when `fix_status` = `fixed`, else NULL. `status`: `fixed` / `needs_human` / `open`
+(`not_attempted` → `open`).
+
+### 4b. Connection details (the Lead sends these privately)
+| Setting | Example |
+|---|---|
+| Host | `ep-xxxx.ap-southeast-1.aws.neon.tech` |
+| Port | `5432` |
+| Database | `patchpilot_compliance` |
+| User | `boomi_writer` |
+| Password | (private message only) |
+| SSL | required (`sslmode=require`) |
+| JDBC URL | `jdbc:postgresql://<host>:5432/patchpilot_compliance?sslmode=require` |
+
+The Lead also sends, privately: Jira site URL, Jira user email, Jira API token, Jira project key, and the Teams
+webhook URL — unless your team already has its own Jira/Teams set up, in which case tell the Lead which ones you use.
 
 ## 5. B2 — Finding notification (the main one)
 `POST ${BOOMI_BASE_URL}/patchpilot/findings` · Basic auth · `Content-Type: application/json` · reply within 15 s.
@@ -324,13 +391,16 @@ After T10 the dev team can also run `python -m app.services.boomi_client ping` t
 | `BOOMI_BASE_URL` and the exact paths for B2/B3/B4 | 10:30 | team chat |
 | `BOOMI_USER` | 10:30 | team chat |
 | `BOOMI_TOKEN` | 10:30 | **private message to the Lead only** — never in git or a shared channel |
-| Jira site URL + project key, Teams channel name | 10:30 | team chat |
+| Jira site URL + project key, Teams channel name (only if you use your own Jira/Teams) | 10:30 | team chat |
+| "PostgreSQL driver works on our Atom" (or "we need the Google Sheet fallback") | B0 | team chat |
 | "B2 passes the curl test" | 11:15 | team chat + screenshot of the Jira issue and Teams card |
 | "B1 points at BACKEND_URL" | 11:40 | team chat |
 
 | We give you | When |
 |---|---|
-| `DEMO_REPO_URL` and the B1 client list | tonight |
+| `DEMO_REPO_URL` and the B1 client list | before you start |
+| PostgreSQL connection details (section 4b) | before you start, private message |
+| Jira site, email, API token, project key; Teams webhook URL | before you start, private message |
 | `BACKEND_URL`, `FRONTEND_URL` | ~11:40 (after deploy) |
 | `PATCHPILOT_API_KEY` | ~11:40, private message |
 
@@ -354,17 +424,17 @@ from the section named. Then review what Companion generated, deploy, and run th
 **B0**
 "Set up a Web Services Server REST listener with Basic authentication on my Atom Cloud. Create connections for:
 Jira Cloud (site URL, email, API token), an HTTP Client for a Microsoft Teams Workflows webhook, an HTTP Client
-for an external REST API that needs an X-API-Key header, and a [database / SharePoint list / Google Sheet] for a
-compliance log with columns: [paste section 4 table]. Show me where to find the Shared Web Server user name and token."
+for an external REST API that needs an X-API-Key header, and a Database connection to PostgreSQL
+(JDBC URL, user, password from section 4b, SSL required) for the compliance_log table [paste the SQL from section 4a]. Show me where to find the Shared Web Server user name and token."
 
 **B2**
 "Create a process with a Web Services Server listener for POST /patchpilot/findings that accepts this JSON
 [paste the B2 request from section 5]. Validate finding_id, cve_id, package, priority and client_name; return 400 {ok:false, error:'invalid_request', message} if missing.
-Read the Idempotency-Key header: if the compliance log already has a row with that finding_id, return the stored
-jira_key, jira_url, teams_sent and compliance_log_id without creating anything.
+Read the Idempotency-Key header and run the idempotency query from section 4a [paste it]: if a row exists, return the
+stored jira_key, jira_url, teams_sent and compliance_log_id without creating anything.
 Add a Decision on priority: P1 or P2 go to an urgent branch. Create a Jira issue using this mapping
 [paste Jira mapping table] (add label actively-exploited when kev is true). Post an Adaptive Card to the Teams webhook with the CVE, package, explanation and
-links to pr_url and the new Jira issue. Insert a row into the compliance log (including finding_id, jira_url and teams_sent). Return this JSON
+links to pr_url and the new Jira issue. Insert a row into the compliance_log table with the insert query from section 4a [paste it]. Return this JSON
 [paste the B2 response from section 5]. If Teams fails, still return 200 with teams_sent false. If Jira fails,
 return 502 with {ok:false, error:'jira_create_failed', message}."
 
@@ -380,5 +450,4 @@ link to dashboard_url, and returns {ok:true, teams_sent:true}."
 
 **B4**
 "Create a process with a Web Services Server listener for GET /patchpilot/compliance with query parameters
-client_name and from. Query the compliance log for that client where detected_at >= from, compute
-time_to_fix_minutes, and return this JSON [paste the B4 response from section 8]. Return items: [] when nothing matches."
+client_name and from. Run the B4 query from section 4a [paste it], and return this JSON [paste the B4 response from section 8]. Return items: [] when nothing matches."

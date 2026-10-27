@@ -58,7 +58,7 @@ Full details with reasons: [docs/TECH_STACK.md](docs/TECH_STACK.md).
 | Language | Python 3.11 |
 | API framework / server | FastAPI + Uvicorn |
 | Live progress | Server-Sent Events (`sse-starlette`) |
-| Database | SQLite via SQLModel |
+| Database | SQLite via SQLModel (app data) · PostgreSQL (Boomi compliance log) |
 | Config | `pydantic-settings` (`.env`) |
 | HTTP client | httpx |
 | Git / GitHub | GitPython · PyGithub |

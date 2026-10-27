@@ -10,6 +10,7 @@ One page for "what do we use, where, and why". Exact library versions are pinned
 | API framework | FastAPI + Uvicorn | Async, Pydantic-native, automatic OpenAPI docs at `/docs` |
 | Live progress | Server-Sent Events (`sse-starlette`) | One-way stream is all we need; simpler than WebSockets, works through proxies |
 | Persistence | SQLModel on SQLite | Zero setup, one file, good enough for a demo and a daily job |
+| Compliance log (Boomi side) | PostgreSQL (Neon / Supabase free tier), written by Boomi B2, read by B4 | Real audit trail outside our app; Boomi Database connector |
 | HTTP client | httpx | Async, timeouts and retries for OSV, Boomi and LLM calls |
 | Git | GitPython (clone, branch, commit) + PyGithub (pull requests) | Mature, simple APIs |
 | Vulnerability data | OSV-Scanner CLI (`--format json`); fallback OSV.dev `querybatch` API | Free, open, covers PyPI with fixed-version ranges |

@@ -70,7 +70,7 @@ Use the T15 demo repo. Run each check and tick it.
 - [ ] Integrations page: B2/B3 events appear in the activity feed.
 - [ ] Compliance page: row for the PyYAML finding, CSV export downloads.
 
-**B. Live mode** — switch one at a time (CONFIG.md section 6) and repeat the scan.
+**B. Live mode** — switch one at a time (CONFIG.md section 7) and repeat the scan.
 - [ ] `LLM_MODE=live`: verdicts and explanations come from the real model; still P1 for PyYAML.
 - [ ] `GITHUB_MODE=live`: a real PR appears on the demo repo — title `[PatchPilot][P1] ...`, body explains why,
       diff changes `requirements.txt` (+ the AI patch), branch `patchpilot/pyyaml-<version>`.

@@ -57,11 +57,27 @@ Anything starting with `VITE_` is shipped to the browser — never put a key the
 | Vercel account linked to GitHub | Dev C | log in | |
 | `cloudflared` (fallback tunnel) | Dev C | `cloudflared --version` | |
 
-## 4. Values that live only in Boomi (we never hold these)
-Jira site URL, Jira project key, Jira user email + API token, Teams webhook URL, compliance log store
-credentials. The Boomi team keeps them in Boomi connections. See `docs/BOOMI_HANDOFF.md`.
+## 4. Databases — which one is which
+| Database | Used by | Engine | Config needed |
+|---|---|---|---|
+| App database (scans, findings, fixes, integration events) | Our backend only | **SQLite** file `backend/patchpilot.db` (via SQLModel) | None — created automatically on start. Boomi never touches it |
+| Compliance log (audit trail, B2 writes, B4 reads) | Boomi only | **PostgreSQL** (free cloud: Neon or Supabase) | Lead creates it and gives the Boomi team the connection details privately |
 
-## 5. Exchange sheet — what moves between teams
+## 5. Boomi-side resources — the Lead prepares and sends privately
+These values never go into our `.env` or git. They go into Boomi connections. Send them by private message.
+
+| # | Resource | How to create | Values to send to the Boomi team | Status |
+|---|---|---|---|---|
+| R1 | Compliance PostgreSQL | Neon (neon.tech) or Supabase → new project `patchpilot_compliance` → run the `CREATE TABLE` from BOOMI_HANDOFF section 4a in its SQL editor → create user `boomi_writer` (or use the default role) | host, port 5432, database, user, password, `sslmode=require`, JDBC URL | |
+| R2 | Jira | Jira Cloud site → project `SEC` (Scrum/Kanban, any) → id.atlassian.com → Security → API tokens → create token | site URL, project key, user email, API token | |
+| R3 | Teams webhook | Teams channel → ⋯ → Workflows → "Post to a channel when a webhook request is received" (or Incoming Webhook if allowed) → copy URL | webhook URL, channel name | |
+| R4 | B1 client list | — | `[{"client_name":"Acme Retail","repo_url":"<DEMO_REPO_URL>","branch":"main","auto_fix":true,"owner_email":"<email>"}]` | |
+| R5 | PatchPilot access for B1 | after T16 deploy | `BACKEND_URL`, `PATCHPILOT_API_KEY` | |
+
+If the Boomi team already has its own Jira / Teams / database they prefer, they may use those — they just tell you which.
+Test R1 before sending: in the Neon/Supabase SQL editor run `SELECT count(*) FROM compliance_log;` → `0`.
+
+## 6. Exchange sheet — what moves between teams
 | From → To | Item | When |
 |---|---|---|
 | Boomi → Dev | `BOOMI_BASE_URL`, `BOOMI_USER`, `BOOMI_TOKEN` (token sent privately) | by 10:30 |
@@ -69,9 +85,10 @@ credentials. The Boomi team keeps them in Boomi connections. See `docs/BOOMI_HAN
 | Boomi → Dev | Jira site URL + project key, Teams channel name (for the demo script) | by 10:30 |
 | Dev → Boomi | `BACKEND_URL`, `PATCHPILOT_API_KEY` (sent privately) | after T16, ~11:40 |
 | Dev → Boomi | `FRONTEND_URL` (dashboard links in Teams cards) | after T16 |
-| Dev → Boomi | Client list for B1: `client_name`, `repo_url` (= `DEMO_REPO_URL`), `branch`, `auto_fix` | tonight |
+| Dev → Boomi | Client list for B1: `client_name`, `repo_url` (= `DEMO_REPO_URL`), `branch`, `auto_fix`, `owner_email` | before they start |
+| Lead → Boomi | R1 compliance PostgreSQL, R2 Jira, R3 Teams webhook (section 5, private) | before they start |
 
-## 6. Switching from mock to live (on the day)
+## 7. Switching from mock to live (on the day)
 1. All `*_MODE=mock` (and `THREAT_INTEL=mock` if offline) → everything works end to end with fixtures.
 2. `LLM_MODE=live` after T04 passes with the kickoff key.
 3. `GITHUB_MODE=live` after T09 opens a real PR on demo-target.
