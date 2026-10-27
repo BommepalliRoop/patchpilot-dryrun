@@ -1,0 +1,26 @@
+# Render blueprint. The free plan sleeps after ~15 min idle (RISKS N10), so the starter plan is required.
+services:
+  - type: web
+    name: patchpilot-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    plan: starter
+    healthCheckPath: /api/health
+    disk:
+      name: patchpilot-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - { key: LLM_MODE, value: mock }
+      - { key: BOOMI_MODE, value: mock }
+      - { key: GITHUB_MODE, value: mock }
+      - { key: DEMO_MODE, value: "true" }
+      - { key: FRONTEND_URL, sync: false }
+      - { key: BACKEND_URL, sync: false }
+      - { key: PATCHPILOT_API_KEY, sync: false }
+      - { key: LLM_API_KEY, sync: false }
+      - { key: GITHUB_TOKEN, sync: false }
+      - { key: BOOMI_BASE_URL, sync: false }
+      - { key: BOOMI_USER, sync: false }
+      - { key: BOOMI_TOKEN, sync: false }

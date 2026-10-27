@@ -1,0 +1,17 @@
+# RISKS S2: secrets and local state never enter the image
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+.git
+**/node_modules
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/.venv
+backend/patchpilot.db*
+frontend
+docs
+tasks
+boomi
