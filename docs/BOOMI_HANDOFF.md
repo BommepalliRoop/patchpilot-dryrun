@@ -15,11 +15,13 @@ maps and connections, deploy, and run the test calls in section 9. A process is 
 **Today's practice run:** build everything in a Boomi folder named `DRYRUN - PatchPilot` and do not reuse
 it tomorrow (hackathon rule: everything is built during the event). Tomorrow, rebuild in a fresh folder.
 
-**Version:** v3 (Oct 27). Changes since earlier copies:
+**Version:** v3.1 (Oct 27). Changes since earlier copies:
 - v2: idempotency (`Idempotency-Key` header, `finding_id` column in the compliance log), new `event` / `fix_status`
   values, optional `owner_email`.
 - v3: exploit data in B2 — `kev`, `epss`, `epss_percentile` (section 5); Jira label `actively-exploited` and an
   "Exploit data" description line; Teams card shows the exploit line (section 6).
+- v3.1: compliance log also stores `jira_url` and `teams_sent` (needed for the idempotent replay); common response
+  rules for all endpoints (section 5a); Teams title for `finding.open`; B3 duplicate handling; schedule time zone.
 If you started from an older copy, apply these changes; nothing else changed.
 
 **Working in parallel:** you do not wait for us. The dev team builds the app at the same time with Boomi in
@@ -139,11 +141,13 @@ building processes before 9:20 is allowed; assume it is not.
 | finding_id | string, unique — used for idempotency | B2 request / `Idempotency-Key` header |
 | client_name, repo_url, cve_id, package, priority | string | B2 request |
 | detected_at | ISO-8601 UTC | B2 request |
-| fixed_at | ISO-8601 UTC, = processing time when `fix_status` = `fixed`, else empty | B2 |
-| jira_key, pr_url | string | Jira response / B2 request |
+| fixed_at | ISO-8601 UTC, = processing time when `fix_status` = `fixed`, else empty (B4 returns `null`) | B2 |
+| jira_key, jira_url | string | Jira response (returned again on an idempotent replay) |
+| teams_sent | boolean | Result of the Teams post |
+| pr_url | string, may be empty | B2 request |
 | status | `fixed` / `needs_human` / `open` | B2 `fix_status` (`not_attempted` → `open`) |
 
-`time_to_fix_minutes` for B4 = `fixed_at − detected_at` in whole minutes (empty if not fixed).
+`time_to_fix_minutes` for B4 = `fixed_at − detected_at` in whole minutes (`null` if not fixed).
 Options: a small cloud database (Postgres/MySQL), a SharePoint list, or a Google/Excel sheet — pick the one
 your Boomi account already has a connector for.
 
@@ -189,9 +193,10 @@ Field notes: `event` finding.fixed / finding.needs_human / finding.open · `prio
 Several findings in the same package share one `pr_url` (one PR per package) — still create one Jira issue per finding.
 
 **Process steps**
-1. Listener receives JSON → validate required fields (`cve_id`, `package`, `priority`, `client_name`). Missing → 400.
+1. Listener receives JSON → validate required fields (`finding_id`, `cve_id`, `package`, `priority`, `client_name`).
+   Missing → 400 `{ "ok": false, "error": "invalid_request", "message": "missing cve_id" }`.
    **Idempotency:** read header `Idempotency-Key` (= `finding_id`). If the compliance log already has a row for that
-   `finding_id`, skip steps 2–5 and return the stored `jira_key`/`jira_url`/`compliance_log_id` (we retry after timeouts,
+   `finding_id`, skip steps 2–5 and return the stored `jira_key`/`jira_url`/`teams_sent`/`compliance_log_id` (we retry after timeouts,
    so without this you get duplicate Jira tickets). Store `finding_id` in the log row.
 2. Decision on `priority`: P1/P2 = urgent branch (Jira Highest/High, Teams card marked urgent); P3/P4 = normal.
 3. Create Jira issue (mapping below) → keep `key` and build `jira_url` = `<site>/browse/<key>`.
@@ -221,6 +226,14 @@ call `/rest/api/2/issue`, which accepts a plain-text description.
 If Teams fails but Jira worked, still return 200 with `"teams_sent": false`.
 If Jira fails: 502 with `{ "ok": false, "error": "jira_create_failed", "message": "..." }`.
 
+## 5a. Response rules for every Boomi endpoint (B2, B3, B4)
+- Basic auth on every listener; wrong or missing credentials → 401.
+- Always JSON. Success → 200 with the documented body. Failure → 4xx/5xx with
+  `{ "ok": false, "error": "<code>", "message": "..." }` (codes: `invalid_request`, `unauthorized`,
+  `jira_create_failed`, `log_write_failed`, `internal_error`).
+- Answer within 15 seconds (our timeout). We retry once on a timeout or 5xx, with the same `Idempotency-Key`.
+- Timestamps are ISO-8601 UTC with `Z` (e.g. `2026-10-28T05:11:40Z`).
+
 ## 6. Teams message (B2 and B3)
 Microsoft is retiring the old Office 365 "Incoming Webhook" connector. If you cannot create one, use the
 Teams **Workflows** app → template "Post to a channel when a webhook request is received"; it gives a URL
@@ -230,8 +243,9 @@ that accepts an Adaptive Card wrapped like this:
   "attachments": [ { "contentType": "application/vnd.microsoft.card.adaptive",
                      "content": { "type": "AdaptiveCard", "version": "1.4", "body": [ ... ], "actions": [ ... ] } } ] }
 ```
-**B2 card:** title `{priority} vulnerability fixed automatically` (or `{priority} vulnerability needs review`
-when `fix_status` = `needs_human`) · facts: client, repo, CVE, package `installed → fixed`, why it is reachable
+**B2 card:** title by `event` — `finding.fixed`: `{priority} vulnerability fixed automatically`;
+`finding.needs_human`: `{priority} vulnerability needs review`; `finding.open`: `{priority} vulnerability found (auto-fix off)`.
+Hide the "Open pull request" button when `pr_url` is empty · facts: client, repo, CVE, package `installed → fixed`, why it is reachable
 (`ai_explanation`), evidence `file:line`, exploit data ("🔥 Actively exploited (CISA KEV)" when `kev`;
 "EPSS 6% · top 7%" from `epss`/`epss_percentile`, hidden when null) · buttons: "Open pull request" (`pr_url`), "Open Jira" (`jira_url`).
 
@@ -239,7 +253,7 @@ when `fix_status` = `needs_human`) · facts: client, repo, CVE, package `install
 P1, P2, fixed, PRs opened · button: "Open dashboard" (`dashboard_url`).
 
 ## 7. B1 — Daily scan trigger (Boomi → PatchPilot)
-- Trigger: process schedule daily 09:00, plus manual "Execute" during the demo.
+- Trigger: process schedule daily 09:00 **IST** (check the Atom's time zone), plus manual "Execute" during the demo.
 - Client list: static JSON in a Message shape or a Cross Reference Table. For the demo, one entry:
   ```json
   [ { "client_name": "Acme Retail", "repo_url": "<DEMO_REPO_URL, we send it>", "branch": "main", "auto_fix": true,
@@ -265,6 +279,8 @@ Request (save as `b3.json` for the test call):
   "dashboard_url": "https://patchpilot.vercel.app/scans/scn_01" }
 ```
 Steps: map stats → B3 Teams card → respond `200 { "ok": true, "teams_sent": true }`.
+We send header `Idempotency-Key: <scan_id>`. Skipping a repeated key is optional for B3 — a duplicate summary card
+is harmless; do it only if it is easy.
 
 **B4 — Compliance report** · `GET ${BOOMI_BASE_URL}/patchpilot/compliance?client_name=Acme%20Retail&from=2026-10-01`
 Steps: read query parameters → query the compliance log for that client with `detected_at >= from` → respond:
@@ -343,17 +359,17 @@ compliance log with columns: [paste section 4 table]. Show me where to find the 
 
 **B2**
 "Create a process with a Web Services Server listener for POST /patchpilot/findings that accepts this JSON
-[paste the B2 request from section 5]. Validate cve_id, package, priority and client_name; return 400 if missing.
+[paste the B2 request from section 5]. Validate finding_id, cve_id, package, priority and client_name; return 400 {ok:false, error:'invalid_request', message} if missing.
 Read the Idempotency-Key header: if the compliance log already has a row with that finding_id, return the stored
-jira_key, jira_url and compliance_log_id without creating anything.
+jira_key, jira_url, teams_sent and compliance_log_id without creating anything.
 Add a Decision on priority: P1 or P2 go to an urgent branch. Create a Jira issue using this mapping
 [paste Jira mapping table] (add label actively-exploited when kev is true). Post an Adaptive Card to the Teams webhook with the CVE, package, explanation and
-links to pr_url and the new Jira issue. Insert a row into the compliance log. Return this JSON
+links to pr_url and the new Jira issue. Insert a row into the compliance log (including finding_id, jira_url and teams_sent). Return this JSON
 [paste the B2 response from section 5]. If Teams fails, still return 200 with teams_sent false. If Jira fails,
 return 502 with {ok:false, error:'jira_create_failed', message}."
 
 **B1**
-"Create a scheduled process (daily 09:00) that reads this client list [paste JSON from section 7] and for each
+"Create a scheduled process (daily 09:00 IST) that reads this client list [paste JSON from section 7] and for each
 entry sends POST {BACKEND_URL}/api/scans with header X-API-Key and the entry as the JSON body. Log the scan_id
 from the 202 response."
 
