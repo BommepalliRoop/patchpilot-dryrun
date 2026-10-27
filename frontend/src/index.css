@@ -41,3 +41,29 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Shiki output: line numbers (offset by --pp-start) and the highlighted evidence line. */
+.pp-code pre {
+  margin: 0;
+  padding: 0.75rem 0;
+  background: transparent !important;
+  counter-reset: pp-n var(--pp-start, 0);
+}
+.pp-code .pp-line {
+  display: inline-block;
+  width: 100%;
+  padding: 0 0.75rem;
+  counter-increment: pp-n;
+}
+.pp-code .pp-line::before {
+  content: counter(pp-n);
+  display: inline-block;
+  width: 2.5rem;
+  margin-right: 0.75rem;
+  text-align: right;
+  color: var(--color-muted);
+}
+.pp-code .pp-hl {
+  background: rgb(244 63 94 / 0.18);
+  box-shadow: inset 3px 0 0 var(--color-danger);
+}
