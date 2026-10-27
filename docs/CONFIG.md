@@ -24,6 +24,7 @@ Legend: 🔒 = secret (only in `.env` / host settings) · 📄 = safe to write h
 | `DEMO_MODE` | 📄 | `true` on demo day, else `false` | Us | Enables `/api/demo/reset` (still needs the API key) | T01, T17 | |
 | `SCAN_TIMEOUT_S` | 📄 | `600` | Us | Whole-scan timeout | T03 | |
 | `MAX_SCANS_PER_HOUR` | 📄 | `20` | Us | Abuse / credit protection | T03 | |
+| `FIX_PYTHON` | 📄 | blank = backend Python; e.g. path to `python3.11` | Us | Interpreter for the fix venvs. The demo target needs Python 3.11 (requests 2.25.1 breaks on 3.12+); Docker image is 3.11 already | T08 | |
 | `PATCHPILOT_API_KEY` | 🔒 | 32+ random chars | Us | `python -c "import secrets;print(secrets.token_urlsafe(32))"` — share privately with Boomi team for B1 | T03 (B1 auth) | |
 | `BOOMI_MODE` | 📄 | `mock` → `live` | Us | Switch after B2 test call works | T10 | `mock` |
 | `BOOMI_BASE_URL` | 📄 | `https://<atom-cloud-host>/ws/rest` | Boomi team | Their deployed Web Services Server base URL | T10 | |

@@ -52,6 +52,7 @@ class Settings(BaseSettings):
     threat_intel: Literal["live", "mock", "off"] = "live"
     scan_timeout_s: int = 600
     max_scans_per_hour: int = 20
+    fix_python: str = ""  # interpreter for fix venvs (T08); blank = the backend's own Python
 
     # Service
     demo_mode: bool = False
