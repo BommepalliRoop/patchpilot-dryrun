@@ -10,7 +10,7 @@ from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-BACKEND_DIR = REPO_ROOT / "backend"
+BACKEND_DIR = Path(__file__).resolve().parents[2]  # backend/ locally, /srv/app in Docker (no backend/ dir there)
 
 Mode = Literal["mock", "live"]
 
