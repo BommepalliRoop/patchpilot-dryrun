@@ -21,7 +21,7 @@ services:
       - { key: BOOMI_B4_PATH, value: /ws/simple/getPatchpilotcompliance }
       - { key: DEMO_MODE, value: "true" }
       - { key: DEMO_REPO_URL, value: "https://github.com/BommepalliRoop/demo-target" }
-      - { key: ALLOWED_REPO_PREFIXES, value: "https://github.com/BommepalliRoop/" }
+      - { key: ALLOWED_REPO_PREFIXES, value: "https://github.com/" }   # any GitHub repo; scanned code runs with a scrubbed env (S2), 20 scans/hour
       - { key: THREAT_INTEL, value: live }
       - { key: FRONTEND_URL, value: "https://patchpilot-ruby.vercel.app" }
       - { key: PATCHPILOT_API_KEY, generateValue: true }
