@@ -10,7 +10,7 @@
 6. (45 s) Boomi results: Jira ticket created, Slack alert in the channel, compliance log row (show B4 page).
 7. (20 s) Close: "Every client, every day, no manual triage. 300 alerts become the 3 that matter — already fixed."
 
-Backup: if live services fail, flip to `*_MODE=mock` and run the seeded demo (T17 seed). Keep a screen recording of a full run.
+Backup: if live services fail, flip to `*_MODE=mock` and run the seeded demo (`python -m app.seed --reset`). Keep a screen recording of a full run. Step by step: `docs/RUNBOOK.md`.
 
 ## If a judge asks: "Is it safe to auto-fix?" (RISKS O4)
 Say it in 20 seconds, in this order:

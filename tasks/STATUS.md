@@ -21,7 +21,19 @@ Update your row when you start (`in_progress`) and finish (`done`). Keep notes t
 | T14 | Integrations and compliance pages | Dev D | Haiku 5.5 | low | 3 | T11 | done | B1–B4 health dots from last call, activity feed polls 3 s with animated new rows, compliance table + CSV export (formula-safe) on existing GET /api/compliance; E14 tested; vitest 43 pass, build green; backend unchanged (route + tests already from T10); real Boomi not exercised |
 | T15 | Demo target vulnerable repo | Dev E / Presenter | Haiku 5.5 | low | 1 | — | done | Pushed to github.com/BommepalliRoop/demo-target (public, main). pytest 6/6 on Python 3.11.9. osv-scanner 2.7.0 lockfile mode: 110 entries (PyPI 104, npm 6); PyYAML 1 advisory, lodash 6, both ecosystems reported; entries duplicated GHSA/PYSEC, certifi/idna transitive extras (API estimate was 39) |
 | T16 | Deployment | Dev C | Sonnet 5.5 | medium | 3 | T03, T11 | done | Dockerfile (py3.11 + git + osv-scanner 2.7.0 sha-checked + Node 20, non-root, healthcheck), .dockerignore, railway.json, render.yaml (starter), vercel.json, warmup scripts, docs/DEPLOY.md; S2,S12,N10 tested; 382 pass (3.13); docker build and real deploy not run (Docker daemon down, no host accounts) |
-| T17 | End-to-end integration and demo seed | Lead | Opus 5.5 | high | 4 | T03, T06, T08, T09, T10, T12, T13 | todo | |
-| T18 | Polish and rehearsal | Everyone | Sonnet 5.5 | medium | 4 | T17 | done | O4 pitch answer added to DEMO_SCRIPT + 3 tests tying it to code (no auto-merge, S6 fence); backend 377 pass, vitest 43 pass, build green; T17 not done and the two live rehearsals are human-only, NOT done |
+| T17 | End-to-end integration and demo seed | Lead | Opus 5.5 | high | 4 | T03, T06, T08, T09, T10, T12, T13 | done | `python -m app.seed` (2 historical scans, real demo-target advisories), demo reset = DB + WORK_DIR (cache kept) + close PRs/delete `patchpilot/*` branches (live), `python -m app.e2e` timing check, docs/RUNBOOK.md; fixed 2 integration bugs found on the real demo-target run (fixer bumped requirements-dev.txt -> every PyPI fix needs_human; clean_env dropped proxy/CA vars -> npm SELF_SIGNED_CERT); O1,O3 tested (network-off e2e); 391 pass (3.11); mock e2e on demo-target: Jira+Slack in 30.6 s, 2 UI rehearsals 40 s/44 s, 68 s backup recording; **live LLM/GitHub/Boomi switch NOT done** (no keys, Boomi B1–B4 not built) — follow RUNBOOK section 2 on the day |
+| T18 | Polish and rehearsal | Everyone | Sonnet 5.5 | medium | 4 | T17 | done | O4 pitch answer added to DEMO_SCRIPT + 3 tests tying it to code (no auto-merge, S6 fence); backend 377 pass, vitest 43 pass, build green; the two live rehearsals, visual polish and README screenshots are human-only, NOT done |
 | B0 | Boomi setup (runtime, listener, auth, connections) | Boomi team / Lead | Boomi Companion | — | 1 | contracts | in_progress | Atom Cloud + Shared Web Server user ready, Supabase compliance table created and tested; Boomi Companion plugin installed, workspace `D:\hackathon\boomi-workspace` created; AtomSphere API token and jq still to set up; Jira/Slack connections not made |
 | B1–B4 | Boomi processes | Boomi team | Boomi Companion | — | 1–3 | B0 | todo | Not built yet; real Boomi not exercised (backend runs `BOOMI_MODE=mock`) |
+
+## RISKS.md final pass (T17, Oct 27)
+Checked against the task notes above and spot-checked in code. "done" = implemented and tested in its task; "not verified" = code exists but the real service/host was never exercised.
+
+| Area | Done | Not done / not verified |
+|---|---|---|
+| Security | S1, S2 (T17: proxy + CA vars now pass through, see RISKS), S3, S4, S5, S6, S7, S8 (backend + Shift+R key prompt), S9, S10, S11, S12, S13, S14, S15 | — |
+| Network | N1, N2, N3, N4, N5 (our side: same `Idempotency-Key` on retry), N6, N7, N8, N9, N11, N12 | N5 Boomi side (B2 duplicate check) not built yet; N10 warm-up script exists but no real deploy / cold start tested (T16) |
+| Errors | E1–E15 | — |
+| Logic | L1–L11 | — |
+| Demo / ops | O1 (each `*_MODE` falls back alone, seed, network-off test, mock recording), O2, O3 (reset + PR/branch cleanup, tested with a fake GitHub) | O1 live screen recording (record after the live switch); O3 against the real GitHub API not run (no token); O4 pitch answer done in T18 (docs/DEMO_SCRIPT.md, tested) |
+
