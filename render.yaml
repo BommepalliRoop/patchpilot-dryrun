@@ -21,7 +21,7 @@ services:
       - { key: DEMO_REPO_URL, value: "https://github.com/BommepalliRoop/demo-target" }
       - { key: ALLOWED_REPO_PREFIXES, value: "https://github.com/BommepalliRoop/" }
       - { key: THREAT_INTEL, value: live }
-      - { key: FRONTEND_URL, value: "http://localhost:5173" }   # set to the Vercel URL once it exists
+      - { key: FRONTEND_URL, value: "https://patchpilot-ruby.vercel.app" }
       - { key: PATCHPILOT_API_KEY, generateValue: true }
       - { key: BOOMI_USER, sync: false }
       - { key: BOOMI_TOKEN, sync: false }
