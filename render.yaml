@@ -10,8 +10,10 @@ services:
     region: singapore
     healthCheckPath: /api/health
     envVars:
-      - { key: LLM_MODE, value: mock }
-      - { key: GITHUB_MODE, value: mock }
+      - { key: LLM_MODE, value: live }
+      - { key: LLM_PROVIDER, value: openai }
+      - { key: LLM_MODEL, value: gpt-4.1-mini }   # chat/completions with temperature 0 (reasoning models reject it)
+      - { key: GITHUB_MODE, value: live }
       - { key: BOOMI_MODE, value: live }
       - { key: BOOMI_BASE_URL, value: "https://c01-sg.integrate.boomi.com" }
       - { key: BOOMI_B2_PATH, value: /ws/simple/createPatchpilotfinding }
@@ -25,3 +27,5 @@ services:
       - { key: PATCHPILOT_API_KEY, generateValue: true }
       - { key: BOOMI_USER, sync: false }
       - { key: BOOMI_TOKEN, sync: false }
+      - { key: LLM_API_KEY, sync: false }   # set in the Render dashboard
+      - { key: GITHUB_TOKEN, sync: false }  # set in the Render dashboard
