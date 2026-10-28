@@ -3,11 +3,13 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
-from app.core.config import reset_settings_cache
+from app.core.config import Settings, reset_settings_cache
 from app.core.db import init_db, reset_engine
 from app.core.events import bus
 
-# Pinned so a developer's real .env can never change test behaviour.
+Settings.model_config["env_file"] = None  # a developer's real .env is never read by the tests
+
+# Pinned so the developer's shell environment can never change test behaviour.
 TEST_ENV = {
     "LLM_MODE": "mock",
     "BOOMI_MODE": "mock",
