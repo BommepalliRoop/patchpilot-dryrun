@@ -1,26 +1,27 @@
-# Render blueprint. The free plan sleeps after ~15 min idle (RISKS N10), so the starter plan is required.
+# Render blueprint. Free plan for the dry run: it sleeps after ~15 min idle (RISKS N10) -> run scripts/warmup.sh
+# 5 min before the demo; no disk on free, so SQLite resets on every deploy (re-seed). Use starter + disk for the event.
 services:
   - type: web
     name: patchpilot-api
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
     dockerContext: .
-    plan: starter
+    plan: free
+    region: singapore
     healthCheckPath: /api/health
-    disk:
-      name: patchpilot-data
-      mountPath: /data
-      sizeGB: 1
     envVars:
       - { key: LLM_MODE, value: mock }
-      - { key: BOOMI_MODE, value: mock }
       - { key: GITHUB_MODE, value: mock }
+      - { key: BOOMI_MODE, value: live }
+      - { key: BOOMI_BASE_URL, value: "https://c01-sg.integrate.boomi.com" }
+      - { key: BOOMI_B2_PATH, value: /ws/simple/createPatchpilotfinding }
+      - { key: BOOMI_B3_PATH, value: /ws/simple/createPatchpilotscansummary }
+      - { key: BOOMI_B4_PATH, value: /ws/simple/getPatchpilotcompliance }
       - { key: DEMO_MODE, value: "true" }
-      - { key: FRONTEND_URL, sync: false }
-      - { key: BACKEND_URL, sync: false }
-      - { key: PATCHPILOT_API_KEY, sync: false }
-      - { key: LLM_API_KEY, sync: false }
-      - { key: GITHUB_TOKEN, sync: false }
-      - { key: BOOMI_BASE_URL, sync: false }
+      - { key: DEMO_REPO_URL, value: "https://github.com/BommepalliRoop/demo-target" }
+      - { key: ALLOWED_REPO_PREFIXES, value: "https://github.com/BommepalliRoop/" }
+      - { key: THREAT_INTEL, value: live }
+      - { key: FRONTEND_URL, value: "http://localhost:5173" }   # set to the Vercel URL once it exists
+      - { key: PATCHPILOT_API_KEY, generateValue: true }
       - { key: BOOMI_USER, sync: false }
       - { key: BOOMI_TOKEN, sync: false }

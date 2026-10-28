@@ -67,7 +67,7 @@ def test_n10_hosts_do_not_sleep():
     railway = json.loads((REPO_ROOT / "railway.json").read_text())
     assert railway["deploy"]["healthcheckPath"] == "/api/health"
     render = (REPO_ROOT / "render.yaml").read_text()
-    assert "plan: starter" in render and "plan: free" not in render
+    assert "plan: free" in render or "plan: starter" in render  # free sleeps (warm-up script); starter for the event
     assert "healthCheckPath: /api/health" in render
 
 
