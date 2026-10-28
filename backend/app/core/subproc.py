@@ -9,7 +9,11 @@ from pathlib import Path
 from typing import NamedTuple
 
 # What a child process may inherit. Windows needs a few more for git/python to find their config and temp dirs.
-_ENV_KEEP = ("PATH", "HOME", "USERPROFILE", "SYSTEMROOT", "TEMP", "TMP", "LANG", "LC_ALL", "SSL_CERT_FILE")
+# T17: proxy settings and CA bundles too — on a proxied / TLS-inspecting network (venue Wi-Fi, corporate proxy)
+# git, pip and npm otherwise fail (`SELF_SIGNED_CERT_IN_CHAIN`). They are paths and proxy addresses, not our keys.
+_ENV_KEEP = ("PATH", "HOME", "USERPROFILE", "SYSTEMROOT", "TEMP", "TMP", "LANG", "LC_ALL", "SSL_CERT_FILE",
+             "SSL_CERT_DIR", "REQUESTS_CA_BUNDLE", "CURL_CA_BUNDLE", "GIT_SSL_CAINFO", "NODE_EXTRA_CA_CERTS",
+             "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY")
 _ENV_KEEP_PREFIXES = ("PIP_",)
 
 

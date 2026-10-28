@@ -1,4 +1,4 @@
-.PHONY: dev backend frontend test lint
+.PHONY: dev backend frontend test lint seed e2e
 
 # Windows without make: powershell -File scripts/dev.ps1
 PY ?= python
@@ -19,3 +19,10 @@ test:
 lint:
 	cd backend && $(PY) -m ruff check app tests
 	cd frontend && npm run lint
+
+# T17 demo tools (docs/RUNBOOK.md)
+seed:
+	cd backend && $(PY) -m app.seed --reset
+
+e2e:
+	cd backend && $(PY) -m app.e2e
