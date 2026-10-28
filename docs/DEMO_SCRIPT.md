@@ -11,3 +11,10 @@
 7. (20 s) Close: "Every client, every day, no manual triage. 300 alerts become the 3 that matter — already fixed."
 
 Backup: if live services fail, flip to `*_MODE=mock` and run the seeded demo (T17 seed). Keep a screen recording of a full run.
+
+## If a judge asks: "Is it safe to auto-fix?" (RISKS O4)
+Say it in 20 seconds, in this order:
+1. **Never auto-merged.** PatchPilot only opens a pull request; a human reviews and merges it.
+2. **Tests must pass.** The upgrade runs the repo's own test suite; if it still fails after 2 AI retries the finding is `needs_human` and the PR is labelled `tests-not-run` / not presented as fixed.
+3. **The AI patch is fenced in (S6).** It may only touch `.py` files named in the failing traceback (or that import the package) plus the package's requirements line; never `tests/`, `.github/`, `setup.py`, `conftest.py`; max 200 changed lines; no `..` or absolute paths.
+4. **Everything is audited.** Each finding creates a Jira ticket (B2) and a compliance-log row (B4) that can be exported.
