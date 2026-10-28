@@ -471,7 +471,7 @@ async def _stage_fix(run: _Run, groups: list[_PackageFix]) -> None:
         run.emit("fix", "running", f"{package}: {g.fix.status}", done / len(groups),
                  {"package": package, "status": g.fix.status, "fix_id": g.fix_id})
 
-    await _gather_limited(groups, one)
+    await _gather_limited(groups, one, get_settings().fix_concurrency)
     fixed = sum(1 for g in groups if g.fix and g.fix.status in FIXED_STATUSES)
     run.emit("fix", "completed", f"{fixed}/{len(groups)} package(s) fixed", 1.0)
 

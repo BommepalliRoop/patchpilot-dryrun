@@ -23,6 +23,7 @@ services:
       - { key: DEMO_REPO_URL, value: "https://github.com/BommepalliRoop/demo-target" }
       - { key: ALLOWED_REPO_PREFIXES, value: "https://github.com/" }   # any GitHub repo; scanned code runs with a scrubbed env (S2), 20 scans/hour
       - { key: THREAT_INTEL, value: live }
+      - { key: FIX_CONCURRENCY, value: "1" }   # 512 MB free plan: one fix venv at a time
       - { key: FRONTEND_URL, value: "https://patchpilot-ruby.vercel.app" }
       - { key: PATCHPILOT_API_KEY, generateValue: true }
       - { key: BOOMI_USER, sync: false }

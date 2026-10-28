@@ -53,6 +53,7 @@ class Settings(BaseSettings):
     scan_timeout_s: int = 600
     max_scans_per_hour: int = 20
     fix_python: str = ""  # interpreter for fix venvs (T08); blank = the backend's own Python
+    fix_concurrency: int = Field(default=4, ge=1)  # package fixes in parallel; 1 on 512 MB hosts (each builds a venv)
 
     # Service
     demo_mode: bool = False
