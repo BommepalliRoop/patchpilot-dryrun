@@ -19,6 +19,9 @@ TEST_ENV = {
     "LLM_API_KEY": "",
     "GITHUB_TOKEN": "",
     "BOOMI_TOKEN": "",
+    "BOOMI_B2_PATH": "/patchpilot/findings",
+    "BOOMI_B3_PATH": "/patchpilot/scan-summary",
+    "BOOMI_B4_PATH": "/patchpilot/compliance",
 }
 
 
